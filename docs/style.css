@@ -1,0 +1,31 @@
+legend {
+	padding: 6px;
+	margin-bottom: 20px;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 1.2em;
+	color: #333333;
+	border: 0;
+	border-bottom: 1px solid #e5e5e5;
+	text-align: center;
+}
+.thumbnails > li {
+	float: none;
+	display: inline-block;
+	vertical-align: top;
+	margin-left: 16px;
+}
+.thumbnails > [class*="span"] {
+	float: none;
+}
+h1 {
+
+}
+h2 {
+	padding-bottom: 9px;
+	margin: 60px 0 20px;
+	border-bottom: 1px solid #eee;
+}
+h3 {
+	margin-top: 30px;
+}
