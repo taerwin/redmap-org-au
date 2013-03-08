@@ -14,6 +14,7 @@ PHOTO_RESULT_TYPES = ((True, _('Present')), (False, _('Not present')))
 
 RESPONSES = ((True, _('Yes')), (False, _('No')))
 
+
 class ValidationMessageTemplate(models.Model):
 
     name = models.CharField(max_length=128, unique=True)
@@ -22,6 +23,7 @@ class ValidationMessageTemplate(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class ConditionSection(models.Model):
 
@@ -34,7 +36,7 @@ class ConditionSection(models.Model):
     @property
     def radiogroup_label(self):
         if self.conditions.exists():
-            return self.conditions.all()[0].radiogroup_label+"?"
+            return self.conditions.all()[0].radiogroup_label + "?"
 
     def __unicode__(self):
         return self.name
@@ -54,10 +56,12 @@ class SightingValidationConditionManager(models.Manager):
         return self.get(
             name="%s - Maybe" % settings.PHOTO_MATCHES_SPECIES_QUESTION)
 
+
 class SightingValidationCondition(models.Model):
 
     name = models.CharField(max_length=255)
-    section = models.ForeignKey(ConditionSection, null=True, blank=True, related_name="conditions")
+    section = models.ForeignKey(
+        ConditionSection, null=True, blank=True, related_name="conditions")
 
     objects = SightingValidationConditionManager()
 
@@ -123,9 +127,9 @@ class SightingValidationRule(models.Model):
 
 
 RULE_CONDITION_TEST_CHOICES = (
-    ( "Y", "True"),
-    ( "N", "False"),
-    ( "-", "Don't care"),
+    ("Y", "True"),
+    ("N", "False"),
+    ("-", "Don't care"),
 )
 
 
@@ -134,8 +138,8 @@ class RuleConditionTestManager(models.Manager):
     def tests_for_rule(self, rule):
         for condition in SightingValidationCondition.objects.all():
             RuleConditionTest.objects.get_or_create(
-                condition = condition,
-                rule = rule
+                condition=condition,
+                rule=rule
             )
         return rule.condition_tests
 
@@ -144,13 +148,13 @@ class RuleConditionTest(models.Model):
 
     rule = models.ForeignKey(
         SightingValidationRule,
-        related_name = "condition_tests"
+        related_name="condition_tests"
     )
     condition = models.ForeignKey(SightingValidationCondition)
     test = models.CharField(
-        max_length = "1",
-        default = "-",
-        choices = RULE_CONDITION_TEST_CHOICES
+        max_length="1",
+        default="-",
+        choices=RULE_CONDITION_TEST_CHOICES
     )
 
     objects = RuleConditionTestManager()
@@ -191,10 +195,10 @@ class ValidationResponseManager(models.Manager):
                 sighting_tracking=tracker,
                 answer=True,
                 sighting_validation_condition__startswith=
-                    settings.PHOTO_MATCHES_SPECIES_QUESTION)
+                settings.PHOTO_MATCHES_SPECIES_QUESTION)
             key = response.condition.radiogroup_value
             for cval, ckey in PHOTO_MATCHES_SPECIES_CHOICES:
-                if key==ckey:
+                if key == ckey:
                     return cval
 
             raise Exception(
@@ -203,6 +207,7 @@ class ValidationResponseManager(models.Manager):
 
         except ValidationResponse.DoesNotExist:
             return None
+
 
 class ValidationResponse(models.Model):
 

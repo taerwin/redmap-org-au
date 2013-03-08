@@ -37,7 +37,7 @@ class SponsorManager(ChainableManager):
             grouped_dict = dict((k, list(v)) for k, v in grouped_qs)
 
             return dict((real_key, grouped_dict.get(db_key, []))
-                for db_key, real_key in keys.items())
+                        for db_key, real_key in keys.items())
 
         def get_major_minor(self):
             "Return a dict of sponsors, keyed by 'major' or 'minor'."

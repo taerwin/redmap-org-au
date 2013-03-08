@@ -19,7 +19,8 @@ def advise_scientist_promotion(user):
         'site': Site.objects.get_current(),
     }
 
-    body = render_to_string('backend/email/text/scientist_promotion.html', payload)
+    body = render_to_string(
+        'backend/email/text/scientist_promotion.html', payload)
     email = EmailMessage(subject, body, from_email, [to_email])
     email.send()
 
@@ -34,6 +35,7 @@ def advise_regional_admin_promotion(user):
         'site': Site.objects.get_current(),
     }
 
-    body = render_to_string('backend/email/text/regional_admin_promotion.html', payload)
+    body = render_to_string(
+        'backend/email/text/regional_admin_promotion.html', payload)
     email = EmailMessage(subject, body, from_email, [to_email])
     email.send()

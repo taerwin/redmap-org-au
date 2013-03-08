@@ -26,7 +26,8 @@ class AddStep1(ModelForm):
     other_species = forms.CharField(widget=forms.TextInput(
         attrs={'placeholder': 'Other species', 'class': 'span3'}))
 
-    progress_uuid = forms.CharField(max_length=36, widget=forms.widgets.HiddenInput())
+    progress_uuid = forms.CharField(
+        max_length=36, widget=forms.widgets.HiddenInput())
 
     def __init__(self, *args, **kwargs):
         super(AddStep1, self).__init__(*args, **kwargs)

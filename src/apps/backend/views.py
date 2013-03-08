@@ -44,7 +44,6 @@ import uuid
 from cms.models import CopyBlock
 
 
-
 login_url = reverse_lazy('auth_login')
 
 
@@ -288,7 +287,7 @@ class manage_experts(AuthMixin, ListView):
             Region.objects.all().values_list(
                 'id', 'description').order_by('description'))
         context['species_list'] = [
-            (s.id, '{0} ( {1} )'.format(s.species_name, s.common_name), ) \
+            (s.id, '{0} ( {1} )'.format(s.species_name, s.common_name), )
             for s in Species.objects.get_redmap().order_by('species_name')]
 
         context['filters'] = self.filters
@@ -361,7 +360,7 @@ class PanelListView(AuthMixin, ListView):
         context['user_list'] = [
             (u.username, u.profile.display_name, ) for u in User.objects.filter(is_active=True).order_by('username')]
         context['species_list'] = [
-            (s.id, '{0} ( {1} )'.format(s.species_name, s.common_name), ) \
+            (s.id, '{0} ( {1} )'.format(s.species_name, s.common_name), )
             for s in Species.objects.get_redmap().order_by('species_name')]
 
         context['filters'] = self.filters
@@ -388,9 +387,9 @@ class Dashboard(AuthMixin, ListView):
     def get_queryset(self):
         return (
             SightingTracking
-                .active_assignments
-                .filter(person=self.request.user)
-                .order_by('-sighting__logging_date'))
+            .active_assignments
+            .filter(person=self.request.user)
+            .order_by('-sighting__logging_date'))
 
     def get_context_data(self, **kwargs):
 
@@ -503,6 +502,7 @@ def DeleteScientist(request, pk=None,
         {'user': user}
     )
 
+
 @login_required
 @permission_required('backend.change_sightingvalidationrule')
 def validation_rules(request):
@@ -519,7 +519,7 @@ def validation_rules(request):
 @login_required
 @permission_required('backend.add_sightingvalidationrule')
 def add_validation_rule(request,
-    template_name="backend/add_validation_rule.html"):
+                        template_name="backend/add_validation_rule.html"):
 
     rule = SightingValidationRule()
     conditions = SightingValidationCondition.objects.all()
@@ -535,7 +535,7 @@ def add_validation_rule(request,
     if request.POST:
         form = RuleForm(request.POST, instance=rule)
         tests = InitialRuleConditionTestFormSet(request.POST, instance=rule,
-            initial=rule_conditions)
+                                                initial=rule_conditions)
         form_valid = form.is_valid()
         tests_valid = tests.is_valid()
         if form_valid and tests_valid:
@@ -546,7 +546,7 @@ def add_validation_rule(request,
         form = RuleForm(instance=rule)
 
         tests = InitialRuleConditionTestFormSet(instance=rule,
-            initial=rule_conditions)
+                                                initial=rule_conditions)
 
     return render(request, template_name, {'form': form, 'tests': tests})
 
@@ -554,12 +554,11 @@ def add_validation_rule(request,
 @login_required
 @permission_required('backend.change_sightingvalidationrule')
 def edit_validation_rule(request, pk,
-    template_name="backend/add_validation_rule.html"):
+                         template_name="backend/add_validation_rule.html"):
 
     rule = get_object_or_404(SightingValidationRule, pk=pk)
 
     RuleConditionTest.objects.tests_for_rule(rule)
-
 
     if request.POST:
 
@@ -677,10 +676,10 @@ class MemberIndex(AuthMixin, ListView):
         qs = User.objects.all()
 
         if filters.get('activated', None) == "False":
-            activate=RegistrationProfile.ACTIVATED
+            activate = RegistrationProfile.ACTIVATED
             qs = qs.filter(
                 ~Q(registrationprofile__activation_key=activate) &
-                 Q(registrationprofile__activation_key__isnull=False))
+                Q(registrationprofile__activation_key__isnull=False))
 
         if 'group' in filters:
             qs = qs.filter(groups__name=filters['group'])
@@ -1116,7 +1115,7 @@ def ValidationConditions(request):
 @login_required
 @permission_required('backend.change_sightingvalidationcondition')
 def ValidationConditionAdd(
-    request, pk=None, template_name="backend/validation_condition_edit.html"):
+        request, pk=None, template_name="backend/validation_condition_edit.html"):
 
     if pk:
         condition = get_object_or_404(SightingValidationCondition, pk=pk)
@@ -1141,7 +1140,7 @@ def ValidationConditionAdd(
 @login_required
 @permission_required('backend.delete_sightingvalidationcondition')
 def ValidationConditionDelete(
-    request, pk=None, template_name="backend/validation_condition_delete.html"):
+        request, pk=None, template_name="backend/validation_condition_delete.html"):
 
     condition = SightingValidationCondition.objects.get(pk=pk)
 
@@ -1174,7 +1173,7 @@ class RegionalAdministrators(AuthMixin, ListView):
 @permission_required('redmapdb.change_administratorallocation')
 @permission_required('auth.change_user')
 def RegionalAdministratorAdd(
-    request, template_name="backend/regional_administrator_add.html"):
+        request, template_name="backend/regional_administrator_add.html"):
 
     form = RegionalAdministratorAddForm(request.POST or None)
 
@@ -1204,7 +1203,7 @@ def RegionalAdministratorAdd(
 @permission_required('redmapdb.delete_administratorallocation')
 @permission_required('auth.change_user')
 def RegionalAdministratorDelete(request, pk=None,
-    template_name="backend/regional_administrator_delete.html"):
+                                template_name="backend/regional_administrator_delete.html"):
 
     user = User.objects.get(pk=pk)
 
@@ -1270,7 +1269,7 @@ class AdministratorAllocations(AuthMixin, ListView):
 @login_required
 @permission_required('redmapdb.change_administratorallocation')
 def AdministratorAllocationEdit(request, pk=None,
-    template_name="backend/administrator_allocation_edit.html"):
+                                template_name="backend/administrator_allocation_edit.html"):
 
     if pk:
         allocation = get_object_or_404(AdministratorAllocation, pk=pk)
@@ -1295,7 +1294,7 @@ def AdministratorAllocationEdit(request, pk=None,
 @login_required
 @permission_required('redmapdb.delete_administratorallocation')
 def AdministratorAllocationDelete(request, pk=None,
-    template_name="backend/administrator_allocation_delete.html"):
+                                  template_name="backend/administrator_allocation_delete.html"):
 
     allocation = AdministratorAllocation.objects.get(pk=pk)
 
@@ -1327,9 +1326,9 @@ def resend_member_activation(request, user_id):
         return redirect(reverse('member_index'))
 
     if not profile.is_pending_activation:
-        messages.warning(request, 
-            'Cannot resend activation for this user as no activation is '
-            'pending.')
+        messages.warning(request,
+                         'Cannot resend activation for this user as no activation is '
+                         'pending.')
 
     payload = {
         'user': user,

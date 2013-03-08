@@ -27,11 +27,11 @@ class VerifyStep(ModelForm):
         empty_label="Other species", required=False)
 
     sighting_date = forms.DateField(required=True,
-        widget=forms.DateInput(attrs={'class': 'input-small'}))
+                                    widget=forms.DateInput(attrs={'class': 'input-small'}))
 
     photo_caption = forms.CharField(required=False,
-        widget=forms.Textarea(attrs={
-            'rows': '3', 'class': 'input-block-level'}))
+                                    widget=forms.Textarea(attrs={
+                                                          'rows': '3', 'class': 'input-block-level'}))
 
     def __init__(self, *args, **kwargs):
         super(VerifyStep, self).__init__(*args, **kwargs)
@@ -101,17 +101,20 @@ class VerifyStep(ModelForm):
     class Meta:
         model = Sighting
         fields = ['species', 'other_species', 'sex', 'size_method', 'size', 'weight', 'count',
-            'sighting_date', 'time', 'latitude', 'longitude', 'accuracy',
-            'activity', 'notes', 'photo_caption']
+                  'sighting_date', 'time', 'latitude', 'longitude', 'accuracy',
+                  'activity', 'notes', 'photo_caption']
 
 
 class VerifyStep3(Form):
 
-    assessment = forms.CharField(widget=forms.widgets.Textarea(attrs={'class': 'span6', 'rows': '12'}))
+    assessment = forms.CharField(
+        widget=forms.widgets.Textarea(attrs={'class': 'span6', 'rows': '12'}))
     is_displayed_on_site = forms.BooleanField(required=False)
     is_published = forms.BooleanField(required=False)
-    template = forms.ModelChoiceField(queryset=ValidationMessageTemplate.objects.all(), empty_label=None)
-    message = forms.CharField(widget=forms.widgets.Textarea(attrs={'class': 'span6', 'rows': '12'}))
+    template = forms.ModelChoiceField(
+        queryset=ValidationMessageTemplate.objects.all(), empty_label=None)
+    message = forms.CharField(
+        widget=forms.widgets.Textarea(attrs={'class': 'span6', 'rows': '12'}))
 
     def __init__(self, is_success, template_id, assessment, *args, **kwargs):
         super(VerifyStep3, self).__init__(*args, **kwargs)
@@ -120,7 +123,7 @@ class VerifyStep3(Form):
             SightingValidationRule.objects.filter(valid_sighting=is_success)
         all_templates = distinct_by_annotation(
             ValidationMessageTemplate.objects.filter(
-                sightingvalidationrule__in = matching_rules))
+                sightingvalidationrule__in=matching_rules))
         matching_template = all_templates.get(pk=template_id)
 
         self.fields['template'].queryset = all_templates
@@ -267,11 +270,11 @@ class RuleConditionTestForm(ModelForm):
 
 
 RuleConditionTestFormSet = inlineformset_factory(SightingValidationRule,
-    RuleConditionTest,
-    form=RuleConditionTestForm,
-    can_delete=False,
-    extra=0
-)
+                                                 RuleConditionTest,
+                                                 form=RuleConditionTestForm,
+                                                 can_delete=False,
+                                                 extra=0
+                                                 )
 
 
 class AddValidationRuleForm(ModelForm):
@@ -314,6 +317,7 @@ class AddValidationRuleForm(ModelForm):
             'sighting_validation_condition': forms.widgets.CheckboxSelectMultiple()
         }
 
+
 class AddEmailTemplateForm(ModelForm):
 
     class Meta:
@@ -322,6 +326,7 @@ class AddEmailTemplateForm(ModelForm):
             'template': forms.widgets.Textarea(attrs={'class': 'span5'}),
             'public_assessment': forms.widgets.Textarea(attrs={'class': 'span5'}),
         }
+
 
 class UserAddForm(ModelForm):
 
@@ -335,8 +340,10 @@ class UserAddForm(ModelForm):
         tag_string = self.instance.profile.tag_list
         self.initial['tag_list'] = parse_tag_input(tag_string)
 
-        self.fields['tag_list'].choices = Tag.objects.all().values_list('name', 'name')
-        self.fields['organisation'].initial = self.instance.profile.organisation
+        self.fields['tag_list'].choices = Tag.objects.all(
+        ).values_list('name', 'name')
+        self.fields[
+            'organisation'].initial = self.instance.profile.organisation
         self.fields['trust_level'].initial = self.instance.profile.trust_level
         self.fields['trust_level'].label = 'Trusted user'
 
@@ -363,10 +370,12 @@ class UserAddForm(ModelForm):
             'groups', 'user_permissions', 'is_active', 'password'
         ]
 
+
 class OrganisationAddForm(ModelForm):
 
     class Meta:
         model = Organisation
+
 
 class EditSightingForm(ModelForm):
 
@@ -377,7 +386,6 @@ class EditSightingForm(ModelForm):
             'class': 'input-xlarge'
         }),
         empty_label="Other species", required=False)
-
 
     def clean(self):
         cleaned_data = super(EditSightingForm, self).clean()
@@ -396,7 +404,6 @@ class EditSightingForm(ModelForm):
 
         return cleaned_data
 
-
     class Meta:
         model = Sighting
         fields = [
@@ -405,6 +412,7 @@ class EditSightingForm(ModelForm):
             'accuracy', 'activity', 'notes', 'photo_caption', 'photo_url',
             'other_species'
         ]
+
 
 class SightingReassignForm(forms.Form):
 
@@ -422,16 +430,17 @@ class SightingReassignForm(forms.Form):
         self.fields.insert(0, 'username', forms.ChoiceField(choices=choices))
 
     comment = forms.CharField(
-        widget = forms.widgets.Textarea(attrs={'class': 'input-xxlarge'}),
-        label = 'Comment<br><small class="nobold lighter">Not displayed on\
+        widget=forms.widgets.Textarea(attrs={'class': 'input-xxlarge'}),
+        label='Comment<br><small class="nobold lighter">Not displayed on\
             site</small>'
     )
+
 
 class SightingSpamForm(forms.Form):
 
     comment = forms.CharField(
-        widget = forms.widgets.Textarea(attrs={'class': 'input-xxlarge'}),
-        label = 'Comment<br><small class="nobold lighter">Not displayed on\
+        widget=forms.widgets.Textarea(attrs={'class': 'input-xxlarge'}),
+        label='Comment<br><small class="nobold lighter">Not displayed on\
             site</small>')
 
 
@@ -459,6 +468,7 @@ class AssignedScientistFilter(NiceUserFilter):
             return qs
 
         return qs.get_sightings_for_user(value)
+
 
 class OutOfRangeFilter(ChoiceFilter):
     CHOICES = (

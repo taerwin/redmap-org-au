@@ -63,6 +63,7 @@ def SponsorDelete(request, pk=None, template_name="backend/sponsor_delete.html")
         {'sponsor': sponsor}
     )
 
+
 @login_required
 @permission_required('frontend.change_faq')
 def FaqIndex(request, template_name="backend/faq_index.html"):
@@ -74,6 +75,7 @@ def FaqIndex(request, template_name="backend/faq_index.html"):
         template_name,
         {'faqs': faqs}
     )
+
 
 @login_required
 @permission_required('frontend.change_faq')
@@ -98,6 +100,7 @@ def FaqEdit(request, pk=None, template_name="backend/faq_edit.html"):
         template_name,
         {'form': form, 'pk': pk}
     )
+
 
 @login_required
 @permission_required('frontend.delete_faq')
@@ -139,7 +142,8 @@ def SponsorCategoryEdit(request, pk=None, template_name="backend/sponsor_categor
         category = SponsorCategory()
 
     if request.POST:
-        form = AddSponsorCategoryForm(request.POST, request.FILES, instance=category)
+        form = AddSponsorCategoryForm(
+            request.POST, request.FILES, instance=category)
 
         if form.is_valid():
             form.save()

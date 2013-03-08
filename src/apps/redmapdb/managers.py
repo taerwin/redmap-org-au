@@ -73,11 +73,12 @@ CAST({latitude} as numeric(18,9))
 class StoredProcedureMetaOptions(object):
     """
     This class' purpose is to provide a configuration container for models
-    in the application which interact with the MSSQL database through stored 
+    in the application which interact with the MSSQL database through stored
     procedures and table views
     """
 
-    name = NotImplementedError("A stored procedure name has not been set on your model.")
+    name = NotImplementedError(
+        "A stored procedure name has not been set on your model.")
     overridden_field_names = dict()
     excluded_fields = list()
     param_prefix = 'p'
@@ -92,7 +93,8 @@ class RedmapModelbase(models.base.ModelBase):
     def __new__(self, name, bases, attrs):
         new = super(RedmapModelbase, self).__new__(self, name, bases, attrs)
         sp_meta_options = attrs.pop('StoredProcedureMeta', None)
-        setattr(new, '_stored_procedure_meta', StoredProcedureMetaOptions(sp_meta_options))
+        setattr(new, '_stored_procedure_meta',
+                StoredProcedureMetaOptions(sp_meta_options))
         return new
 
 
@@ -175,7 +177,8 @@ class RedmapModel(models.Model):
             if attr in self._stored_procedure_meta.overridden_field_names:
                 param_name = self._stored_procedure_meta.overridden_field_names.get(attr)
             else:
-                param_name = "{0}{1}".format(self._stored_procedure_meta.param_prefix, field.column)
+                param_name = "{0}{1}".format(
+                    self._stored_procedure_meta.param_prefix, field.column)
 
             value = getattr(self, attr)
 
@@ -184,7 +187,8 @@ class RedmapModel(models.Model):
 
             d[param_name] = value
         for field in self._meta.many_to_many:
-            d[param_name] = [obj._get_pk_val() for obj in getattr(self, field.attname).all()]
+            d[param_name] = [obj._get_pk_val(
+            ) for obj in getattr(self, field.attname).all()]
         return d
 
     def _get_sp_call(self, sp_name, mode, params=None):

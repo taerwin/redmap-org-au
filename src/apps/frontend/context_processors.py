@@ -2,6 +2,7 @@ from django.core.urlresolvers import resolve, Resolver404
 from django.conf import settings
 from frontend.models import Faq, Sponsor, SponsorCategory
 
+
 def content(request):
     return {
         'sponsors': Sponsor.objects.all(),
@@ -22,6 +23,7 @@ SPECIES_URL_NAMES = [
     'species_category_list',
     'species_category_list_by_region'
 ]
+
 
 def is_section_page(request):
     """
@@ -57,10 +59,12 @@ def resolver_match(request):
     except Resolver404:
         return {'resolver_match': ''}
 
+
 def facebook_page_url(request):
     return {
         'facebook_page_url': settings.FACEBOOK_PAGE_URL,
     }
+
 
 def geoserver_url(request):
     return {

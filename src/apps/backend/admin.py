@@ -1,13 +1,16 @@
 from django.contrib import admin
 from models import *
 
+
 class RuleConditionTestInline(admin.TabularInline):
     model = RuleConditionTest
+
 
 class SightingValidationRuleAdmin(admin.ModelAdmin):
     inlines = [
         RuleConditionTestInline,
     ]
+
 
 class ValidationResponseAdmin(admin.ModelAdmin):
     list_display = [

@@ -72,7 +72,7 @@ class SpeciesTaxonomicGroup(models.Model):
     update_time = models.DateTimeField(
         db_column=u'update_time', null=True, auto_now_add=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'MB_SPECIES_TAXONOMIC_GROUP'
@@ -87,7 +87,7 @@ class SpeciesReportGroup(models.Model):
     update_time = models.DateTimeField(
         db_column=u'update_time', null=True, auto_now_add=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'MB_SPECIES_REPORT_GROUP'
@@ -106,7 +106,7 @@ class SpeciesInOtherGroup(models.Model):
     species_other_group = models.IntegerField(
         db_column=u'mb_species_other_group_id')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'MB_SPECIES_IN_OTHER_GROUP'
@@ -129,7 +129,8 @@ class SpeciesManager(models.Manager):
         species = self.filter(active=True, speciesincategory__isnull=False)
 
         if category:
-            species = species.filter(speciesincategory__species_category=category)
+            species = species.filter(
+                speciesincategory__species_category=category)
 
         if region:
             species = species.filter(speciesallocation__region=region)
@@ -194,12 +195,12 @@ class Species(models.Model):
         db_column=u'distribution_latitude_south_limit',
         null=True, blank=True)
     notes = models.TextField(db_column=u'notes', null=True, blank=True,
-        help_text='Shown on the species page, under the "Notes:" heading. '
-                  'Should give more information about when to log sightings.')
+                             help_text='Shown on the species page, under the "Notes:" heading. '
+                             'Should give more information about when to log sightings.')
     update_time = models.DateTimeField(
         db_column=u'update_time', null=True, auto_now_add=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     objects = SpeciesManager()
 
@@ -254,7 +255,7 @@ class Accuracy(models.Model):
     code = models.CharField(max_length=7, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_ACCURACY'
@@ -270,7 +271,7 @@ class Sex(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_SEX'
@@ -289,7 +290,7 @@ class Count(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_COUNT'
@@ -303,7 +304,7 @@ class WeightMethod(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_WEIGHT_METHOD'
@@ -317,7 +318,7 @@ class SizeMethod(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_SIZE_METHOD'
@@ -331,7 +332,7 @@ class Habitat(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_HABITAT'
@@ -345,7 +346,7 @@ class Method(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_METHOD'
@@ -359,7 +360,7 @@ class Activity(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_ACTIVITY'
@@ -375,7 +376,7 @@ class Time(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_TIME'
@@ -493,6 +494,7 @@ class SightingManagerMixin:
 class SightingManagerQuerySet(QuerySet, SightingManagerMixin):
     pass
 
+
 class SightingManager(SightingManagerMixin, RedmapManager):
 
     def get_query_set(self):
@@ -520,11 +522,13 @@ class SightingManager(SightingManagerMixin, RedmapManager):
 
         sighting.save()
 
-        sighting.assign(sighting.pick_expert(), "Picked from available expert pool")
+        sighting.assign(
+            sighting.pick_expert(), "Picked from available expert pool")
 
         thank_sighter(sighting)
 
         return sighting
+
 
 class Organisation(models.Model):
     id = models.AutoField(db_column=u'id', primary_key=True)
@@ -537,7 +541,7 @@ class Organisation(models.Model):
         upload_to="organisations", db_column=u'image_url', null=True,
         max_length=512, blank=True, verbose_name="Image URL")
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_ORGANISATION'
@@ -552,7 +556,7 @@ class Jurisdiction(models.Model):
     organisation = models.ForeignKey(
         Organisation, db_column=u'rm_organisation_id')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_JURISDICTION'
@@ -583,7 +587,7 @@ class Region(models.Model):
         Jurisdiction, db_column=u'rm_jurisdiction_id')
     email = models.EmailField()
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     objects = RegionManager()
 
@@ -624,9 +628,11 @@ class Region(models.Model):
 class Sighting(models.Model):
     id = models.AutoField(db_column=u'id', primary_key=True)
     if use_auth:
-        user = models.ForeignKey(User, db_column=u'registered_user_id', related_name="sightings")
+        user = models.ForeignKey(
+            User, db_column=u'registered_user_id', related_name="sightings")
     else:
-        user = models.IntegerField(db_column=u'registered_user_id', related_name="sightings")
+        user = models.IntegerField(
+            db_column=u'registered_user_id', related_name="sightings")
     sighting_date = models.DateTimeField(db_column=u'sighting_date')
 
     is_verified_by_scientist = models.BooleanField(
@@ -671,14 +677,14 @@ class Sighting(models.Model):
     accuracy = models.ForeignKey(
         Accuracy, db_column=u'rm_accuracy_id', null=True)
     species = models.ForeignKey(Species, db_column=u'mb_species_id', null=True,
-        related_name="sightings", blank=True)
+                                related_name="sightings", blank=True)
     other_species = models.CharField(
         max_length=512, db_column=u'other_species', null=True, blank=True)
     count = models.ForeignKey(Count, db_column=u'rm_count_id', null=True)
     sex = models.ForeignKey(Sex, db_column=u'rm_sex_id', null=True)
     size = models.IntegerField(db_column=u'size', null=True, blank=True)
     weight = models.DecimalField(db_column=u'weight',
-        max_digits=11, decimal_places=3, null=True, blank=True)
+                                 max_digits=11, decimal_places=3, null=True, blank=True)
     size_method = models.ForeignKey(
         SizeMethod, db_column=u'rm_size_method_id', null=True, blank=True)
     weight_method = models.ForeignKey(
@@ -695,7 +701,7 @@ class Sighting(models.Model):
     activity_other = models.CharField(
         max_length=50, db_column=u'activity_other', null=True, blank=True)
     time = models.ForeignKey(Time, db_column=u'rm_time_id',
-        null=True, blank=True)
+                             null=True, blank=True)
     photo_url = models.ImageField(upload_to="pictures", db_column=u'photo_url',
                                   blank=True, null=True, max_length=512)
     photo_caption = models.TextField(
@@ -728,7 +734,7 @@ class Sighting(models.Model):
     organisation = models.ForeignKey(
         Organisation, db_column=u'rm_organisation_id', null=True, blank=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
     region = models.ForeignKey(
         Region, db_column=u'rm_region_id', null=True, blank=True)
 
@@ -819,7 +825,8 @@ class Sighting(models.Model):
         return self.tracker is not None
 
     def reassign(self, by_user, to_user, comment=None):
-        SightingTracking.objects.reassign(self, to_user, comment or "No comment")
+        SightingTracking.objects.reassign(
+            self, to_user, comment or "No comment")
         alert_reassignee(self, by_user, to_user, comment)
 
     def assign(self, user, comment=None):
@@ -834,7 +841,7 @@ class Sighting(models.Model):
         self.is_checked_by_admin = is_valid and not is_species_expert
 
     def report_valid_without_photo(self, comment, is_displayed_on_site,
-        is_published):
+                                   is_published):
             SightingTracking.objects.report(
                 self, True, comment=comment,
                 is_displayed_on_site=is_displayed_on_site)
@@ -842,7 +849,7 @@ class Sighting(models.Model):
             self.save()
 
     def report_valid_with_photo(self, photo_matches_species, comment,
-        is_displayed_on_site, is_published):
+                                is_displayed_on_site, is_published):
         SightingTracking.objects.report(
             self, True, comment=comment,
             is_displayed_on_site=is_displayed_on_site)
@@ -870,7 +877,8 @@ class Sighting(models.Model):
             self.region = Region.objects.get_by_coordinates(
                 self.latitude, self.longitude)
             if self.species:
-                self.is_out_of_range = not Sighting.objects.in_known_range(self)
+                self.is_out_of_range = not Sighting.objects.in_known_range(
+                    self)
 
         return super(Sighting, self).save(*args, **kwargs)
 
@@ -929,7 +937,8 @@ class Sighting(models.Model):
         share = OpenGraphShare.objects.create(user=self.user, action_domain=self.get_facebook_action_domain(), content_object=self)
 
         if request is None:
-            sighting_url = 'http://{0}{1}'.format(Site.objects.get_current().domain, self.get_absolute_url())
+            sighting_url = 'http://{0}{1}'.format(
+                Site.objects.get_current().domain, self.get_absolute_url())
         else:
             sighting_url = request.build_absolute_uri(self.get_absolute_url())
 
@@ -941,7 +950,6 @@ class Sighting(models.Model):
         share.send()
 
         return
-
 
     class Meta:
         db_table = u'RM_SIGHTING'
@@ -960,7 +968,7 @@ class SightingTrackingStatus(models.Model):
     code = models.CharField(max_length=3, db_column=u'code')
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_SIGHTING_TRACKING_STATUS'
@@ -977,10 +985,14 @@ class Person(FacebookProfileModel):
         user = models.OneToOneField(
             User, db_column=u'registered_user_id', null=True)
     else:
-        user = models.IntegerField(db_column=u'registered_user_id', null=True, blank=True)
-    postcode = models.CharField(max_length=4, db_column=u'postcode', default='', null=True, blank=True)
-    phone = models.CharField(max_length=20, db_column=u'phone', default='', null=True, blank=True)
-    mobile = models.CharField(max_length=20, db_column=u'mobile', default='', null=True, blank=True)
+        user = models.IntegerField(
+            db_column=u'registered_user_id', null=True, blank=True)
+    postcode = models.CharField(max_length=4, db_column=u'postcode',
+                                default='', null=True, blank=True)
+    phone = models.CharField(
+        max_length=20, db_column=u'phone', default='', null=True, blank=True)
+    mobile = models.CharField(
+        max_length=20, db_column=u'mobile', default='', null=True, blank=True)
     organisation = models.ForeignKey(
         Organisation, db_column=u'cm_organisation_id', null=True, blank=True)
     image_url = models.ImageField(
@@ -989,7 +1001,7 @@ class Person(FacebookProfileModel):
     trust_level = models.IntegerField(
         db_column=u'trust_level', default=0, null=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
     is_available = models.BooleanField(db_column=u'is_available', default=True)
 
     occupation_interest = models.CharField(
@@ -997,7 +1009,8 @@ class Person(FacebookProfileModel):
 
     joined_mailing_list_on_signup = models.IntegerField(null=True)
 
-    region = models.ForeignKey(Region, db_column=u'rm_region_id', null=True, blank=True)
+    region = models.ForeignKey(
+        Region, db_column=u'rm_region_id', null=True, blank=True)
 
     tag_list = TagField()
 
@@ -1017,7 +1030,7 @@ class Person(FacebookProfileModel):
         """
         if hasattr(self, 'user'):
             if self.user.groups.filter(
-                name="Regional Administrators").exists():
+                    name="Regional Administrators").exists():
                 return True
         return False
 
@@ -1037,7 +1050,7 @@ class Person(FacebookProfileModel):
         """
         if hasattr(self, 'user'):
             if self.is_regional_admin or self.user.groups.filter(
-                name='Scientists').exists():
+                    name='Scientists').exists():
                 return True
         return False
 
@@ -1105,8 +1118,9 @@ class Person(FacebookProfileModel):
         Behaviour after registering with facebook
         '''
         from django_facebook.utils import next_redirect
-        response = next_redirect(request, default=settings.FACEBOOK_REGISTRATION_REDIRECT,
-                                 next_key=['register_next', 'next'])
+        response = next_redirect(
+            request, default=settings.FACEBOOK_REGISTRATION_REDIRECT,
+            next_key=['register_next', 'next'])
         response.set_cookie('fresh_registration', self.user_id)
 
         return response
@@ -1260,10 +1274,10 @@ class SightingTrackingManager(models.Manager):
     def get_active_tracker(self, sighting):
         try:
             return self.get(sighting=sighting,
-                sighting_tracking_status__code=settings.REQUIRES_VALIDATION)
+                            sighting_tracking_status__code=settings.REQUIRES_VALIDATION)
         except SightingTracking.MultipleObjectsReturned:
             return self.filter(sighting=sighting,
-                sighting_tracking_status__code=settings.REQUIRES_VALIDATION)[0]
+                               sighting_tracking_status__code=settings.REQUIRES_VALIDATION)[0]
         except SightingTracking.DoesNotExist:
             return None
 
@@ -1351,7 +1365,7 @@ class SightingTracking(models.Model):
     is_displayed_on_site = models.BooleanField(
         db_column=u'is_displayed_on_site', default=False)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     objects = SightingTrackingManager()
     active_assignments = SightingTrackingManager(settings.REQUIRES_VALIDATION)
@@ -1369,16 +1383,17 @@ class SightingTracking(models.Model):
         if status_code == settings.REQUIRES_VALIDATION:
             assessment_template = "Awaiting validation by {0}"
         elif status_code == settings.INVALID_SIGHTING:
-            assessment_template =  "Reported as invalid by {0}"
+            assessment_template = "Reported as invalid by {0}"
         elif status_code == settings.VALID_SIGHTING:
             assessment_template = "Validated by {0}"
         else:
             assessment_template = "Status `{1}` assigned to {0}"
 
-        assessment = assessment_template.format(self.person.profile, self.sighting_tracking_status)
+        assessment = assessment_template.format(
+            self.person.profile, self.sighting_tracking_status)
 
         if self.is_displayed_on_site:
-            assessment = assessment+": "+self.comment
+            assessment = assessment + ": " + self.comment
 
         return assessment
 
@@ -1399,7 +1414,7 @@ class SpeciesCategory(models.Model):
         upload_to="species_categories", db_column=u'picture_url', null=True,
         blank=True, max_length=512)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_SPECIES_CATEGORY'
@@ -1416,7 +1431,7 @@ class SpeciesInCategory(models.Model):
         SpeciesCategory, db_column=u'rm_species_category_id')
     species = models.ForeignKey(Species, db_column=u'mb_species_id')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_SPECIES_IN_CATEGORY'
@@ -1439,7 +1454,7 @@ class FBGroup(models.Model):
     facebook_group = models.IntegerField(
         db_column=u'facebook_group', null=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
     owner = models.ForeignKey(
         User, db_column=u'cm_person_id', null=True, blank=True)
 
@@ -1463,14 +1478,13 @@ class PersonInGroup(models.Model):
         person = models.IntegerField(db_column=u'cm_person_id')
     status = models.IntegerField(db_column=u'status', null=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_PERSON_IN_GROUP'
 
 
 class AdministratorAllocationMixin(object):
-
 
     def top_ranked_admins(self):
         """
@@ -1479,7 +1493,6 @@ class AdministratorAllocationMixin(object):
         min_rank = self.aggregate(Min('rank'))['rank__min']
         return self.filter(rank=min_rank)
 
-
     def pick_regional_admin(self):
         """
         Given a list of admin allocations, using rules:
@@ -1487,7 +1500,7 @@ class AdministratorAllocationMixin(object):
         - Pick least busy
         """
         least_busy_admin = None
-        count = None;
+        count = None
 
         for allocation in self.top_ranked_admins():
 
@@ -1505,7 +1518,6 @@ class AdministratorAllocationMixin(object):
         else:
             return least_busy_admin
 
-
     def find_regional_admins(self, region):
         return self.filter(region=region).exclude(
             person__person__is_available=False).order_by('rank')
@@ -1516,7 +1528,7 @@ class AdministratorAllocationQuerySet(QuerySet, AdministratorAllocationMixin):
 
 
 class AdministratorAllocationManager(
-    models.Manager, AdministratorAllocationMixin):
+        models.Manager, AdministratorAllocationMixin):
 
     def get_query_set(self):
         return AdministratorAllocationQuerySet(self.model, using=self._db)
@@ -1531,7 +1543,7 @@ class AdministratorAllocation(models.Model):
         person = models.IntegerField(db_column=u'cm_person_id')
     rank = models.IntegerField(db_column=u'rank', null=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     objects = AdministratorAllocationManager()
 
@@ -1548,7 +1560,7 @@ class Badge(models.Model):
         upload_to="badges", db_column=u'image_url', max_length=512)
     description = models.CharField(max_length=50, db_column=u'description')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_BADGE'
@@ -1566,7 +1578,7 @@ class BadgeInPerson(models.Model):
         person = models.IntegerField(db_column=u'cm_person_id')
     date_awarded = models.DateTimeField(db_column=u'date_awarded')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_BADGE_IN_PERSON'
@@ -1577,7 +1589,7 @@ class EmailResponse(models.Model):
     description = models.CharField(max_length=50, db_column=u'description')
     details = models.TextField(db_column=u'details')
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     class Meta:
         db_table = u'RM_EMAIL_RESPONSE'
@@ -1637,7 +1649,7 @@ class SpeciesAllocationMixin(object):
         """
         return self.is_available().species_match(species).region_match(
             range).range_filter(is_out_of_range).trusted_filter(
-            is_user_trusted).order_by('rank')
+                is_user_trusted).order_by('rank')
 
     def top_ranked_experts(self):
         """
@@ -1653,7 +1665,7 @@ class SpeciesAllocationMixin(object):
         - Pick least busy
         """
         least_busy_scientist = None
-        count = None;
+        count = None
 
         for allocation in self.top_ranked_experts():
 
@@ -1703,7 +1715,7 @@ class SpeciesAllocation(models.Model):
     contact_if_trusted = models.BooleanField(
         db_column=u'contact_if_trusted', default=True)
     update_number = models.IntegerField(db_column=u'update_number', default=1,
-        editable=False)
+                                        editable=False)
 
     objects = SpeciesAllocationManager()
 

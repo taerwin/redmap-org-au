@@ -12,7 +12,6 @@ class SpeciesIndex(SearchIndex):
         return Species.objects.get_redmap()
 
 
-
 class PersonIndex(SearchIndex):
 
     name = CharField(boost=1.125)

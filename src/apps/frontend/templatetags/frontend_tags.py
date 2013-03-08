@@ -26,6 +26,7 @@ TEMPLATE_PATHS = [
     "$prefix/$app/$model.html",
     "$prefix.html"]
 
+
 def template_list_generator(prefix, instance):
     "Helper for resolving the best template for an instance"
     vars = dict(
@@ -33,12 +34,14 @@ def template_list_generator(prefix, instance):
         model=instance._meta.module_name)
     return [string.Template(t).substitute(**vars) for t in TEMPLATE_PATHS]
 
+
 @register.simple_tag()
 def render_link(object):
     "Generates a link for an instance"
     ts = template_list_generator("frontend/render/link", object)
     t = template.loader.select_template(ts)
     return t.render(Context({'object': object}))
+
 
 @register.simple_tag()
 def render_feature(object):
@@ -152,4 +155,3 @@ def get_scientists(context, for_region=None):
 
     return Person.objects.filter(
         organisation__isnull=False, user__in=scientist_users)
-

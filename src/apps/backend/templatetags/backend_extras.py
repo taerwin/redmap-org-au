@@ -6,13 +6,15 @@ register = template.Library()
 
 @register.inclusion_tag("../templates/_navtabs.html", takes_context=True)
 def navtabs(context, active, user):
-    context['active']=active
+    context['active'] = active
     return context
+
 
 @register.inclusion_tag("../templates/_panel_sightings.html", takes_context=True)
 def panel_sightings(context, active):
-    context['active']=active
+    context['active'] = active
     return context
+
 
 @register.inclusion_tag("../templates/_panel_expert.html")
 def panel_expert(active):
@@ -20,11 +22,13 @@ def panel_expert(active):
         'active': active
     }
 
+
 @register.inclusion_tag("../templates/_panel_content.html")
 def panel_content(active):
     return {
         'active': active
     }
+
 
 @register.inclusion_tag("../templates/_panel_administration.html", takes_context=True)
 def panel_administration(context, active, user):

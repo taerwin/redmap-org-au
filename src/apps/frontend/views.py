@@ -60,18 +60,18 @@ class RedmapContextMixin(TemplateResponseMixin):
         if self.request.GET and 'species' in self.request.GET:
             try:
                 species = Species.objects.get(
-                    id = self.request.GET.get('species')
+                    id=self.request.GET.get('species')
                 )
                 context['species_filter'] = species.pk
                 context['species_filter_get'] =\
                     "species={0}".format(species.pk)
-                form = FilterSpeciesForm(shown_species, initial={'species': species.pk})
+                form = FilterSpeciesForm(
+                    shown_species, initial={'species': species.pk})
 
             except (Species.DoesNotExist, ValueError):
                 form = FilterSpeciesForm(shown_species)
         else:
             form = FilterSpeciesForm(shown_species)
-
 
         context.update({
             'species_filter_form': form,
@@ -103,8 +103,8 @@ def get_exif(fn):
                         d = GPSTAGS.get(t, t)
                         new_value[d] = v
 
-                    latitude_dms = [(tup[0] / tup[1])\
-                        for tup in new_value['GPSLatitude']]
+                    latitude_dms = [(tup[0] / tup[1])
+                                    for tup in new_value['GPSLatitude']]
 
                     if new_value['GPSLatitudeRef'] == 'S':
 
@@ -121,8 +121,8 @@ def get_exif(fn):
                             latitude_dms[2]
                         )
 
-                    longitude_dms = [(tup[0] / tup[1])\
-                        for tup in new_value['GPSLongitude']]
+                    longitude_dms = [(tup[0] / tup[1])
+                                     for tup in new_value['GPSLongitude']]
 
                     if new_value['GPSLongitudeRef'] == 'W':
 
@@ -226,12 +226,12 @@ class AddWizard(UploadHandlerMixin, SessionWizardView):
                         exif.get('DateTimeDigitalized') or\
                         exif.get('DateTimeOriginal')
 
-
                     if date_string:
                         exif_date_format = '%Y:%m:%d %H:%M:%S'
                         try:
-                            date = datetime.strptime(date_string, exif_date_format)
-                            hour = code=date.strftime('%H')
+                            date = datetime.strptime(
+                                date_string, exif_date_format)
+                            hour = code = date.strftime('%H')
                             context.update({
                                 'exif_date': date,
                                 'exif_time': Time.objects.get(code=hour).id
@@ -240,17 +240,18 @@ class AddWizard(UploadHandlerMixin, SessionWizardView):
                             pass
 
                 except Exception:
-                    logger.exception("Failed to decode exif data for {0}".format(url))
+                    logger.exception(
+                        "Failed to decode exif data for {0}".format(url))
 
-        accuracies = Accuracy.objects.all();
+        accuracies = Accuracy.objects.all()
         accuracy_dict = {}
         for a in accuracies:
             try:
                 a.code = int(a.code)
             except:
                 a.code = a.code[0:-1]
-            accuracy_dict.update({ a.id: a.code })
-        context.update({'accuracies': accuracy_dict});
+            accuracy_dict.update({a.id: a.code})
+        context.update({'accuracies': accuracy_dict})
 
         if int(self.storage.current_step) == 3:
             context.update({
@@ -291,8 +292,8 @@ def region_landing_page(request, region_slug):
         'is_region_page': True,
         'recent_activity': photo_sightings[:5],
         'recent_news': TaggedItem.objects.get_union_by_model(
-                Entry.published, (region_tag, get_redmap_tag())
-            ).filter(categories__slug='news', status=PUBLISHED)[:4],
+        Entry.published, (region_tag, get_redmap_tag())
+        ).filter(categories__slug='news', status=PUBLISHED)[:4],
         'photo_sightings': photo_sightings,
     }
 
@@ -395,7 +396,8 @@ class SpeciesInCategoryList(ListView, RedmapContextMixin):
 
     def get_queryset(self):
 
-        category = get_object_or_404(SpeciesCategory, pk=self.kwargs['category'])
+        category = get_object_or_404(
+            SpeciesCategory, pk=self.kwargs['category'])
 
         region_slug = self.kwargs.get('region_slug', None)
         if region_slug:
@@ -410,7 +412,7 @@ class SpeciesInCategoryList(ListView, RedmapContextMixin):
         category = SpeciesCategory.objects.get(pk=self.kwargs['category'])
 
         context.update({
-            'form':SpeciesJumpForm(self.region),
+            'form': SpeciesJumpForm(self.region),
             'region': self.region,
             'region_jump_form': RegionCategoryJumpForm(category),
             'category': category,
@@ -418,11 +420,13 @@ class SpeciesInCategoryList(ListView, RedmapContextMixin):
 
         return context
 
+
 class Faqs(ListView):
 
     context_object_name = 'faqs'
     model = Faq
     template_name = 'frontend/faq_list.html'
+
 
 class Scientists(ListView, RedmapContextMixin):
 
@@ -441,12 +445,13 @@ class Scientists(ListView, RedmapContextMixin):
 
             people = {}
             for allocation in allocations:
-                people.update({ str(allocation.person.id): allocation.person })
+                people.update({str(allocation.person.id): allocation.person})
 
             return people
 
         else:
-            return Person.objects.filter(user__groups__name = 'Scientists')
+            return Person.objects.filter(user__groups__name='Scientists')
+
 
 class Articles(ListView):
 
@@ -455,7 +460,8 @@ class Articles(ListView):
     template_name = 'frontend/article_list.html'
 
     def get_queryset(self):
-        return Entry.published.filter(categories__title = 'Articles')
+        return Entry.published.filter(categories__title='Articles')
+
 
 class SpeciesDetailView(DetailView):
 
@@ -481,8 +487,8 @@ class SpeciesDetailView(DetailView):
 def NewsletterSignup(request, template_name='frontend/newsletter_signup.html'):
 
     return render(request, template_name)
-    
-    
+
+
 def NewsletterSignupPage(request, template_name='frontend/newsletter_signup_page.html'):
 
     return render(request, template_name)
@@ -490,10 +496,12 @@ def NewsletterSignupPage(request, template_name='frontend/newsletter_signup_page
 
 def render_cluster(request, count):
 
-    import Image, ImageFont, ImageDraw
+    import Image
+    import ImageFont
+    import ImageDraw
 
-    W = 100 # img.size[0]
-    H = 100 # img.size[1]
+    W = 100  # img.size[0]
+    H = 100  # img.size[1]
 
     f = ImageFont.truetype(
         settings.WEBAPP_ROOT + '/static/fonts/FreeSans.ttf',
@@ -501,12 +509,13 @@ def render_cluster(request, count):
     )
     img = Image.new('RGBA', (W, H))
 
-    if count == '1': count = ''
+    if count == '1':
+        count = ''
 
     draw = ImageDraw.Draw(img)
-    draw.ellipse((0,0,W,H), fill=(255,0,0))
+    draw.ellipse((0, 0, W, H), fill=(255, 0, 0))
     w, h = draw.textsize(count, f)
-    draw.text(((W-w)/2,(H-h)), count, font=f, fill='black')
+    draw.text(((W - w) / 2, (H - h)), count, font=f, fill='black')
 
     response = HttpResponse(mimetype='image/png')
     img.save(response, 'PNG')
@@ -528,7 +537,8 @@ class SightingsPhoto(ListView, RedmapContextMixin):
             sightings = Sighting.objects.get_public_photo().\
                 filter(region__slug=region_slug).order_by('-sighting_date')
         else:
-            sightings = Sighting.objects.get_public_photo().order_by('-sighting_date')
+            sightings = Sighting.objects.get_public_photo(
+            ).order_by('-sighting_date')
 
         if self.request.GET and 'species' in self.request.GET:
             try:
@@ -613,7 +623,7 @@ class SpeciesCategoryView(ListView, RedmapContextMixin):
         context = super(SpeciesCategoryView, self).get_context_data(**kwargs)
 
         context.update({
-            'form':SpeciesJumpForm(),
+            'form': SpeciesJumpForm(),
             'region_jump_form': RegionJumpForm()
         })
 
@@ -656,12 +666,13 @@ def GroupView(request, pk=None, template_name='frontend/group_view.html'):
             elif action == 'leave':
 
                 membership =\
-                    PersonInGroup.objects.filter(group=group, person=request.user)
+                    PersonInGroup.objects.filter(
+                        group=group, person=request.user)
                 membership.delete()
 
             elif action == 'delete':
 
-                print 'Delete is unimplemented!' # TODO ?
+                print 'Delete is unimplemented!'  # TODO ?
 
         else:
             messages.error(request, 'You must log in to join a group')
@@ -677,8 +688,8 @@ def GroupView(request, pk=None, template_name='frontend/group_view.html'):
 
     if request.user.is_authenticated():
         is_member = PersonInGroup.objects.filter(
-            group = group,
-            person = request.user
+            group=group,
+            person=request.user
         ).exists()
         is_owner = group.owner == request.user
     else:
@@ -698,6 +709,7 @@ def GroupView(request, pk=None, template_name='frontend/group_view.html'):
             'is_owner': is_owner,
         }
     )
+
 
 @login_required
 def GroupEdit(request, pk=None, template_name='frontend/group_edit.html'):
@@ -736,6 +748,7 @@ def GroupEdit(request, pk=None, template_name='frontend/group_edit.html'):
 
     return render(request, template_name, context)
 
+
 @login_required
 def GroupDelete(request, pk=None, template_name='frontend/group_delete.html'):
 
@@ -757,4 +770,3 @@ def GroupDelete(request, pk=None, template_name='frontend/group_delete.html'):
             'count': len(members),
         }
     )
-

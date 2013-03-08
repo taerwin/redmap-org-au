@@ -8,11 +8,12 @@ def get_admin_edit_link(instance):
     app_slug = instance._meta.app_label
     model_slug = instance._meta.module_name
     return u"<a href='/admin/{0}/{1}/{2}/'>{3}</a>".format(app_slug, model_slug, instance.pk, instance)
-get_admin_edit_link.allow_tags=True
+get_admin_edit_link.allow_tags = True
 
 
 class SpeciesInCategoryInline(admin.TabularInline):
     model = SpeciesInCategory
+
 
 class SpeciesAdmin(admin.ModelAdmin):
 
@@ -29,15 +30,19 @@ class SpeciesAdmin(admin.ModelAdmin):
     inlines = [SpeciesInCategoryInline]
     list_per_page = 200
 
+
 class SpeciesCategoryAdmin(admin.ModelAdmin):
     inlines = [SpeciesInCategoryInline]
+
 
 class AdministratorAllocationAdmin(admin.ModelAdmin):
     list_display = ['region', 'person', 'rank']
     ordering = ['region', 'rank']
 
+
 class SightingTrackingAdmin(admin.ModelAdmin):
-    list_display = ['tracking_date', 'sighting_link', 'assignee_link', 'sighting_tracking_status']
+    list_display = ['tracking_date', 'sighting_link', 'assignee_link',
+                    'sighting_tracking_status']
     list_filter = ['sighting_tracking_status']
 
     def assignee_link(self, item):
@@ -52,8 +57,10 @@ class SightingTrackingAdmin(admin.ModelAdmin):
 class SightingTrackingStatusAdmin(admin.ModelAdmin):
     list_display = ['description', 'code']
 
+
 class OrganisationAdmin(admin.ModelAdmin):
     list_display = ['description', 'citation']
+
 
 class PersonAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'region', 'organisation', 'tag_list']
@@ -66,6 +73,7 @@ class PersonAdmin(admin.ModelAdmin):
         'organisation__description',
         'tag_list',
     ]
+
 
 class SightingAdmin(admin.ModelAdmin):
     list_display = [
@@ -90,18 +98,19 @@ class SightingAdmin(admin.ModelAdmin):
 
     def l_trackers(self, item):
         count = item.sighting_tracking.count()
-        if count==0:
+        if count == 0:
             return "No trackers"
         else:
             return (u"<a href='../sightingtracking/?sighting__id={0}'>{1} tracker{2}</a>"
-                .format(item.pk, count, pluralize(count)))
+                    .format(item.pk, count, pluralize(count)))
     l_trackers.allow_tags = True
     l_trackers.short_description = 'Trackers'
 
 
 class SpeciesAllocationAdmin(admin.ModelAdmin):
 
-    list_display = ['id', 'species', 'region', 'rank', 'person_link', 'contact_in_range']
+    list_display = ['id', 'species', 'region', 'rank', 'person_link',
+                    'contact_in_range']
     list_filter = ['region']
     search_fields = [
         'species__species_name', 'species__common_name',

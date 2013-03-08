@@ -18,19 +18,22 @@ def get_stale_sightings():
 
     last_week = date.today() - timedelta(weeks=1)
 
-    trackings = SightingTracking.active_assignments.filter(tracking_date__lte=last_week)
+    trackings = SightingTracking.active_assignments.filter(
+        tracking_date__lte=last_week)
 
     for tracking in trackings:
 
         sighting = tracking.sighting
 
-        sighting.reassign(global_admin, sighting.pick_expert(), "Reassigning stale sighting")
+        sighting.reassign(global_admin, sighting.pick_expert(
+        ), "Reassigning stale sighting")
 
         subject = '#%s - Stale Sighting' % sighting.pk
         from_email = settings.DEFAULT_FROM_EMAIL
         to = sighting.tracking.person.email
         if sighting.photo_url:
-            image = 'http://' + Site.objects.get_current().domain + sighting.photo_url.url
+            image = 'http://' + Site.objects.get_current(
+            ).domain + sighting.photo_url.url
         else:
             image = ''
 
@@ -44,8 +47,10 @@ def get_stale_sightings():
             'region': Region.objects.get(description='Tasmania'),
             'out_of_range': sighting.is_out_of_range,
         }
-        text_content = render_to_string('backend/email/text/stale_sighting.html', dictionary)
-        html_content = render_to_string('backend/email/html/stale_sighting.html', dictionary)
+        text_content = render_to_string(
+            'backend/email/text/stale_sighting.html', dictionary)
+        html_content = render_to_string(
+            'backend/email/html/stale_sighting.html', dictionary)
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()

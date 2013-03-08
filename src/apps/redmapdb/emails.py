@@ -85,7 +85,8 @@ def thank_sighter(sighting):
 
     REPLACEMENTS = dict([
         ('{sighter}', sighting.user.profile.display_name),
-        ('{species}', '%s (%s)' % (sighting.common_name, sighting.species_name)),
+        ('{species}', '%s (%s)' % (sighting.common_name,
+         sighting.species_name)),
     ])
     r = re.compile('|'.join(REPLACEMENTS.keys()))
 
