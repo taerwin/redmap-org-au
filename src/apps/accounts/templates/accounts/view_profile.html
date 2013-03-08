@@ -1,0 +1,83 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n thumbnail %}
+
+{% block head_title %}{% trans "Profile" %}{% endblock %}
+
+{% block section_title %}<h1>User Profile</h1>{% endblock %}
+
+{% block body %}
+
+<div class="overflow">
+
+	<div class="col col-200 margr2 margb2 padb2">
+		
+		{% include "snippet/profile-thumbnail.html" with profile=user.profile geometry="180x135" %}
+		
+		<div class="margb2">
+			<h3 class="nomargb"><strong>{{ user.profile }}</strong></h3>
+			{% if user.profile.organisation %}<h4>{{ user.profile.organisation }}</h4>{% endif %}
+			{% if user.profile.about_me %}
+				<div class="padt">
+					{{ user.profile.about_me|linebreaks|safe }}
+				</div>
+			{% endif %}
+		</div>
+		
+		<ul class="lines">
+			<li><i class="icon-calendar"></i> <strong>Joined</strong>: {{ user.date_joined|date:"j F, Y" }}</li>
+			<li><i class="icon-tags"></i> <strong>Total sightings</strong>: {{ sightings.count }}</li>
+			<li><i class="icon-tags"></i> <strong>Verified photo sightings</strong>: {{ photo_sightings.count }}</li>
+		</ul>
+
+	</div>
+	<div class="col col-700 margl2 margb2 padb2">
+	
+		<div class="overflow">
+			<h2 class="float-left">Verified sightings</h2>
+			{% if sightings %}
+				<p class="float-right padt">{{ sightings.count }}</p>
+			{% endif %}
+		</div>
+	
+		<ul class="listing clear3 padt2">
+			{% for sighting in sightings %}
+				<li class="col overflow col-220 margl2 margb2 sighting">
+					<div class="box pada">
+					    {% url sighting_detail_by_region sighting.region.slug sighting.id as sighting_url %}
+						
+						<a href="{% url sighting_detail sighting.id %}">
+							{% thumbnail sighting.photo_url '194x144' crop="center" upscale=True as im %}
+								<img class="polaroid-small margb" title="Photo of sighting" alt="Photo of sighting" src="{{ im.url }}">
+							{% empty %}
+								<div class="polaroid-small margb polaroid-placeholder" style="width:194px;height:144px;">
+									<span>No photo</span>
+								</div>
+							{% endthumbnail %}
+						</a>
+
+						<time datetime="{{ sighting.sighting_date|date:'c' }}" class="date">
+							<span class="date-day">{{ sighting.sighting_date|date:'j' }}</span>
+							<span class="date-month">{{ sighting.sighting_date|date:'M' }}</span>
+						</time>
+
+						{% if sighting.species %}
+							<h3 class="margt nomargb">
+								<a href="{{ sighting_url }}">{{ sighting.species.common_name }}</a>
+							</h3>
+							<p><dfn>{{ sighting.species.species_name }}</dfn></p>
+						{% else %}
+							<h3 class="margt nomargb"><a href="{{ sighting_url }}">{{ sighting.other_species }}</a></h3>
+							<p>&nbsp;</p>
+						{% endif %}
+					</div>
+				</li>
+			{% empty %}
+				<li>
+					<h4 class="padt2 padb2 center">{% trans "This user has not logged any sightings" %}</h4>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+{% endblock %}

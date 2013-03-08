@@ -1,0 +1,102 @@
+{% extends "subnav_base.html" %}
+
+{% load i18n ifsetting_tag thumbnail %}
+
+{% block head_title %}{% trans "My REDMAP" %}{% endblock %}
+{# {% block body_class %}account{% endblock %} #}
+
+{% block section_title %}<h1>My Redmap</h1>{% endblock %}
+
+{% block body %}
+	<div class="col col-200 margr2 margb2 padb2">
+		
+		{% if request.user.get_profile.image %}
+			<div class="polaroid margb">
+				{% thumbnail request.user.get_profile.image '180x135' upscale=True as im %}
+					<img title="{{ request.user.profile }}"
+					       alt="{{ request.user.profile }}"
+					       src="{{ im.url }}">
+				{% endthumbnail %}
+			</div>
+		{% endif %}
+		
+		<div class="margb2">
+			<h3 class="nomargb"><strong>{{ request.user.profile }}</strong></h3>
+			{% if request.user.profile.organisation %}
+				<h4 class="nobold">{{ request.user.profile.organisation }}</h4>
+			{% endif %}
+		</div>
+		
+		<ul class="lines">
+			{% url acct_edit_profile as acct_edit_profile %}
+			<li{% if request.path == acct_edit_profile %} class="active"{% endif %}>
+				<a href="{{ acct_edit_profile }}"><i class="icon-cog"></i> User profile</a>
+			</li>
+			{% url auth_password_change as auth_password_change %}
+			{% url auth_password_change_done as auth_password_change_done %}
+			<li{% if request.path == auth_password_change or request.path == auth_password_change_done %} class="active"{% endif %}>
+				<a href="{{ auth_password_change }}"><i class="icon-pencil"></i> {% trans "Change Password" %}</a>
+			</li>
+			<li><a href="{% url sighting_add %}"><i class="icon-screenshot"></i> Log a Sighting</a></li>
+			{% url my_groups as my_groups %}
+			<li{% if request.path == my_groups %} class="active"{% endif %}><a href="{{ my_groups }}"><i class="icon-bookmark"></i> My Groups</a></li>
+		</ul>
+
+		<br />
+
+		{% regroup sightings by species as species_list %}
+
+		<div class="margb2">
+			<h3 class="nomargb"><strong>Species reported:</strong></h3>
+			<br />
+			<ul class="lines">
+				{% for group in species_list %}
+					{% with group.grouper as species %}
+					<li>
+						<a href="{{ species.get_absolute_url }}">
+							{{ species.common_name }}
+						</a>
+					</li>
+					{% endwith %}
+				{% endfor %}
+			</ul>
+		</div>
+
+	</div>
+	<div class="col col-700 margl2 margb2 padb2">
+		{% block account_content %}{% endblock %}
+	</div>
+{% endblock %}
+
+{% block subnav %}
+	<ul class="nav nav-list">
+		<li>&nbsp;</li>
+		<li>
+			{% thumbnail request.user.profile.image '200x250' upscale=True as im %}
+			<img class="thumbnail" title="{{ request.user.username }}" alt="{{ request.user.username }}" src="{{ im.url }}">
+			{% empty %}
+			<img class="thumbnail" title="{{ request.user.username }}" alt="{{ request.user.username }}" src="http://placehold.it/200x250">
+			{% endthumbnail %}
+		</li>
+		<li>
+			<h3 class="page-header">
+				<a href="{% url acct_profile %}">
+					Hello {{ request.user.profile }}
+				</a>
+			</h3>
+		</li>
+		{% url acct_edit_profile as acct_edit_profile %}
+		<li{% if request.path == acct_edit_profile %} class="active"{% endif %}>
+			<a href="{{ acct_edit_profile }}"><i class="icon-cog"></i> User profile</a>
+		</li>
+		{% url auth_password_change as auth_password_change %}
+		{% url auth_password_change_done as auth_password_change_done %}
+		<li{% if request.path == auth_password_change or request.path == auth_password_change_done %} class="active"{% endif %}>
+			<a href="{{ auth_password_change }}"><i class="icon-pencil"></i> {% trans "Change Password" %}</a>
+		</li>
+		<li><hr></li>
+		<li><a href="{% url sighting_add %}"><i class="icon-screenshot"></i> Log a Sighting</a></li>
+		{% url my_groups as my_groups %}
+		<li{% if request.path == my_groups %} class="active"{% endif %}><a href="{{ my_groups }}"><i class="icon-bookmark"></i> My Groups</a></li>
+	</ul>
+{% endblock %}

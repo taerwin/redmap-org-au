@@ -1,0 +1,40 @@
+{% extends "accounts/base.html" %}
+
+{% load i18n bootstrap_tags frontend_tags thumbnail %}
+
+{% block account_content %}
+	<div class="overflow padb">
+		<h2 class="fleft">My groups</h2>
+		<div class="fright">			
+			<a href="{% url groups_list %}" class="button-blue button-caps">Browse groups<span class="chevron chevron-right"></span></a>
+		</div>
+	</div>
+	
+	<table class="table zebra-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Members</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for group in groups %}
+				<tr>
+					<th><a href="{% url group_view group.group.pk %}">{{ group.group }}</a></th>
+					<td>{{ group.members }}</td>
+					<td>
+						<a href="{% url group_view group.group.pk %}" class="btn">View</a>
+					</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="3" class="center">
+						<p><strong>You currently have no groups</strong></p>
+						<p><a href="{% url group_add %}">Create a group</a></p>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

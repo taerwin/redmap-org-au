@@ -1,0 +1,61 @@
+{% extends "accounts/base.html" %}
+
+{% load bootstrap_tags i18n thumbnail %}
+
+
+{% block account_content  %}	
+
+	{% if 'facebook_welcome' in request.GET %}
+
+		<h2>Welcome to Redmap!</h2>
+
+		{{ copyblock.registration_facebook_welcome|safe|default:"<p>This is your new Redmap profile page where you can edit your settings.</p><p>You can also begin logging sightings straight away by visiting the <a href='/sightings/add/'><strong>Log a sighting</strong></a> page.</p>" }}
+
+		{% include "frontend/newsletter_signup.html" %}
+
+		<h2 class="fleft">Update your profile</h2>
+		<p><a href="{% url acct_edit_profile %}" class="button button-red">View your profile</a></p>
+	
+
+	{% else %}
+
+		<h2>Your sightings</h2>
+		<ul class="listing clear3 padt2">
+			{% for sighting in sightings %}
+				<li class="col col-220 margl2 margb2">
+					<div class="box pada">
+
+						<a href="{% url sighting_detail sighting.id %}">
+							{% thumbnail sighting.photo_url '194x144' crop="center" upscale=True as im %}
+								<img class="polaroid-small margb" title="Photo of sighting" alt="Photo of sighting" src="{{ im.url }}">
+							{% empty %}
+								<div class="polaroid-small margb polaroid-placeholder" style="width:194px;height:144px;">
+									<span>No photo</span>
+								</div>
+							{% endthumbnail %}
+						</a>
+
+						<h3{% if sighting.species %} class="nomargb"{% endif %}><a href="{% url sighting_detail sighting.id %}">{{ sighting.species.common_name }}</a></h3>
+						<p><dfn>{{ sighting.species.species_name }}</dfn></p>
+						<p>{{ sighting.sighting_date|date:'j F, Y' }}{# <span class="lighter">{{ sighting.time }}</span> #}</p>
+						
+						{% comment %}
+							<p>{{ sighting.photo_caption }}</p>
+							<p>{{ sighting.notes }}</p>
+						{% endcomment %}
+						
+						<span class="paperclip{% if forloop.counter|divisibleby:2 %}-left{% else %}-right{% endif %}"></span>
+
+					</div>
+				</li>
+			{% empty %}
+				<li>
+					<p class="center">You have not logged any sightings yet</p>
+					<p class="center"><a href="#" class="button button-red">Log a sighting</a></p>
+				</li>
+			{% endfor %}
+		</ul>
+
+	{% endif %}
+
+{% endblock %}

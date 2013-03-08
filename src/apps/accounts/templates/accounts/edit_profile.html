@@ -1,0 +1,53 @@
+{% extends "accounts/base.html" %}
+
+{% load i18n %}
+{% load bootstrap_tags %}
+{% load frontend_tags %}
+{% load thumbnail %}
+
+{% block account_content %}
+	<h2>Edit profile</h2>
+	<form enctype="multipart/form-data" id="edit_profile" action="{% url acct_edit_profile %}" method="POST" class="form-horizontal">
+		{% csrf_token %}
+		<fieldset>
+			<legend>Account details</legend>
+			<div class="padt2">
+				{% for field in form.fieldsets.user_fields %}
+					{{ form|get_key:field|as_bootstrap_field }}
+				{% endfor %}
+				{% for field in form.fieldsets.misc_fields %}
+					{% if field == 'image' %}
+						{% with shape=shape|default:'150x150' %}
+							{% thumbnail form.image.value shape as im %}
+								<img class="margl-180 margb2 thumbnail"
+									title="Avatar"
+									src="{{ im.url }}">
+							{% empty %}
+							{% endthumbnail %}
+						{% endwith %}
+					{% endif %}
+					{{ form|get_key:field|as_bootstrap_field }}
+				{% endfor %}
+			</div>
+		</fieldset>
+		<div class="hr">
+			<fieldset>
+				<legend>Personal details</legend>
+				<div class="padt2">
+					{% for field in form.fieldsets.region_fields %}
+						{{ form|get_key:field|as_bootstrap_field }}
+					{% endfor %}
+					{% include "frontend/fields/textfield.html" with field=form.postcode optional=1 %}
+					{% include "frontend/fields/textfield.html" with field=form.phone optional=1 %}
+					{% include "frontend/fields/textfield.html" with field=form.mobile optional=1 %}
+				</div>
+			</fieldset>
+		</div>
+
+		<div class="margl-180">
+			<p class="padb"><em>Your private details will remain private! Will will not share any of the information you provide.</em></p>
+			<a href="{% url acct_profile %}" class="button-grey button-caps margr2"><strong>Cancel</strong></a>
+			<button type="submit" class="button-red button-caps"><strong>Save</strong></button>
+		</div>
+	</form>
+{% endblock %}
