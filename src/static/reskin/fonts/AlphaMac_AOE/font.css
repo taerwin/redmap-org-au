@@ -1,0 +1,10 @@
+@font-face {
+	font-family: 'AlphaMac AOE';
+    src: url('alphamacaoe.eot');
+    src: url('alphamacaoe.eot?#iefix') format('embedded-opentype'),
+         url('alphamacaoe.woff') format('woff'),
+         url('alphamacaoe.ttf') format('truetype'),
+         url('alphamacaoe.svg#alphamack_aoeregular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}

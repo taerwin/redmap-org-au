@@ -1,0 +1,268 @@
+/*********************************************************************************
+ * These are just development styles, please delete once proper styling beings!  *
+ * Nothing other than the OpenLayers overrides at the bottom should be important *
+ *********************************************************************************/
+
+label.checkbox.control-label ul, div.controls ul {
+    list-style: none;
+}
+
+div.controls ul li label input {
+    float: left;
+    margin-right: 10px;
+}
+
+div.actions .btn {
+    width: 80%;
+}
+
+body.panel div.navbar-inner {
+    background-image: none;
+    background-color: #CCF !important;
+}
+
+body.panel div.navbar-inner a {
+    color: black;
+}
+
+.species-right-col li:first-child {
+    min-height: 70px;
+}
+
+.species-right-col li div.pull-left {
+    margin-right: 5px;
+}
+
+/* resuable bits n bobs*/
+.margin-top{
+	margin-top: 40px;
+}
+.margin-bottom{
+	margin-bottom: 40px;
+}
+
+/*activity summary homepage*/
+.activity-wrapper{
+    padding:20px;
+    background:whiteSmoke;
+    margin:0 0 20px 0;
+}
+
+.activity-summary{
+    /*width:100%;
+    margin:0px;*/
+}
+.activity-image{
+    margin:0;
+}
+
+/*sidebar homepage*/
+.sidebar h3{
+    margin-bottom:10px;
+    color:#666;
+    font-weight:normal;
+}
+
+.sidebar .widget{
+    margin-bottom:20px;
+}
+
+.sidebar .span3{
+    margin-left:10px;
+}
+
+.sidebar ul{
+    padding:0;
+    margin:0;
+}
+
+.sidebar li{
+    list-style:none;
+}
+
+/* sighting details */
+
+.sighting-details{
+	width:100%;
+	margin-top:40px;
+	text-align: left;
+	margin-left:0;
+}
+
+.sighting-details tbody{
+	border-top:1px solid #999;
+}
+
+.sighting-details td, .sighting-details th{
+	padding:5px;
+	border-bottom:1px solid #aaa;
+}
+
+.sighting-details th{
+	background:#eee;
+	padding-right:15px;
+}
+
+/*add sighting forms*/
+
+.add-sighting-buttons{
+	text-align: right;
+	border:none;
+	box-shadow: none;
+}
+
+.control-label{
+	font-weight:bold;
+}
+
+.img-cap textarea{
+	height: 80px;
+	width: 260px;
+}
+
+.img-perms label{
+	float:right;
+	width:90%;
+}
+
+.add-deets textarea{
+	width: 100%;
+height: 158px;
+}
+
+/* errors */
+
+.errorlist{
+	margin:20px 0 0 0;
+}
+
+.errorlist li{
+list-style:none;
+	padding: 8px 35px 8px 14px;
+	margin-bottom: 18px;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+	border: 1px solid #EED3D7;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	color: #B94A48;
+	background-color: #F2DEDE;
+}
+
+#edit_profile .thumbnail {
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.sortable, .sortable ol {
+    list-style: none;
+}
+
+.sortable li {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: 1px solid #AAA;
+    background-color: #EEE;
+    padding: 5px;
+    cursor: move;
+    border-radius: 0.4em;
+}
+
+.sortable li.placeholder {
+    background-color: #AAF
+}
+
+.sortable i {
+    cursor: move;
+}
+
+#options {
+    position:relative;
+}
+#admin-options {
+    position:absolute;
+    right:0px;
+}
+
+.about-species hr {
+    margin: 4px 0;
+}
+
+.main-container.comments .span1 {
+    margin-left: 10px;
+}
+
+.sighting-image .thumbnail {
+    background-color: #113;
+}
+
+.home .hero-unit {
+    width: 100%;
+    position: absolute;
+    z-index: 1000;
+    bottom: -10px;
+    background: rgba(245,245,245,0.5);
+    padding: 15px 0px 15px 0px;
+    border-radius: 0;
+}
+.home .hero-unit p {
+    margin: 0 10px 0 10px;
+}
+.home .hero-unit h1 {
+    margin: 0 10px 0 10px;
+}
+
+body {
+    padding-top: 40px;
+}
+.nav-tabs.navigation {
+    margin-top: 18px;
+}
+
+.sighting table tr {
+    cursor: pointer;
+}
+
+.profile .sighting {
+    color: #333;
+}
+
+.sighting_tracking th {
+    width: 15%;
+}
+
+/***** Keep everything below this line *****/
+
+/**
+ * OpenLayers styles
+ *
+ * !important used because OpenLayers styles are overriding this & I'm lazy;
+ * fix this when the real styles are applied >.<
+ */
+
+.smallmap {
+    width: 100% !important;
+    height: 300px !important;
+    border: 1px solid #ccc !important;
+}
+.bigmap {
+    width: 100% !important;
+    height: 600px !important;
+    border: 1px solid #ccc !important;
+    position: relative;
+}
+.olControlScaleLine {
+    top: 15px !important;
+    right: 10px !important;
+    left: auto !important;
+}
+
+/**
+ * Override for Google Maps
+ *
+ * Removes an annoying div from displaying
+ */
+
+.olLayerGooglePoweredBy {
+    display:none;
+}

@@ -1,0 +1,52 @@
+
+.ui-slider .ui-slider-handle {
+	background:#e41e26 !important;
+	border-radius:0.7em;
+		-moz-border-radius:0.7em;
+		-webkit-border-radius:0.7em;
+	border:#e41e26 solid 1px !important;
+}
+
+.ui-slider {
+	background:#dbd9d8 !important;
+	border:#dbd9d8 solid 1px !important
+}
+
+.ui-datepicker-header {
+	background:#157acc !important;
+	border-color:#157acc !important;
+}
+
+.ui-datepicker-title {
+	color:#fff;
+	font:700 11px/23px 'Droid Sans', Arial, Helvetica, sans-serif !important;
+	text-transform:uppercase;
+}
+
+.ui-datepicker-calendar {
+	font-family:'Droid Sans', Arial, Helvetica, sans-serif;
+}
+
+.ui-datepicker-next:hover, .ui-datepicker-prev:hover {
+	background:#093468 !important;
+	border-color:#093468 !important;
+	
+}
+
+.ui-datepicker-calendar thead th {
+	font-size:11px;
+	text-transform:uppercase;
+	font-weight:400;
+}
+
+.ui-datepicker-calendar .ui-state-default {
+	background:#DBD9D8 !important;
+	text-align:center !important;
+}
+
+.ui-datepicker-calendar .ui-state-highlight {
+	background:#e41e26 !important;
+	color:#fff !important;
+	border-color:#e41e26 !important;
+	font-weight:700 !important;
+}
