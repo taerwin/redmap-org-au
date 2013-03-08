@@ -1,0 +1,30 @@
+<div class="control-group{% if field.errors %} error{% endif %}">
+	{% if not no_label %}
+		<label class="control-label" for="{{ field.auto_id }}">
+			{% if label_override %}
+				{{ label_override }}
+			{% else %}
+				{{ field.label }}
+			{% endif %}
+			{% if optional %}<span class="nobold lighter">(optional)</span>{% endif %}
+		</label>
+	{% endif %}
+	<div class="field controls">
+		{% if help_text_before_field %}
+			{% if field.help_text or help_text %}
+				<p class="help-block" style="padding-bottom:10px !important;margin-bottom:0 !important">{% if help_text %}{{ help_text }}{% else %}{{ field.help_text }}{% endif %}</p>
+			{% endif %}
+		{% endif %}
+		{% if field_append or field_prepend %}<div class="{% if field_append %} input-append{% endif %}{% if field_prepend %} input-prepend{% endif %}">{% endif %}
+			{% if field_prepend %}<span class="add-on">{{ field_prepend }}</span>{% endif %}		
+			{{ field }}
+			{% if field_append %}<span class="add-on">{{ field_append }}</span>{% endif %}			
+		{% if field_append or field_prepend %}</div>{% endif %}
+		{% if field.errors %}{{ field.errors }}{% endif %}
+		{% if not help_text_before_field %}
+			{% if field.help_text or help_text %}
+				<p class="help-block">{% if help_text %}{{ help_text }}{% else %}{{ field.help_text }}{% endif %}</p>
+			{% endif %}
+		{% endif %}		
+	</div>
+</div>

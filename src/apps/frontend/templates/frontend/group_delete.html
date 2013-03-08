@@ -1,0 +1,29 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n thumbnail %}
+
+{% block head_title %}Delete group{% endblock %}
+{% block body_class %}groups{% endblock %}
+{% block region_navigation %}{% endblock %}
+{% block site_navigation %}{% endblock %}
+
+{% block content %}
+<h1 class="page-header">Delete "{{ group }}" group</h1>
+<form action="{% url group_delete pk %}" method="POST" class="form-horizontal">{% csrf_token %}
+    <fieldset>
+        <p>Are you sure you want to delete this group? This action can not be undone.</p>
+        <h6>This group currently has {{ count }} member{{ count|pluralize:'s' }}:</h6>
+        <ul class="unstyled">
+            {% for member in members %}
+            <li>
+                {{ member.person.profile.get_link }}
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-large btn-danger">Delete this group</button>
+            <a href="{% url groups_list %}" class="btn btn-large">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

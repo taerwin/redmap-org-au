@@ -1,0 +1,50 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail %}
+
+{% block head_title %}{% trans "Groups" %}{% endblock %}
+
+{% block section_title %}<h1>Groups</h1>{% endblock %}
+
+{% block body %}
+<div class="overflow">
+    <div class="col col-200 margr2">
+        <ul class="lines">
+            <li>
+                <a href="{% url group_add %}"><i class="icon-file"></i> Create a new group</a>
+            </li>
+            {% if request.user.is_authenticated %}
+				<li>
+					<a href="{% url my_groups %}"><i class="icon-eye-open"></i> View my groups</a>
+				</li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="col col-700 margl2">
+        <table class="table zebra-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Members</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for group in groups %}
+                <tr>
+                    <th>{{ group }}</th>
+                    <td>{{ group.members }}</td>
+                    <td>
+                        <a href="{% url group_view group.pk %}" class="btn">View</a>
+                    </td>
+                </tr>
+			{% empty %}				
+				<tr>
+					<td colspan="3" class="center"><strong>No groups found</strong></td>
+				</tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

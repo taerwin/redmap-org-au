@@ -1,0 +1,12 @@
+{% load thumbnail %}
+
+<section class="section hr" id="latest-news">
+	<h2 class="padt">Species resources</h2>
+
+	{% for article in related_articles %}
+		<ul class="arrows hr nomargb">
+			<li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+		</ul>
+	{% endfor %}
+
+</section><!-- /.section -->

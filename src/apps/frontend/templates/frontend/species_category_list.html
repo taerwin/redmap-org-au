@@ -1,0 +1,75 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail %}
+
+{% block head_title %}{% trans "Marine Species" %}{% endblock %}
+
+{% block body_class %}species{% endblock %}
+
+{% block section_title %}
+	<h1>What's on the move{% if region %} in {{ region }}{% else %} around Australia{% endif %}?</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+	{% include "frontend/breadcrumbs.html" %}
+{% endblock %}
+
+{% block body %}
+
+<div class="jump-boxes fright">
+	{% include "frontend/_gotoRegion.html" %}
+	{% include "frontend/_gotoSpecies.html" %}
+</div>
+
+<header id="title">
+	<h1>{% trans "Marine Species" %}</h1>
+    <nav class="right fright">
+		{% url species_category_list as page_url %}
+		{% include "frontend/pagination.html" %}
+    </nav>
+</header>
+
+<ul class="listing clear3 padt">
+	{% for category in category_list %}
+		<li class="col col-300 margl2 margb2">
+			<div class="box pada">
+				{% if not region %}
+					<a href="{% url species_list category.id %}" class="thumb-wrap" style="width:280px;height:210px">
+				{% else %}
+					<a href="{% url species_list_by_region region.slug category.id %}" class="thumb-wrap" style="width:280px;height:210px">
+				{% endif %}
+				
+					{% with shape=shape|default:'274x204' %}
+						{% thumbnail category.picture_url shape upscale="True" as im %}
+							 <img class="polaroid-small" alt="{{ category.description }}" src="{{ im.url }}" style="max-height:204px;margin:{{ im|margin:shape }}">
+						{% empty %}						
+							<div class="polaroid-small polaroid-placeholder" style="width:274px;height:204px;">
+								<span>No photo</span>
+							</div>
+						{% endthumbnail %}
+					{% endwith %}					
+				</a>
+				
+				<h3 class="margt nomargb center">
+					<a href="{% if not region %}{% url species_list category.id %}{% else %}{% url species_list_by_region region.slug category.id %}{% endif %}">
+						{{ category.description }}
+					</a>
+				</h3>
+				{# <p class="cutoff cutoff-fade-bottom nomargb" style="height:130px">{{ category.long_description|safe }}</p> #}
+				<span class="paperclip{% if forloop.counter|divisibleby:3 %}-left{% else %}-right{% endif %}"></span>
+			</div>
+		</li>
+	{% endfor %}
+</ul>
+
+{% if is_paginated %}
+	<nav class="right">
+		<p class="inline-block marg2">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+		{% url species_category_list as page_url %}
+		{% include "frontend/pagination.html" %}
+	</nav>
+{% endif %}
+
+{% endblock %}
+
+{% block footer %}{% endblock %}

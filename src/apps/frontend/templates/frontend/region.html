@@ -1,0 +1,167 @@
+{% extends "site_base.html" %}
+
+{% load frontend_extras %}
+{% load i18n thumbnail %}
+
+{% block head_title %}{{ region }}{% endblock %}
+
+{% block body_class %}map{% endblock %}
+
+{% block extra_head %}
+	<!-- OpenLayers -->
+	<link href="{{ STATIC_URL }}openlayers/theme/default/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+<!-- Google Maps -->
+<script src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+<!-- OpenLayers -->
+<script src="{{ STATIC_URL }}openlayers/OpenLayers.js"></script>
+<script>
+$(document).ready(function() {
+	// Initialize map
+	var map = new OpenLayers.Map('map-region', {
+		minZoomLevel: 2,
+		projection: new OpenLayers.Projection("EPSG:900913"),
+		displayProjection: new OpenLayers.Projection("EPSG:4326"),
+		units: "m"
+	});
+	map.addControl(new OpenLayers.Control.Navigation());
+	map.addControl(new OpenLayers.Control.ScaleLine());
+
+	// Define map projections
+	var googleProjection = new OpenLayers.Projection("EPSG:900913");
+	var usefulProjection = new OpenLayers.Projection("EPSG:4326");
+
+	// Create layers
+	var wms = new OpenLayers.Layer.Google(
+		"Google Maps",
+		{numZoomLevels: 20}
+	);
+
+	// Add layers to map
+	map.addLayers([wms]);
+
+	// Zoom to Australia
+	var aussieBounds = new OpenLayers.Bounds();
+	aussieBounds.extend(new OpenLayers.LonLat(110.21484, -13.92340).transform(usefulProjection, googleProjection));
+	aussieBounds.extend(new OpenLayers.LonLat(159.94922, -43.32518).transform(usefulProjection, googleProjection));
+	map.zoomToExtent(aussieBounds);
+
+	// Add markers to map
+	var size = new OpenLayers.Size(-50, -50),
+		offset = new OpenLayers.Pixel(-(size.w/2), -size.h),
+		icon = new OpenLayers.Icon(null, size, offset)
+		store = [];
+	{% for sighting in photo_sightings %}
+		var popup = new OpenLayers.Popup.Anchored("Popup",
+			new OpenLayers.LonLat({{ sighting.longitude }}, {{ sighting.latitude }}).transform(usefulProjection, googleProjection),
+			new OpenLayers.Size(175,175),
+			{% include "frontend/_map_sighting_popup.html" %},
+			icon,
+			false
+		);
+		store.push(popup);
+		map.addPopup(popup);
+		popup.hide();
+	{% endfor %}
+
+	// Set map to cycle through markers
+	var idx = 0,
+		last = null,
+		panToMarker = function() {
+			{# The zoom level, zoomed out to show species further off coast #}
+			map.zoomTo(5);
+			if (last != null) {
+				store[last].hide();
+			}
+			store[idx].show();
+			map.panTo(new OpenLayers.LonLat(store[idx].lonlat.lon, store[idx].lonlat.lat));
+			last = idx;
+			if (!store[++idx]) {
+				idx = 0;
+			}
+		}
+	panToMarker();
+	setInterval(panToMarker, 5000);
+});
+</script>
+{% endblock %}
+
+
+{% block section_title %}
+	<div class="overflow padl padr">
+		<div class="col col-540 margr">
+			<h1 class="nombargb">What's on the move along the {{ region.description|abbrstate }} coast?</h1>
+			<h3 class="margb2">Log a sighting or check out what others have spotted recently!</h3>			
+			<div class="polaroid polaroid-520">				
+				<h2 class="polaroid-label">Latest Sighting</h2>
+				<div id="map-region"></div>
+			</div>
+		</div><!-- /.col -->
+		
+		<div class="col col-340 margl2">
+			<h2 class="margt center">View the regional map</h2>
+			<div class="hr-arrow"></div>
+			<div id="regional-map">
+				<div id="map-regional-map" class="map-canvas">
+					<img width="340" height="280" src="{{ STATIC_URL }}/reskin/images/regions/{{ region.description|abbrstate|lower }}.jpg" alt="{{ region }} map">
+				</div>
+			</div>
+			<div class="box-red">
+				<h3 class="center caps">Got a <strong>question?</strong></h3>
+				<p class="center"><a href="mailto:{{ region.contact_email }}">Contact the Redmap team in {{ region.description|abbrstate }}</a></p>
+			</div><!-- /.box-red -->
+		</div><!-- /.col -->
+		
+	</div><!-- /.overflow -->	
+{% endblock %}
+
+{% block body %}
+
+<div class="col col-520">
+
+	{# These are from Holly's design - Meet the Scientist #}
+	{# {% include "frontend/region_meet_the_scientist.html" %} #}
+	
+	
+	{# These are the templates for Holly's design, they aren't being used #}
+	{# {% include "frontend/region_species_of_interest.html" %} #}
+	
+	{% include "frontend/activity_list.html" with sighting_list=recent_activity %}
+	
+</div><!-- /.col -->
+<div class="col col-380 margl2 padl2">
+
+	{% if region.sponsor_set.exists %}
+		
+		<section class="section">
+		
+			<div class="overflow">
+				{% with  shape=shape|default:'90x64' %}
+					<div class="col col-180 margr">				
+						<h4 class="caps blue"><strong>Redmap {{ region.description|abbrstate }}</strong> is led by:</h4>
+						<ul class="thumbs center thumbs-2">
+							{% with sponsors=region.sponsor_set.get_lead_supporter %}
+								{% include "frontend/list_sponsors.html" with display_sponsors=sponsors.lead|slice:":3" %}
+							{% endwith %}
+						</ul>
+					</div>
+					
+					<div class="col col-180">						
+						<h4 class="caps blue"><strong>Redmap Australia</strong> is led by:</h4>				
+						<ul class="thumbs center thumbs-2">
+							{% include "frontend/list_sponsors.html" with display_sponsors=national_sponsors.get_major_lead|slice:":3" %}
+						</ul>
+					</div>
+				{% endwith %}
+			</div>
+			
+		</section>
+	{% endif %}
+
+	{% include "frontend/recent_news.html" with news_entries=recent_news %}
+</div><!-- /.col -->
+
+{% endblock %}

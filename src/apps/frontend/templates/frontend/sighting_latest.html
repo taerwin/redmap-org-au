@@ -1,0 +1,74 @@
+{% extends "site_base.html" %}
+
+{% load i18n frontend_extras thumbnail %}
+
+{% block head_title %}{% trans "Sightings" %}{% endblock %}
+
+
+{% block section_title %}<h1>What's been spotted {% if region %}in {{ region }}{% else %}lately around the country{% endif %}?</h1>{% endblock %}
+
+{% block body %}
+	
+    {% include "_sighting_tabs.html" %}
+	
+    <table class="table table-bordered table-striped margt2">
+        <thead>
+            <th style="width:100px">Date and time</th>
+            <th style="width:48px"></th>
+            <th>Species</th>
+            <th>Member</th>
+            <th>Region</th>
+        </thead>
+        <tbody>
+            {% for sighting in latest_sightings %}
+				<tr id="{{ sighting.id }}" class="row-hover row-clickable" data-href="{% url sighting_detail sighting.id %}">
+					<th class="valign-middle">
+						<time datetime="{{ sighting.sighting_date|date:"c" }}">{{ sighting.sighting_date|date:'Y-m-d' }}</time>
+						<span class="nobold block">{{ sighting.time }}</span>
+					</th>
+					<td class="valign-middle right">
+						{% thumbnail sighting.photo_url '48x48' as thumb %}
+							{% thumbnail sighting.photo_url '640x480' as full %}
+								<a href="{{ full.url }}" class="lightbox-image" title="Click to enlarge"><img src="{{ thumb.url }}"></a>
+							{% endthumbnail %}
+						{% endthumbnail %}
+					</td>
+					<td class="valign-middle">
+						{% if sighting.species %}
+							<strong class="block">{{ sighting.species.common_name }}</strong>
+							<dfn class="block">{{ sighting.species.species_name }}</dfn>
+						{% else %}
+							<strong>{{ sighting.other_species }}</strong>
+						{% endif %}
+					</td>
+					<td class="valign-middle">{{ sighting.user.profile }}</td>
+					<td class="valign-middle">{{ sighting.region }}</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="5">
+						<h4 class="padt2 padb2 center">{% trans "Sorry, no sightings found" %}</h4>
+					</td>
+				</tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+        <nav class="right">
+			<p class="inline-block margr2">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+
+			{% url sighting_latest as page_url %}
+			{% if species_filter_get %}
+				{% include "frontend/pagination.html" with page_url_extra=species_filter_get %}
+			{% else %}
+				{% include "frontend/pagination.html" %}
+			{% endif %}
+        </nav>
+    {% endif %}
+	
+{% endblock %}
+
+
+
+{% block footer %}{% endblock %}

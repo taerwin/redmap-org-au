@@ -1,0 +1,15 @@
+{% load thumbnail %}
+
+<section class="section hr" id="latest-news">
+	<h2 class="padt">Species news</h2>
+
+	{% for news in related_news %}
+		<ul class="arrows hr nomargb">
+			<li><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></li>
+		</ul>
+	{% endfor %}
+	
+	<p class="nomargb margt2 padr right hr-inline"><a href="{{ zinnia_entry_archive_index }}" class="button-blue button-caps"><strong>Read more</strong></a></p>
+	
+
+</section><!-- /.section -->

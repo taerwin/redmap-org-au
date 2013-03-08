@@ -1,0 +1,75 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail %}
+
+{% block head_title %}{% trans "Marine Species" %}{% endblock %}
+
+{% block body_class %}species{% endblock %}
+
+{% block section_title %}
+	<h1>What's on the move{% if region %} in {{ region }}{% else %} around Australia{% endif %}?</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+	{% include "frontend/breadcrumbs.html" %}
+{% endblock %}
+
+{% block body %}
+
+<div class="jump-boxes fright">
+	{% include "frontend/_gotoRegion.html" %}
+	{% include "frontend/_gotoSpecies.html" %}
+</div>
+
+<header id="title">
+	<h1 class="fleft">{{ category.description }}</h1>
+	{% if is_paginated %}
+		<nav class="fright right">
+			{% url species_list category.id as page_url %}
+			{% include "frontend/pagination.html" %}
+		</nav>
+	{% endif %}
+</header>
+
+{% if category.long_description %}{{ category.long_description|linebreaks|safe }}{% endif %}
+
+<ul class="listing clear4 padt">
+	{% for species in species_list %}
+		<li class="col col-220 margl2 margb2">
+			<div class="box pada">
+				{% with shape=shape|default:'194' %}
+					<a href="{% url species_detail category.id species.id %}" class="thumb-wrap">
+						{% thumbnail species.picture_url shape upscale="True" as im %}						
+							<img class="polaroid-small" src="{{ im.url }}" style="margin:{{ im|margin:shape }};max-height:160px;">
+						{% empty %}				
+							<div class="polaroid-small polaroid-placeholder" style="width:194px;height:144px;">
+								<span>No photo</span>
+							</div>
+						{% endthumbnail %}
+					</a>
+				{% endwith %}
+				<h3 class="margt nomargb"><a href="{% url species_detail category.id species.id %}">{{ species.common_name }}</a></h3>
+				<p class="nomargb"><dfn>{{ species.species_name }}</dfn></h6>
+				{% if species.description %}
+					<p class="cutoff nomargb" style="max-height:82px">
+					    {{ species.description|striptags|truncatechars:140 }}</p>
+				{% endif %}
+				<span class="paperclip{% if forloop.counter|divisibleby:3 %}-left{% else %}-right{% endif %}"></span>
+			</div>
+		</li>
+	{% empty %}
+		<li>
+			<h4 class="padt2 padb2 center">{% trans "Sorry, no species found" %}</h4>
+		</li>
+	{% endfor %}
+</ul>
+
+{% if is_paginated %}
+	<nav class="right">
+		<p class="margr2 inline-block">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
+		{% url species_list category.id as page_url %}
+		{% include "frontend/pagination.html" %}
+	</nav>
+{% endif %}
+
+{% endblock %}

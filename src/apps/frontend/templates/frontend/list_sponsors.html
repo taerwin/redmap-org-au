@@ -1,0 +1,15 @@
+{% load frontend_tags thumbnail %}
+
+{% for sponsor in display_sponsors %}
+	{% thumbnail sponsor.image_url shape as im %}
+	<li>
+		{% if sponsor.website_url %}
+		<a href="http://{{ sponsor.website_url }}" target="_blank">
+			<img title="{{ sponsor.name }}" src="{{ im.url }}">
+		</a>
+		{% else %}
+		<img title="{{ sponsor.name }}" src="{{ im.url }}">
+		{% endif %}
+	</li>
+	{% endthumbnail %}
+{% endfor %}

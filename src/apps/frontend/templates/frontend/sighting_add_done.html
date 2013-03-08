@@ -1,0 +1,24 @@
+{% extends "site_base.html" %}
+
+{% block section_title %}<h1>Log a sighting</h1>{% endblock %}
+
+{% load i18n %}
+{% load thumbnail %}
+{% load bootstrap_tags %}
+
+{% block head_title %}{% trans "Log a sighting" %}{% endblock %}
+
+{% block body_class %}sighting add{% endblock %}
+
+{% block body %}
+	<div class="box box-shadow" id="log-thanks">
+		<h2 class="red big-heading padb2">Thank you!</h2>
+		<p>Your sighting has been sent to one of our experts. We will let you know once it is available on the site!</p>
+		<p class="padb2">In the meantime, you might like to <a href="{% url acct_profile %}">see your latest sighting</a>.</p>
+		<div class="button-bottom top padl2">
+			<a href="/" class="button-blue-big"><span class="chevron chevron-left"></span><strong>Home</strong></a>
+			<a href="{{ sighting_add }}" class="button-white-big front"><strong>Log</strong> another sighting</a>
+		</div>
+		<span class="locale-big"></span>
+	</div>
+{% endblock %}

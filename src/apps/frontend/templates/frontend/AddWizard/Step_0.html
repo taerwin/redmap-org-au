@@ -1,0 +1,145 @@
+{% extends "frontend/AddWizard/Step_base.html" %}
+{% load i18n thumbnail %}
+
+
+{% block extra_script %}
+
+	<script src="{{ STATIC_URL }}formjs/formjs.js"></script>
+
+	<script type="text/javascript">
+
+	{% include "frontend/AddWizard/addstep1.js" with form=wizard.form %}
+
+	$(document).ready(function() {
+		$("#{{ wizard.form.species.auto_id }}").chosen();
+
+		var addstep1 = AddStep1("form");
+
+		$("form").submit(function() {
+			if (addstep1.is_valid()) {
+				
+				// if there is no file postback normally
+				if ( $("#{{ wizard.form.photo_url.auto_id }}").val().length < 1){
+					return true;
+				}
+				
+				// Prevent multiple submits
+				if ($.data(this, 'submitted')) return false;
+				
+				var freq = 2000; // freqency of update in ms
+				var uuid = "{{ wizard.form.progress_uuid.value }}"; // id for this upload so we can fetch progress info.
+				var progress_url = '{% url upload_progress %}'; // ajax view serving progress info
+				
+				// Update progress bar
+				function update_progress_info() {
+				    $.getJSON(progress_url, {'progress_uuid': uuid}, function(data, status){
+				        if (data) {
+				        	$("#myModal .progress .bar").css('width', data.percentage + '%');
+				        }
+				        window.setTimeout(update_progress_info, freq);
+				    });
+				};
+				
+				$('<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"><div class="modal-header"><h3 id="myModalLabel">Uploading...</h3></div><div class="modal-body"><div class="progress"><div class="bar" style="width: 0%;"></div></div></div></div>').modal();
+				
+				window.setTimeout(update_progress_info, freq);
+				
+				return true;
+			} else {
+				formjs_update_errors(addstep1._errors);
+				return false;
+			}
+		});
+		
+		$('#log-photo-image-remove').click(function() {
+			$(this).remove();
+			$('#log-photo-image').fadeOut(1000, function() {
+				$(this).remove();
+			});
+		});
+
+	});	
+	</script>
+{% endblock %}
+
+{% block wizard_form_action_extra %}?progress_uuid={{ wizard.form.progress_uuid.value }}{% endblock %}
+
+{% block wizard_form %}
+	<div class="row padb2">
+
+		{% if copy.sighting.sighting_intro %}
+			<div id="sighting-intro">
+				{{ copy.sighting.sighting_intro|safe|linebreaks }}
+			</div>
+		{% endif %}
+
+		<div class="span4 margr2 padr2">
+
+			<h3 class="red"><label for="{{ wizard.form.photo_url.auto_id }}"><strong>{% trans "Upload a photo" %}</strong></label></h3>
+
+			{% if copy.sighting.sighting_photo_help_text %}
+				<p id="sighting-photo-description">
+					{{ copy.sighting.sighting_photo_help_text }}
+				</p>
+			{% endif %}
+
+			{{ wizard.form.progress_uuid }}
+
+			{% include "frontend/fields/textfield.html" with field=wizard.form.photo_caption %}
+
+			{% with field=wizard.form.photo_permission %}
+				<div class="field control-group{% if field.errors %} error{% endif %}">
+					<label class="checkbox">
+						{{ field }}
+						<small>{{ copy.sighting.sighting_photo_permission_text }}</small>
+					</label>
+					{% if field.errors %}
+						{{ field.errors }}
+					{% endif %}
+				</div>
+			{% endwith %}
+		</div>
+		<div class="span4 field">
+			<div id="log-photo" class="log-photo polaroid polaroid-white">
+				<label id="log-photo-field">
+					{{ wizard.form.photo_url.errors }}
+					{{ wizard.form.photo_url }}
+				</label>
+				
+				{% if picture_data.photo_url %}
+					{% with shape=shape|default:'280x200' %}
+						{% thumbnail picture_data.photo_url shape crop="center" as im %}
+							<img
+								id="log-photo-image"			
+								title="Sighting photo"
+								src="{{ im.url }}"
+							>
+							<span title="Remove photo" id="log-photo-image-remove"></span>
+						{% endthumbnail %}
+					{% endwith %}
+				{% endif %}
+			</div>
+		</div>
+		
+	</div><!-- /.row -->
+
+	<div class="field">
+		<div class="overflow">
+			<h3 class="red fleft"><strong>What species is this?</strong></h3>
+			<a href="{% url species_category_list %}" class="fleft margl" style="margin-top:3px">View species list</a>
+		</div>
+		<div class="controls">
+			{{ wizard.form.species }}
+			<div class="inline-block margl margr"><strong>or</strong></div>
+			{{ wizard.form.other_species }}
+		</div>
+		
+		{% if wizard.form.species.errors %}
+			{{ wizard.form.species.errors }}
+		{% endif %}
+		{% if wizard.form.other_species.errors %}
+			{{ wizard.form.other_species.errors }}
+		{% endif %}
+	</div>
+
+{% endblock %}

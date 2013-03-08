@@ -1,0 +1,12 @@
+{% load thumbnail %}
+{% for sighting in sighting_list %}
+    <li>
+        <a href="{% url sighting_detail sighting.id %}">
+			{% with shape=shape|default:"100x75" %}
+            {% thumbnail sighting.photo_url shape upscale=True as im %}
+			<img title="{{ sighting.species_name }}" src="{{ im.url }}" style="margin:{{ im|margin:shape }}">
+            {% endthumbnail %}
+			{% endwith %}
+        </a>
+    </li>
+{% endfor %}

@@ -1,0 +1,36 @@
+{% load thumbnail %}
+
+<section class="section hr" id="latest-news">
+	<h2 class="padt">Latest News</h2>
+
+	{% for news in recent_news %}
+		{% if forloop.first %}
+			<div class="overflow padb">
+				{% if news.image %}
+					{% thumbnail news.image "100x100" upscale=True format="JPEG" as im %}
+						<a href="{{ news.get_absolute_url }}" class="col col-100">
+							<img src="{{ im.url }}" class="polaroid-small margb">
+						</a>
+					{% endthumbnail %}
+				{% endif %}
+				<div{% if news.image %} class="margl-100 padl"{% endif %}>
+					<h3><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></h3>
+					<p>{{ news.excerpt|safe }}</p>
+				</div>
+			</div>
+			{% if recent_news|length > 1 %}
+				<ul class="arrows hr nomargb">
+			{% endif %}
+		{% else %}
+			<li><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></li>
+		{% endif %}
+	{% endfor %}
+	
+	{% if recent_news|length > 1 %}
+		</ul><!-- /.arrows -->
+	{% endif %}
+	
+	<p class="nomargb margt2 padr right hr-inline"><a href="{% url zinnia_entry_archive_index %}" class="button-blue button-caps"><strong>Read more</strong></a></p>
+	
+
+</section><!-- /.section -->

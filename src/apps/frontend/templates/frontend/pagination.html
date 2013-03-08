@@ -1,0 +1,6 @@
+{% if page_obj.has_previous %}
+	<a href=".?page={{ page_obj.previous_page_number }}{% if page_url_extra %}&amp;{{ page_url_extra }}{% endif %}" class="button-caps button-red"> <span class="chevron chevron-left"></span> Previous</a>
+{% endif %}
+{% if page_obj.has_next %}
+	<a href=".?page={{ page_obj.next_page_number }}{% if page_url_extra %}&amp;{{ page_url_extra }}{% endif %}" class="button-caps button-blue">Next <span class="chevron chevron-right"></span></a>
+{% endif %}

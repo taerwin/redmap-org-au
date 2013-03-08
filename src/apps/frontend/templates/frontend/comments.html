@@ -1,0 +1,49 @@
+
+<div class="fb-comments" data-href="http://{{ domain }}{% url sighting_detail sighting.id %}" data-num-posts="10" data-width="540"></div>
+
+{% comment %}
+	{# These comments are for Holly's design, currently using FB comment API so we can't use these styles #}
+	<ul id="comments">
+		<li class="hr">
+			<div class="padt padb">
+				<h4><span class="red">John Smith</span> <time class="nobold" datetime="2012-05-16">16 May, 2012</time></h4>
+				<p>Os volorepe ommodic illentem consequaspel idelibus inullest harum sum ut quatem quam velignatur, volorroidelibus inullest harum sum ut quatem quam velignat.</p>
+				<p><a href="#" class="caps">Reply</a></p>
+			</div>
+		</li>
+		<li class="hr">
+			<div class="padt padb">
+				<h4><span class="red">John Smith</span> <time class="nobold" datetime="2012-05-16">16 May, 2012</time></h4>
+				<p>Os volorepe ommodic illentem consequaspel idelibus inullest harum sum ut quatem quam velignatur, volorroidelibus inullest harum sum ut quatem quam velignat.</p>
+				<p><a href="#" class="caps">Reply</a></p>
+			</div>
+		</li>
+	</ul>
+	<form method="post" action="." class="hr form-horizontal form-horizontal-narrow">
+		<fieldset>
+			<legend>Leave a comment</legend>
+			<div class="control-group">
+				<label class="control-label" for="field-name">Your name</label>
+				<div class="controls">
+					<input type="text" class="input-large" maxlength="255" name="name" id="field-name">
+				</div>
+			</div>
+			<div class="control-group">
+				<label class="control-label" for="field-email">Email</label>
+				<div class="controls">
+					<input type="email" class="input-large" maxlength="255" name="email" id="field-email">
+				</div>
+			</div>
+			
+			<div class="control-group">
+				<div class="controls">
+					<textarea placeholder="Your comment" name="comment" class="input-xlarge" id="field-comment" rows="5" cols="40"></textarea>
+				</div>
+			</div>
+			
+			<div class="form-actions">
+				<button type="submit" name="comment" class="button-red button-caps"><strong>Submit</strong><span class="chevron chevron-right"></span></button>
+			</div>									
+		</fieldset>
+	</form>
+{% endcomment %}

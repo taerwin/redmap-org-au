@@ -1,0 +1,7 @@
+<div class="section">
+	<div class="box-blue" id="sidebar-log">
+		<h2><strong>Log</strong> your sighting</h2>
+		<p>{% if log_description %}{{ log_description }}{% else %}Have you seen or caught a marine critter that's not commonly found at your favourite fishing, diving or swimming spot?{% endif %}</p>
+		<a class="button-red-big button-bottom button-right" href="{% url sighting_add %}?species={{ species.pk }}"><strong>Log it</strong><span class="chevron chevron-right"></span></a>
+	</div>
+</div>

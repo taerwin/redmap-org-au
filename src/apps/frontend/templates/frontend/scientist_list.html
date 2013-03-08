@@ -1,0 +1,46 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail %}
+
+{% block head_title %}{% trans "Scientists" %}{% endblock %}
+
+{% block body_class %}scientists{% endblock %}
+
+{% block section_title %}
+	<h1>{% trans "Scientists" %}</h1>
+{% endblock %}
+
+{% block breadcrumbs %}
+	<nav id="breadcrumbs">
+		<a href="#">About</a>
+		<span class="sep">&#155;</span>
+		<a href="#">Scientists</a>
+	</nav>
+{% endblock %}
+
+{% block body %}
+	<header id="title">
+		<h1>Who are the scientists?</h1>
+	</header>
+
+	<ul class="padt">
+		{% for scientist in scientists %}
+			<li class="box pada margb2">
+				<div class="overflow">
+				{% with shape=shape|default:"200x250" %}
+					{% thumbnail scientist.image shape upscale="True" as im %}
+					<img class="fleft polaroid-small" title="{{ scientist.user.profile }}" alt="{{ scientist.user.profile }}" src="{{ im.url }}" style="margin:{{ im|margin:shape }}">
+					{% empty %}
+						<img class="fleft polaroid-small" title="{{ scientist.user.profile }}" alt="{{ scientist.user.profile }}" src="http://placehold.it/200x250">
+					{% endthumbnail %}
+					<div class="margl-220">
+						<h3 class="margt">{{ scientist.user.profile }}</h3>
+						{{ scientist.about_me|linebreaks }}
+					</div>
+				{% endwith %}
+				</div>
+				<span class="paperclip-left"></span>
+			</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

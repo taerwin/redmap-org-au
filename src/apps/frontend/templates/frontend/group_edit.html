@@ -1,0 +1,40 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n thumbnail %}
+
+{% block head_title %}{% if pk %}Edit{% else %}Add{% endif %} group{% endblock %}
+
+{% block section_title %}<h1>Groups</h1>{% endblock %}
+
+{% block body %}
+<div class="overflow">
+    <div class="col col-200 margr2">
+        <ul class="lines">
+            <li>
+                <a href="{% url groups_list %}"><i class="icon-list"></i> Browse groups</a>
+            </li>
+            {% if request.user.is_authenticated %}
+				<li>
+					<a href="{% url my_groups %}"><i class="icon-eye-open"></i> View my groups</a>
+				</li>
+            {% endif %}
+        </ul>
+    </div>
+	<div class="col col-700 margl2">		
+		<form enctype="multipart/form-data" action="{% url groups_list %}{% if pk %}edit/{{ pk }}{% else %}add{% endif %}/" method="POST" class="form-horizontal">
+			<fieldset>
+				<legend>{% if pk %}Edit group{% else %}Create a new group{% endif %}</legend>
+				<div class="padt2">
+					{% csrf_token %}
+					{{ form|as_bootstrap }}
+				</div>
+			</fieldset>
+			<div class="margl-160">
+				<a href="{% url groups_list %}" class="button-grey button-caps margr2"><strong>Cancel</strong></a>
+				<button type="submit" class="button-red button-caps"><strong>Save</strong></button>
+			</div>
+		</form>
+	</div>
+</div>
+{% endblock %}
+

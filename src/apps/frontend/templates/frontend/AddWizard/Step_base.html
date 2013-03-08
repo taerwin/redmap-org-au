@@ -1,0 +1,124 @@
+{% extends "site_base.html" %}
+
+{% load ajax_form_utils bootstrap_tags i18n %}
+
+{% block head_title %}{% trans "Add Sighting" %}{% endblock %}
+
+{% block body_class %}sighting add{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+	<!-- django_ajax_forms -->
+	<script src="{{ STATIC_URL }}js/jquery.ajax_forms.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.ajax_forms.validation.js"></script>
+	<script>
+	
+	(function($){
+	
+		var validation_options = {
+			layout: 'p',
+			style: {
+				valid: 'valid',
+				invalid: 'error',
+				processing: 'processing',
+				error_list: 'errorlist'
+			},
+			callbacks: {
+				get_parent_element: function(field, opts) {
+					var parent = field.data('parent');
+					if (!parent) {
+						if (opts.layout == 'table') {
+							parent = field.parent().parent();
+						} else {
+							parent = field.parents('.control-group');
+						}
+						field.data('parent', parent);
+					}
+					return parent;
+				},
+				show_error: function(field, msg, opts) {				
+					var errors = field.parents('.control-group').find('ul.'+opts.style.error_list);
+					if (errors.length) {
+						errors.empty();
+					} else {
+						errors = $('<ul>')
+							.addClass(opts.style.error_list)
+							.hide();
+							
+						/*
+						var last_field = field.parents('.controls').find('input, select, textarea').last();
+						
+						if (last_field.parent().hasClass('input-append') || last_field.parent().hasClass('input-prepend')) {
+							errors.insertAfter(last_field.parent());
+						} else {
+							errors.insertAfter(last_field);
+						}
+						*/
+						
+						errors.appendTo(field.parents('.controls'));
+					}
+					$('<li>')
+						.text(msg)
+						.appendTo(errors);
+					errors.fadeIn();
+				},
+				clear_error: function(field, opts) {
+					field.siblings('ul.'+opts.style.error_list).fadeOut(function() {
+						$(this).hide();
+					});
+				}
+			}
+		};
+	
+		$(document).ready(function() {
+			$('form').validation(
+				{% render_ajax_fields wizard.form %},
+				validation_options
+			);
+		});
+	})(jQuery);
+	</script>
+{% endblock %}
+
+{% block section_title %}<h1>Log a sighting</h1>{% endblock %}
+
+{% block body %}
+
+<header id="log-heading">
+	<h2 class="log-step"><span class="rotate">Step {{ wizard.steps.step1 }} of {{wizard.steps.count}}</span></h2>
+	<h3 class="red">{% block wizard_subheading %}Tell us about your sighting&hellip;{% endblock %}</h3>
+	<span class="pin-big"></span>
+</header>
+
+<form enctype="multipart/form-data" action="{% url sighting_add %}{% block wizard_form_action_extra%}{% endblock %}" method="post" class="box clear" id="log-form">
+	{% csrf_token %}
+	
+	{{ form.non_field_errors }}		
+	
+	{{ wizard.management_form }}
+	
+	{% if wizard.form.forms %}	
+		{{ wizard.form.management_form }}
+		{% for form in wizard.form.forms %}
+			{{ form.as_p }}
+		{% endfor %}
+	{% else %}	
+	
+		<div class="pada-60">
+			{% block wizard_form %}{% endblock %}
+		</div>	
+		
+		<div class="inline-block button-bottom button-right">
+			<button type="submit" name="submit" class="button-red-big rotate">{% if wizard.steps.current == '3' %}{% trans "Submit" %}{% else %}{% trans "Next step" %}{% endif %}<span class="chevron chevron-right"></span></button>
+		</div>
+		
+		{% if wizard.steps.prev %}
+			<div class="button-bottom button-left">
+				<button type="submit" name="wizard_prev_step" value="{{ wizard.steps.prev }}" class="skip button-white-big"><span class="chevron chevron-left"></span> {% trans "Previous step" %}</button>
+			</div>
+		{% endif %}
+		
+	{% endif %}
+	
+</form>
+{% endblock %}

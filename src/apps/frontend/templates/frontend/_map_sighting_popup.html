@@ -1,0 +1,26 @@
+'{% load i18n thumbnail %}' +
+'<a style="overflow:hidden;width:175px;height:175px" href="{% if region %}{% url sighting_detail_by_region region.slug sighting.id %}{% else %}{% url sighting_detail sighting.id %}{% endif %}">' +
+	'<div style="clear:both;padding-bottom:10px;text-align:center;height:115px;width:175px;vertical-align:middle;">' +
+		{% with shape=shape|default:"175x115" %}
+			{% thumbnail sighting.photo_url shape crop="center" upscale=True as im %}
+				'<img src="{{ im.url }}" alt="Picture of sighting" style="vertical-align:middle;">' +
+				{% empty %}
+				'<span class="popup-no-photo">No image found</span>' +
+			{% endthumbnail %}
+		{% endwith %}
+	'</div>' +
+	'<div style="float:left;width:175px;">' +
+		'<strong>Latest sighting:</strong>' +
+		'<p class="popup-species-name">{% if sighting.species %}{{ sighting.species.common_name }}{% else %}{{ sighting.other_species }}{% endif %}</p>' +
+		'<p class="popup-sighter">{% if sighting.user %}Spotted by {{ sighting.user.profile }}{% endif %}</p>' +
+	'</div>' +
+	{% comment %}
+		{% if sighting.species %}
+			{% with shape=shape|default:"50x50" %}
+				{% thumbnail sighting.species.photo_url shape upscale=True as im %}
+					'<div style="float:right;width:50px;"><img src="{{ im.url }}"></div>' +
+				{% endthumbnail %}
+			{% endwith %}
+		{% endif %}
+	{% endcomment %}
+'</a>'

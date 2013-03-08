@@ -1,0 +1,18 @@
+Hi {{ species_contact }},
+
+A new {{ species_common_name }} ({{ species_name }}) sighting has been
+reported in {{ region }}. {% if not out_of_range %}The sighting is within
+the known distribution range for this species{% else %}The sighting is out
+of range{% endif %}.
+
+You can view and verify the sighting here:
+http://{{ domain }}/panel/verify/{{ sighting_id }}
+
+The comment associated with this assignment was: {{ comment|default:"No comment" }}
+
+Please be sure to verify sightings promptly as a quick response shows
+contributors that their sighting is valued.
+
+
+Kind regards,
+REDMAP Australia

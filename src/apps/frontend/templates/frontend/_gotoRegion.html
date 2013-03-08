@@ -1,0 +1,14 @@
+<span id="gotoRegion">
+{{ region_jump_form.region }}
+<script>
+(function($) {
+	$(document).ready(function() {
+		var $select = $('#{{ region_jump_form.region.id_for_label }}');
+		$select.chosen();
+		$select.change(function() {
+			if ($select.val()) window.location = $select.val();
+		});
+	});
+})(jQuery);
+</script>
+</span>

@@ -1,0 +1,53 @@
+{% load frontend_extras %}
+{% load i18n %}
+
+	<nav id="breadcrumbs">
+		<a href="/">Home</a>
+
+		{% if region %}
+			<span class="sep">&#155;</span>
+			<a href="{% url region_landing_page region.slug %}">{{ region.description }}</a>
+		{% endif %}
+
+		{% if category_list or category %}
+			{% if category_list or category %}
+				<span class="sep">&#155;</span>
+				{% if region %}
+					<a href="{% url species_category_list_by_region region.slug %}">{% trans "Marine species" %}</a>
+				{% else %}
+					<a href="{% url species_category_list %}">{% trans "Marine species" %}</a>
+				{% endif %}
+			{% endif %}
+			{% if category.id %}
+				<span class="sep">&#155;</span>
+				{% if region %}
+					<a href="{% url species_list_by_region region.slug category.id %}">{{ category.description }}</a>
+				{% else %}
+					<a href="{% url species_list category.id %}">{{ category.description }}</a>
+				{% endif %}
+			{% endif %}
+		{% endif %}
+
+		{# Sighting #}
+		{% if sighting %}
+			<span class="sep">&#155;</span>
+			{% if region %}
+			<a href="{% url sighting_photo_by_region region.slug %}">{% trans "Sightings" %}</a>
+			{% else %}
+			<a href="{% url sighting_photo %}">{% trans "Sightings" %}</a>
+			{% endif %}
+
+			<span class="sep">&#155;</span>
+			{% if region %}
+			<a href="{% url sighting_detail_by_region region.slug sighting.id %}">{% trans "Sighting" %} {{ sighting.id }}{% if sighting.species %} ({{ sighting.species.common_name }}){% endif %}</a>
+			{% else %}
+			<a href="{% url sighting_detail sighting.id %}">{% trans "Sighting" %} {{ sighting.id }}{% if sighting.species %} ({{ sighting.species.common_name }}){% endif %}</a>
+			{% endif %}
+		{% else %}
+			{# Species #}
+			{% if species %}
+				<span class="sep">&#155;</span>
+				<a href="{% url species_detail category_id species.id %}">{{ species.species_name }}</a>
+			{% endif %}
+		{% endif %}
+	</nav>

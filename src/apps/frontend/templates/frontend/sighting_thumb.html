@@ -1,0 +1,16 @@
+{% load thumbnail %}
+{% spaceless %}
+	<a class="thumb-wrap" href="{{ sighting_url }}">
+		{% with shape=shape|default:'194' %}
+		   {% thumbnail sighting.photo_url shape upscale=False as im %}
+				<img src="{{ im.url }}" style="{#margin:{{ im|margin:shape }};#}vertical-align:middle;max-height:160px;" class="polaroid-small">
+		   {% empty %}
+				{% thumbnail "uploads/default.jpg" shape upscale=True as im %}
+					<img src="{{ im.url }}" style="{#margin:{{ im|margin:shape }};#}vertical-align:middle;max-height:160px;" class="polaroid-small">
+				{% empty %}
+					No image found
+				{% endthumbnail %}
+		   {% endthumbnail %}
+		{% endwith %}
+	</a>
+{% endspaceless %}

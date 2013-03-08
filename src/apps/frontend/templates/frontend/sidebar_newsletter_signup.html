@@ -1,0 +1,14 @@
+{% comment %}
+	Submit this form, then open lightbox and ask for region
+{% endcomment %}
+<h2 class="padt">Subscribe</h2>
+<form id="newsletter" method="post" action="{% url newsletter_signup %}">
+	{% csrf_token %}
+	<div class="control-group">
+		<label class="control-label nowrap" for="newsletter-email">Subscribe to our newsletter</label>
+		<div class="controls">
+			<input class="input-medium" maxlength="255" type="text" id="newsletter-email" name="cm-pxuuj-pxuuj">
+			<button type="submit" class="button-red-square"><strong>Join</strong><span class="chevron chevron-right"></span></button>
+		</div>
+	</div>
+</form>

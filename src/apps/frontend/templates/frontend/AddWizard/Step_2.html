@@ -1,0 +1,151 @@
+{% extends "frontend/AddWizard/Step_base.html" %}
+
+{% load thumbnail %}
+
+
+{% block wizard_subheading %}The science!{% endblock %}
+
+{% block wizard_form %}
+
+	{% if copy.sighting.sighting_details_intro %}
+		<div id="sighting-intro">
+			{{ copy.sighting.sighting_details_intro|safe|linebreaks }}
+		</div>
+	{% endif %}
+
+	<div class="row margb2 padt2">
+		<div class="span4 margr2">
+			<h2 class="red rotate arrow-dr">Your sighting!</h2>
+			
+			<div class="polaroid margb">
+				{% with shape=shape|default:'280x200' %}
+					{% thumbnail picture_data.photo_url shape as im %}
+						<img
+							title="Sighting photo"
+							src="{{ im.url }}">
+					{% empty %}
+						{% thumbnail "uploads/default.jpg" shape as im %}
+							<img
+								title="Sighting photo"
+								src="{{ im.url }}">
+						{% empty %}
+							No image found.
+						{% endthumbnail %}
+					{% endthumbnail %}
+				{% endwith %}
+				{% if picture_data.photo_caption %}<p class="polaroid-caption">{{ picture_data.photo_caption }}</p>{% endif %}
+				<span class="paperclip-right"></span>
+			</div>
+		</div>
+		
+		<div class="span6 padt">
+
+			<fieldset>
+				<legend><strong class="red">Observation details</strong></legend>
+			
+				<div class="form-horizontal form-horizontal-narrow padt2">
+				
+					{% with field=wizard.form.count %}
+						<div class="control-group">
+							<label for="{{ field.auto_id }}" class="control-label">Count</label>
+							<div class="controls">
+								{{ field }}
+								{% if copy.sighting.sighting_count_help_text %}<span class="info" title="{{ copy.sighting.sighting_count_help_text }}"></span>{% endif %}
+							</div>
+						</div>
+					{% endwith %}
+					
+					{% with method=wizard.form.weight_method value=wizard.form.weight %}
+						<div class="control-group">		
+							<label for="{{ weight.auto_id }}" class="control-label">Weight</label>
+							<div class="controls">
+								{{ method }}
+								<div class="input-append inline-block">
+									{{ value }}<span class="add-on">kg</span>
+								</div>
+								{% if copy.sighting.sighting_weight_help_text %}<span class="info" title="{{ copy.sighting.sighting_weight_help_text }}"></span>{% endif %}
+							</div>
+						</div>
+					{% endwith %}
+					
+					{% with method=wizard.form.size_method value=wizard.form.size %}
+						<div class="control-group padt2">
+							<label for="{{ weight.auto_id }}" class="control-label">Size</label>
+							<div class="controls">	
+								{{ method }}
+								<div class="input-append inline-block">
+									{{ value }}<span class="add-on">cm</span>
+								</div>	
+								{% if copy.sighting.sighting_size_help_text %}<span class="info" title="{{ copy.sighting.sighting_size_help_text }}"></span>{% endif %}
+							</div>
+						</div>
+					{% endwith %}
+					
+					{% with field=wizard.form.sex %}
+						<div class="control-group">
+							<label for="{{ field.auto_id }}" class="control-label">{{ field.label }}</label>
+							<div class="controls">
+								<div class="inline-block">
+									{{ field }}
+								</div>
+							{% if copy.sighting.sighting_sex_help_text %}<span class="info" title="{{ copy.sighting.sighting_sex_help_text }}"></span>{% endif %}
+							</div>
+						</div>
+					{% endwith %}
+				</div>
+			</fieldset>
+			
+			<div class="hr padt2">
+				<fieldset>
+					<legend><strong class="red">Environment details</strong></legend>		
+					<div class="form-horizontal form-horizontal-narrow padt2">					
+				
+						{% with field=wizard.form.depth %}
+							<div class="control-group">
+								<label for="{{ field.auto_id }}" class="control-label">Depth</label>
+								<div class="controls">
+									<div class="input-append inline-block">
+										{{ field }}
+										<span class="add-on">metres</span>
+									</div>
+									{% if copy.sighting.sighting_depth_help_text %}<span class="info" title="{{ copy.sighting.sighting_depth_help_text }}"></span>{% endif %}
+								</div>
+							</div>
+						{% endwith %}		
+				
+						{% with field=wizard.form.habitat %}
+							<div class="control-group">
+								<label for="{{ field.auto_id }}" class="control-label">Habitat</label>
+								<div class="controls">
+									{{ field }}
+									{% if copy.sighting.sighting_habitat_help_text %}<span class="info" title="{{ copy.sighting.sighting_habitat_help_text }}"></span>{% endif %}
+								</div>
+							</div>
+						{% endwith %}	
+				
+						{% with field=wizard.form.water_temperature %}
+							<div class="control-group">
+								<label for="{{ field.auto_id }}" class="control-label">Temperature</label>
+								<div class="controls">
+									<div class="input-append inline-block">
+										{{ field }}
+										<span class="add-on">&deg;C</span>
+									</div>
+									{% if copy.sighting.sighting_temperature_help_text %}<span class="info" title="{{ copy.sighting.sighting_temperature_help_text }}"></span>{% endif %}									
+									<p class="help-block">Water temperature</p>
+								</div>
+							</div>
+						{% endwith %}				
+					</div>
+				</fieldset>
+			</div>
+			
+			<div class="hr padt2">
+				<fieldset>
+					<legend><strong class="red">Additional observation details</strong></legend>
+					{% include "frontend/fields/textfield.html" with field=wizard.form.notes no_label=1 %}
+				</fieldset>
+			</div>
+		</div>
+	</div>
+{% endblock %}

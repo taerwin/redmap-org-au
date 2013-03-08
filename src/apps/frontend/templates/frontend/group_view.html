@@ -1,0 +1,130 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail %}
+
+{% block head_title %}{{ group.description }}{% endblock %}
+
+{% block section_title %}<h1>Groups</h1>{% endblock %}
+
+{% block extra_head %}
+	<!-- OpenLayers -->
+	<link href="{{ STATIC_URL }}openlayers/theme/default/style.css" rel="stylesheet">
+	<link href="{{ STATIC_URL }}css/olwidget.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	<!-- Google Maps -->
+	<script src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+	<!-- OpenLayers -->
+	<script src="{{ STATIC_URL }}openlayers/OpenLayers.js"></script>
+
+	<!-- olwidget -->
+	<script src="{{STATIC_URL}}js/olwidget.js"></script>
+
+	<script>
+	var data = [];
+
+	{% for sighting in sightings %}
+	data.push([
+		"POINT({{ sighting.longitude }} {{ sighting.latitude }})",
+		{% include "frontend/_map_sighting_popup.html" %}
+	]);
+	{% endfor %}
+
+	var map = new olwidget.InfoMap(
+		'map-group',
+		data,
+		{
+			cluster: true,
+			mapOptions: {
+				controls: ['PanZoom', 'Navigation']
+			},
+			layers: [
+				'google.streets'
+			],
+			overlayStyle: {
+				fillColor: "#FF0000",
+				strokeColor: "#FF0000"
+			}
+		}
+	);
+
+	var googleProjection = new OpenLayers.Projection("EPSG:900913");
+	var usefulProjection = new OpenLayers.Projection("EPSG:4326");
+
+	// Zoom map
+	var aussieBounds = new OpenLayers.Bounds();
+	aussieBounds.extend(new OpenLayers.LonLat(110.21484, -13.92340).transform(usefulProjection, googleProjection));
+	aussieBounds.extend(new OpenLayers.LonLat(159.94922, -43.32518).transform(usefulProjection, googleProjection));
+	map.zoomToExtent(aussieBounds);
+	</script>
+{% endblock %}
+
+{% block content %}
+
+	<div class="overflow">
+
+		<div class="col col-200 margr2">
+			<div class="polaroid margb2">
+				{% thumbnail group.image_url "180x135" upscale=True as im %}
+					<img title="{{ group.description }}" src="{{ im.url }}">
+				{% endthumbnail %}
+			</div>
+			<ul class="lines">
+				<form action="{% url group_view group.id %}" method="POST">
+					{% csrf_token %}
+					{% if is_member %}
+						<input type="hidden" value="leave" name="action">
+						<li><button type="submit"><i class="icon-ban-circle"></i> Leave Group</button></li>
+						{% if is_owner %}
+							<li><a href="{% url group_edit group.id %}"><i class="icon-pencil"></i> Edit group</a></li>
+							<li><a href="{% url group_delete group.id %}"><i class="icon-trash"></i> Delete group</a></li>
+						{% endif %}
+					{% else %}
+						<input type="hidden" value="join" name="action">
+						<li><button type="submit"><i class="icon-ok-circle"></i> Join Group</button></li>
+					{% endif %}
+				</form>
+			</ul>
+		</div>
+
+		<div class="col col-700 margl2">
+			<div class="overflow padb2">
+				<h2 class="fleft">{{ group.description }} group page</h2>
+				<a class="fright button-blue button-caps" href="{% url groups_list %}"><strong>Browse groups</strong></a>
+			</div>
+
+			<div class="overflow">
+				<div class="col col-260 margr2">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Members: {{ count }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for member in members %}
+								<tr>
+									<td>
+										{{ member.person.profile.get_link }}
+									</td>
+								</tr>
+							{% empty %}
+								<tr>
+									<td class="center"><strong>This group currently has no members</strong></td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+
+				<div class="col col-380 margl2">
+					<div id="map-group" class="map-canvas"></div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

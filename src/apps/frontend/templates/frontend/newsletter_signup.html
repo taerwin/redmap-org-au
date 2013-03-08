@@ -1,0 +1,58 @@
+{% extends "ajax_base.html" %}
+
+{% block content %}
+	<form method="post" action="http://email.ionata.com.au/t/y/s/pxuuj/" class="form-horizontal">
+
+		<fieldset>
+			<legend>Subscribe to our newsletter</legend>
+			<div class="control-group">
+				<label class="control-label">Email</label>
+				<div class="controls">
+					<input type="email" name="cm-pxuuj-pxuuj" value="{{ request.user.email }}">
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label">Your state/territory</label>
+				<div class="controls">
+					<label for="cm466012" class="checkbox">
+						<input id="cm466012" name="cm-fo-utiukt" type="checkbox" value="466012">
+						Australian Capital Territory
+					</label>
+					<label for="cm466013" class="checkbox">
+						<input id="cm466013" name="cm-fo-utiukt" type="checkbox" value="466013">
+						New South Wales
+					</label>
+					<label for="cm466014" class="checkbox">
+						<input id="cm466014" name="cm-fo-utiukt" type="checkbox" value="466014">
+						Northern Territory
+					</label>
+					<label for="cm466015" class="checkbox">
+						<input id="cm466015" name="cm-fo-utiukt" type="checkbox" value="466015">
+						Queensland
+					</label>
+					<label for="cm466016" class="checkbox">
+						<input id="cm466016" name="cm-fo-utiukt" type="checkbox" value="466016">
+						South Australia
+					</label>
+					<label for="cm466017" class="checkbox">
+						<input id="cm466017" name="cm-fo-utiukt" type="checkbox" value="466017">
+						Tasmania
+					</label>
+					<label for="cm466018" class="checkbox">
+						<input id="cm466018" name="cm-fo-utiukt" type="checkbox" value="466018">
+						Victoria
+					</label>
+					<label for="cm466019" class="checkbox">
+						<input id="cm466019" name="cm-fo-utiukt" type="checkbox" value="466019">
+						Western Australia
+					</label>
+				</select>
+				<p class="help-block">Select all that apply</p>
+			</div>
+			<div class="margt2">
+				<button type="submit" class="margl-180 button button-red button-caps"><strong>Subscribe</strong></button>
+			</div>
+		</fieldset>
+	</form>
+{% endblock %}

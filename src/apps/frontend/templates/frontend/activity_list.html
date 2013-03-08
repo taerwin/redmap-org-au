@@ -1,0 +1,47 @@
+{% load thumbnail %}
+
+<h2>Latest Activity</h2>
+
+<ul>
+	{% for sighting in sighting_list %}
+		<li class="pada box overflow margb">
+			{% if region %}
+			<a href="{% url sighting_detail_by_region region.slug sighting.id %}" class="col col-140">
+			{% else %}
+			<a href="{% url sighting_detail sighting.id %}" class="col col-140">
+			{% endif %}
+				{% with shape=shape|default:"134x104" %}
+				{% thumbnail sighting.photo_url shape upscale="True" as img %}
+				<img
+					class="polaroid-small"
+					title="{{ sighting.resolved_species }}"
+					alt="{% if sighting.species %}{{ sighting.species.common_name }}{% endif %}"
+					src="{{ img.url }}"
+					width="134"
+					height="104"
+					style="margin:{{ im|margin:shape }}">
+				{% endthumbnail %}
+				{% endwith %}
+			</a>
+			<div class="margl-140 padl2 padt">
+				<header>
+					<h4 class="margbh">
+						{% if region %}
+						<a href="{% url sighting_detail_by_region region.slug sighting.id %}">
+						{% else %}
+						<a href="{% url sighting_detail sighting.id %}">
+						{% endif %}
+							{{ sighting.short_name }}
+							<span class="nobold">spotted by</span> {{ sighting.user.profile }}
+						</a>
+					</h4>
+					<p><small>{% if sighting.region %}{{ sighting.region.description }}, {% endif %} <time datetime="{{ sighting.verification_date|date:'c' }}">{{ sighting.verification_date|date:'j F Y' }}</time></small></p>
+				</header>
+				<p>{{ sighting.photo_caption }}</p>
+			</div>
+		</li>
+	{% endfor %}
+	<p class="nomargb margt2 padr right hr-inline">
+	<a class="button-blue button-caps" href="{% if region %}{% url sighting_photo_by_region region.slug %}{% else %}{% url sighting_photo %}{% endif %}">more sightings</a>
+	</p>
+</ul>

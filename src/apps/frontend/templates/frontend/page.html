@@ -1,0 +1,43 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail frontend_extras mptt_tags %}
+
+{% block head_title %}{{ page.title }}{% endblock %}
+
+{% block section_title %}
+<h1>
+	{% if not about_page %}
+		{% if region %}{{ region.owner }} {% else %}National {% endif %}
+	{% endif %}
+	{{ page.parent }}
+</h1>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block body_class %}{{ block.super }}{% if page.is_draft %} draft-content{% endif %}{% endblock %}
+
+{% block body %}
+	<header id="title">
+		<h1>{% if page.is_draft %}<em>{{ page.title }} - (Draft)</em>{% else %}{{ page.title }}{% endif %}</h1>
+	</header>
+	
+	<div class="overflow padt">
+
+		<article class="col col-640 margr2">
+			{% block content %}{% endblock %}
+		</article>
+
+		<div class="col col-260 margl2" id="sidebar">
+			{% block sidebar %}
+				<div class="box pada2">
+					<section class="section">
+						{% include "nav/page_list.html" %}
+						<span class="paperclip-right-vertical"></span>
+					</section>
+				</div>
+			{% endblock %}
+		</div>
+		
+	</div>
+{% endblock %}

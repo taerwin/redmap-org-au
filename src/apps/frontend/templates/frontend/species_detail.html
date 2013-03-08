@@ -1,0 +1,269 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail article_tags frontend_extras  %}
+
+{% block head_title %}{% trans "Welcome" %}{% endblock %}
+
+{% block extra_head %}
+<!-- OpenLayers -->
+<link href="{{ STATIC_URL }}openlayers/theme/default/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+<!-- Google Maps -->
+<script src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+<!-- OpenLayers -->
+<script src="{{ STATIC_URL }}openlayers/OpenLayers.js"></script>
+<script src="{{ STATIC_URL }}js/CustomCluster.js"></script>
+<script>
+$(document).ready(function() {
+
+	// Define map projections
+	var googleProjection = new OpenLayers.Projection("EPSG:900913");
+	var usefulProjection = new OpenLayers.Projection("EPSG:4326");
+
+	// Collect sighting points
+	var features = [];
+	{% for sighting in sightings %}
+	features.push(new OpenLayers.Feature.Vector(
+		new OpenLayers.Geometry.Point({{ sighting.longitude }}, {{ sighting.latitude }}).transform(usefulProjection, googleProjection), {x: {{ sighting.longitude }}, y: {{ sighting.latitude }}}
+	));
+	{% endfor %}
+
+	// Initialize map
+	var map = new OpenLayers.Map('map-species', {
+		minZoomLevel: 2,
+		projection: new OpenLayers.Projection("EPSG:900913"),
+		displayProjection: new OpenLayers.Projection("EPSG:4326"),
+		maxResolution: 'auto',
+		maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
+		units: "m"
+	}),
+	strategy,
+	clusters;
+	map.addControl(new OpenLayers.Control.Navigation());
+	map.addControl(new OpenLayers.Control.ScaleLine());
+
+	// Create map layer
+	var wms = new OpenLayers.Layer.Google(
+		"Google Maps",
+		{numZoomLevels: 9}
+	);
+
+	// Create species distribution layer
+	var imasbiodiv = new OpenLayers.Layer.WMS(
+		'IMASBioDiv-dev',
+		'{{ geoserver_url }}',
+		{
+			layers: 'redmap:MB_SPECIES_DISTRIBUTION_REDMAP_VIEW',
+			transparent: true,
+			format: 'image/png',
+			tiled: true,
+			cql_filter: '(ID={{ species.id }})',
+		},
+		{isBaseLayer: false}
+	);
+
+	// Set up cluster styles
+	var style = new OpenLayers.Style({
+		pointRadius: "${radius}",
+		fillColor: "#faa",
+		fillOpacity: 0.5,
+		strokeColor: "#fff",
+		strokeWidth: "2",
+		strokeOpacity: 1,
+		externalGraphic: '/render/cluster/${count}/',
+	}, {
+		context: {
+			count: function(feature) {
+				return feature.attributes.count || 1;
+			},
+			radius: function(feature) {
+
+				var count = feature.attributes.count;
+
+				if (isNaN(count)) return 5;
+
+				var size = Math.min(count, 15);
+
+				return size < 5 ? 5 : size;
+
+			}
+		}
+	});
+
+	// Set up clusters
+	strategy = new OpenLayers.Strategy.Cluster({ distanceTo: 75, threshold: 2 });
+	clusters = new OpenLayers.Layer.Vector("Clusters", {
+		strategies: [strategy],
+		styleMap: new OpenLayers.StyleMap({
+			"default": style,
+			"select": {
+				fillColor: "#faa",
+				strokeColor: "#f00"
+			}
+		})
+	});
+
+	// Add select control to map
+	var select = new OpenLayers.Control.SelectFeature(
+		clusters, {hover: true}
+	);
+	map.addControl(select);
+	select.activate();
+
+	//clusters.events.on({"featureselected": doSomething()});
+
+	// Add layers to map
+	map.addLayers([wms, imasbiodiv, clusters]);
+
+	// Finally, set a couple of cluster settings
+	var distance = parseInt('20');
+	var threshold = parseInt('null');
+	strategy.distance = distance || strategy.distance;
+	strategy.threshold = threshold || strategy.threshold;
+	clusters.removeFeatures(clusters.features);
+	clusters.addFeatures(features);
+
+	// Zoom map
+	var aussieBounds = new OpenLayers.Bounds();
+	aussieBounds.extend(new OpenLayers.LonLat(110.21484, -13.92340).transform(usefulProjection, googleProjection));
+	aussieBounds.extend(new OpenLayers.LonLat(159.94922, -43.32518).transform(usefulProjection, googleProjection));
+	map.zoomToExtent(aussieBounds);
+});
+</script>
+{% endblock %}
+
+
+{% block section_title %}
+	<h1>What's on the move</h1>
+{% endblock %}
+
+
+{% block breadcrumbs %}
+	{% include 'frontend/breadcrumbs.html' %}
+{% endblock %}
+
+{% block body %}
+
+<div class="overflow">
+
+	<article class="col col-540 margr2 padr2">
+		<header id="title" class="species">
+			<h1>{{ species.common_name }}</h1>
+			<p><dfn>{{ species.species_name }}</dfn></p>
+		</header>
+
+		<section class="section center">
+		  {% with shape=shape|default:'540x260' %}
+				{% thumbnail species.picture_url shape as im %}
+					<img
+						title="{{ species }}"
+						src="{{ im.url }}"
+					>
+				{% empty %}
+					{% thumbnail "uploads/default.jpg" shape as im %}
+						<img
+							title="{{ sighting.species }}"
+							src="{{ im.url }}"
+						>
+					{% empty %}
+						No image found
+					{% endthumbnail %}
+				{% endthumbnail %}
+			{% endwith %}
+		</section>
+
+		<section class="section">
+
+			<div class="col col-380 margr2 padr2">
+				{% if species.image_credit %}
+					<p class="image_credit">(Image credit: {{ species.image_credit }})</p>
+				{% endif %}
+
+				{% if species.description %}
+					{{ species.description|safe|linebreaks }}
+				{% endif %}
+				
+				{% if species.habitat %}
+					<h2>Habitat</h2>					
+					{{ species.habitat|safe|linebreaks }}
+				{% endif %}
+					
+
+				{% if species.notes %}
+					<h2>Log it</h2>
+					{{ species.notes|safe|linebreaks }}
+				{% endif %}
+
+				{% if species.related %}
+					<h2>Related links/info</h2>
+					{{ species.related|safe|linebreaks }}
+				{% endif %}
+			</div>
+
+			<div class="col col-100 padr2">
+				<a href="{% url sighting_photo %}?species={{ species.id }}">
+					<p class="sightings">Number of <strong>sightings</strong> <output>{{ sightings|length }}</output></p>
+				</a>
+				{% include 'frontend/social.html' %}
+			</div>
+
+		</section>
+
+	</article><!-- /.col -->
+	
+
+	<aside class="col col-320 margl2 padl2">
+		<section class="section">
+			<h2><span class="red">{% trans "Usual distribution" %}</span></h2>
+			<div id="map-species" class="map-canvas"></div>
+		</section>
+
+		{% include "frontend/sidebar_log.html" %}
+		
+		
+	
+        {# {% if regions_of_interest %} #}
+        {#  <section class="section box pada2"> #}
+        {#      <h3 class="red">Regional interest</h3> #}
+        {#      <table class="graphs nopmargb"> #}
+        {#          <thead> #}
+        {#              <tr> #}
+        {#                  <th></th> #}
+        {#                  <th class="left"><small class="light">Frequently<br>sighted</small></th> #}
+        {#                  <th class="right"><small class="light">Rarely<br>sighted</small></th> #}
+        {#              </tr> #}
+        {#          </thead> #}
+        {#          <tbody> #}
+        {#              {% for region in regions_of_interest %} #}
+        {#                  <tr> #}
+        {#                      <th scope="row">{{ region.description|abbrstate|upper }}</th> #}
+        {#                      <td colspan="2"> #}
+        {#                          {% with value="" %} #}
+        {#                              <meter value="{{ value }}" min="0" max="10" class="bar"> #}
+        {#                          {% endwith %} #}
+        {#                      </td> #}
+        {#                  </tr> #}
+        {#              {% endfor %} #}
+        {#          </tbody> #}
+        {#      </table> #}
+        {#  </section> #}
+        {# {% endif %} #}
+
+		{% include "frontend/sidebar_recent_sightings.html" with recent_species_sightings=sightings|slice:":9" %}
+
+		{% news_with_tags species.tag as related_news %}
+		{% if related_news %}
+			{% include 'frontend/_related_news.html' %}
+		{% endif %}
+
+		{% articles_with_tags species.tag as related_articles %}
+		{% if related_articles %}
+			{% include 'frontend/_related_articles.html' %}
+		{% endif %}
+	</aside>
+</div>
+
+{% endblock %}

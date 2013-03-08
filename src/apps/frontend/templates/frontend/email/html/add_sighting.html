@@ -1,0 +1,32 @@
+<table>
+    <tr>
+        <td>
+            <p>Hi {{ species_contact }},</p>
+            <p>
+                A new  {{ species_common_name }} ({{ species_name }}) sighting
+                has been reported in {{ region }}.  The sighting is
+                {{ out_of_range|yesno:"outside,within"}} the known
+                distribution range for this species.
+            </p>
+            <p>
+                You can view and verify the sighting here:<br>
+                http://{{ domain }}/panel/verify/{{ sighting_id }}
+            </p>
+            <p>
+                The comment associated with this assignment was:
+                {{ comment|default:"No comment" }}
+            </p>
+            <p>
+                Please be sure to verify sightings promptly as a quick response
+                shows contributors that their sighting is valued.
+            </p>
+            <p>
+                Kind regards,<br>
+                REDMAP Australia
+            </p>
+        </td>
+        <td>
+            <img src="{{ image }}" style="max-width:250px; max-height:250px;">
+        </td>
+    </tr>
+</table>

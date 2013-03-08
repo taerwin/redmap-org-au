@@ -1,0 +1,14 @@
+<span id="gotoSpecies">
+{{ form.species }}
+<script>
+(function($) {
+	$(document).ready(function() {
+		var $select = $('#{{ form.species.id_for_label }}');
+		$select.chosen();
+		$select.change(function() {
+			if ($select.val()) window.location = $select.val();
+		});
+	});
+})(jQuery);
+</script>
+</span>

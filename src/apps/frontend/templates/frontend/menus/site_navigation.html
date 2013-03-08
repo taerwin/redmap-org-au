@@ -1,0 +1,81 @@
+{% load i18n mptt_tags frontend_tags %}
+<ul class="nav nav-pills navigation">
+
+                {% url home as home %}
+                <li{% if request.path = home %}
+                    class="active"
+                {% else %}
+                    {% comment %}
+                    A bit icky, but the overview item has dual meaning.
+                    It can be the `homepage` and well as a `regional_landing_page`.
+                    {% endcomment %}
+                    {% for region in nav_regions %}
+                        {% url region_landing_page region.id as region_landing_page %}
+                        {% if request.path = region_landing_page %}
+                            class="active"
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                >
+                    <a href="{% if request.session.filter_by_region %}{% url region_landing_page request.session.filter_by_region %}{% else %}{% url home %}{% endif %}">Overview</a>
+                </li>
+
+                {% url sighting_photo as sighting_photo %}
+                {% url sightings_photo_by_region region.slug as sightings_photo_by_region %}
+                {% url sighting_latest as sighting_latest %}
+                {% url sighting_map as sighting_map %}
+                {% url sighting_detail sighting.pk as sighting_detail %}
+                <li{% if request.path = sighting_photo or request.path = sighting_latest or request.path = sighting_map or request.path = sighting_detail or request.path = sightings_photo_by_region %} class="active"{% endif %}>
+                    {% if region %}
+                    <a href="{% url sightings_photo_by_region region %}">Sightings</a>
+                    {% else %}
+                    <a href="{% url sighting_photo %}">Sightings</a>
+                    {% endif%}
+                </li>
+
+                {% url species_category_list as species_category_list %}
+                {% url species_list category.pk as species_list %}
+                {% url species_detail category species.pk as species_detail %}
+                <li{% if request.path = species_category_list or request.path = species_list or request.path = species_detail %} class="active"{% endif %}>
+                    <a href="{{ species_category_list }}">Species</a>
+                </li>
+
+                {% recursetree pages %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ node.title }}<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for child in node.get_descendants %}
+                        {% if request.session.filter_by_region %}
+                            {% if child.get_level == 2 and child.tag_list|show_regional_pages:request.session.filter_by_region %}
+                                {% with child.get_public_url as cms_view %}
+                                <li{% if request.path = cms_view %} class="active"{% endif %}><a href="{{ cms_view }}">{{ child.title }}</a></li>
+                                {% endwith %}
+                            {% endif %}
+                        {% else %}
+                            {% if child.get_level == 2 and child.tag_list|show_global_pages %}
+                                {% with child.get_public_url as cms_view %}
+                                <li{% if request.path = cms_view %} class="active"{% endif %}><a href="{{ cms_view }}">{{ child.title }}</a></li>
+                                {% endwith %}
+                            {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endrecursetree %}
+
+                {% url zinnia_entry_archive_index as zinnia_entry_archive_index %}
+                <li{% if request.path = zinnia_entry_archive_index %} class="active"{% endif %}>
+                    <a href="{{ zinnia_entry_archive_index }}">Latest News</a>
+                </li>
+
+                {% url scientists as scientists %}
+                <li class="dropdown{% if request.path = scientists %} active{% endif %}">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+
+                        <li{% if request.path = scientists %} class="active"{% endif %}>
+                            <a href="{{ scientists }}">Scientists</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>

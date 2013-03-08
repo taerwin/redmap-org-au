@@ -1,0 +1,301 @@
+{% extends "frontend/AddWizard/Step_base.html" %}
+
+{% load thumbnail %}
+
+{% block extra_head %}
+<!-- jQuery UI -->
+<link href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.18.custom.css" rel="stylesheet">
+
+<!-- OpenLayers -->
+<link href="{{ STATIC_URL }}openlayers/theme/default/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+
+<!-- Google Maps -->
+<script src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+<!-- OpenLayers -->
+<script src="{{ STATIC_URL }}/openlayers/OpenLayers.js"></script>
+<script>
+$(document).ready(function() {
+
+	// Initialize map
+	var map = new OpenLayers.Map('map-log', {
+		minZoomLevel: 2,
+		projection: new OpenLayers.Projection("EPSG:900913"),
+		displayProjection: new OpenLayers.Projection("EPSG:4326"),
+		units: "m",
+	});
+	map.addControl(new OpenLayers.Control.Navigation());
+	map.addControl(new OpenLayers.Control.ScaleLine());
+
+	// Create layers
+	var wms = new OpenLayers.Layer.Google(
+		"Google Maps",
+		{numZoomLevels: 20}
+	);
+	var vectors = new OpenLayers.Layer.Vector('Vectors', {
+		styleMap: new OpenLayers.Style({
+			fillColor: '#093468',
+			fillOpacity: 0.6,
+			strokeColor: '#093468'
+		})
+	});
+	var markers = new OpenLayers.Layer.Markers('Markers');
+
+	// Add layers to map
+	map.addLayers([wms, vectors, markers]);
+
+	// Handle marker logic //
+
+	var longitude = {{ step2.longitude }};
+	var latitude = {{ step2.latitude }};
+	var accuracy = {{ step2.accuracy.code }};
+
+	var marker, circle;
+
+	// Define map projections
+	var googleProjection = new OpenLayers.Projection("EPSG:900913");
+	var usefulProjection = new OpenLayers.Projection("EPSG:4326");
+
+	// Setup icon for marker
+	var size = new OpenLayers.Size(32,24);
+	var offset = new OpenLayers.Pixel(-6, -size.h);
+	var icon = new OpenLayers.Icon(
+		'{{ STATIC_URL }}reskin/images/marker-64.png',
+		size,
+		offset
+	);
+
+	/**
+	 * When the map is zoomed, center on the sighting marker (if it exists)
+	 */
+	map.events.register('zoomend', map, function(e) {
+		if (marker) {
+			map.setCenter(marker.lonlat);
+		}
+	});
+
+	/**
+	 * Updates the marker position on the map based on lat/lng form fields
+	 */
+	var updateMap = function() {
+
+		var position = new OpenLayers.LonLat(longitude, latitude).transform(usefulProjection, googleProjection);
+
+		addMarker(position);
+	};
+
+	/**
+	 * Adds or updates a marker on the map
+	 */
+	var addMarker = function(position) {
+
+		// Check for invalid coordinates
+		if(isNaN(position.lat) || isNaN(position.lon)) {
+			return 1;
+		}
+
+		// Add marker to map
+		if(marker != null) {
+			markers.removeMarker(marker); // Remove marker if it already exists
+		}
+		marker = new OpenLayers.Marker(position, icon);
+		markers.addMarker(marker);
+
+		// Add accuracy circle to map
+		if(circle != null) {
+			vectors.removeFeatures(circle); // Remove circle if it exists
+		}
+		var point = OpenLayers.Geometry.Polygon.createRegularPolygon(
+			new OpenLayers.Geometry.Point(position.lon, position.lat),
+			accuracy / 2, // radius
+			30
+		);
+		circle = new OpenLayers.Feature.Vector(point, {
+			styleMap: new OpenLayers.Style(
+			{% include "frontend/openlayers_vector_style.html" %}
+			)
+		});
+		vectors.addFeatures(circle);
+	}
+
+	// Perform initial update
+	updateMap();
+
+	// Zoom map
+	var aussieBounds = new OpenLayers.Bounds();
+	if(circle == null || isNaN(circle.geometry.getBounds().top)) {
+		aussieBounds.extend(new OpenLayers.LonLat(110.21484, -13.92340).transform(usefulProjection, googleProjection));
+		aussieBounds.extend(new OpenLayers.LonLat(159.94922, -43.32518).transform(usefulProjection, googleProjection));
+	} else {
+		aussieBounds.extend(circle.geometry.getBounds());
+	}
+	map.zoomToExtent(aussieBounds);
+	if(circle != null && map.getZoom() > 5) {
+		map.zoomTo(5);
+	}
+});
+</script>
+{% endblock %}
+
+{% block wizard_subheading %}Summary{% endblock %}
+
+{% block wizard_form %}
+
+{% if copy.sighting.sighting_confirmation_intro %}
+	<div id="sighting-intro">
+		{{ copy.sighting.sighting_confirmation_intro|linebreaks }}
+	</div>
+{% endif %}
+
+<div class="row margb2 padt2">
+	<div class="span5 margr2">
+		<h2 class="red rotate arrow-dr" style="margin-top:-20px">Your sighting!</h2>
+
+
+		{% with shape=shape|default:'360x270' %}
+			{% thumbnail picture_data.photo_url shape as im %}	
+				<div class="polaroid margb">
+					<img
+						title="Sighting photo"
+						src="{{ im.url }}"
+						alt="{{ picture_data.photo_caption }}"
+					>
+					<span class="paperclip-right"></span>
+					{% if picture_data.photo_caption %}<p class="polaroid-caption">{{ picture_data.photo_caption }}</p>{% endif %}
+				</div>
+			{% empty %}
+				<div class="polaroid margb polaroid-placeholder" style="height:270px">
+					<span>No photo added</span>
+				</div>
+			{% endthumbnail %}
+		{% endwith %}
+
+		<div class="polaroid margb margt2">
+			<div id="map-log" class="map-canvas"></div>
+		</div>
+
+	</div>
+
+	<div class="span5 padt">
+
+		<fieldset>
+			<legend><strong class="red">About your sighting</strong> <button type="submit" name="wizard_prev_step" value="0">Edit</button></legend>
+
+			{% comment %}
+			Print {{ step1 }} to see a list of all options.
+			{% endcomment %}
+
+			<dl class="dl-horizontal dl-horizontal-big padt2">
+				{% if step1.photo_url %}
+					<dt>Has provided photo permissions?</dt>
+					<dd>Yes</dd>
+				{% endif %}
+
+				<dt>Selected species</dt>
+				<dd>
+					{% if step1.species %}
+						{{ step1.species.common_name }} (<dfn>{{ step1.species.species_name }}</dfn>)
+					{% else %}
+						{{ step1.other_species }}
+					{% endif %}
+				</dd>
+			</dl>
+		</fieldset>
+
+		<div class="hr padt2">
+			<fieldset>
+				<legend><strong class="red">Sighting location</strong> <button type="submit" name="wizard_prev_step" value="1">Edit</button></legend>
+				
+				<dl class="dl-horizontal dl-horizontal-big padt2">
+					{% comment %}
+					Print {{ step2 }} to see a list of all options.
+					{% endcomment %}
+					<dt>Latitude</label>
+					<dd>{{ step2.latitude }}</dd>
+
+					<dt>Longitude</dt>
+					<dd>{{ step2.longitude }}</dd>
+
+					<dt>Accuracy</dt>
+					<dd>{{ step2.accuracy }}</dd>
+
+					<dt>When</dt>
+					<dd>{{ step2.sighting_date|date:"Y-m-d" }} {{ step2.time|default:" - Time unknown" }}</dd>
+
+					<dt>Activity</dt>
+					<dd>{{ step2.activity }}</dd>
+				</dl>
+				
+			</fieldset>
+		</div>
+
+		<div class="hr padt2">
+			<fieldset>
+				<legend><strong class="red">The science!</strong> <button type="submit" name="wizard_prev_step" value="2">Edit</button></legend>
+				
+				{% comment %}
+				Print {{ step3 }} to see a list of all options.
+				{% endcomment %}
+				
+				<dl class="dl-horizontal dl-horizontal-big padt2">
+					<dt>Count</dt>
+					<dd>{{ step3.count }}</dd>
+
+					{% if step3.weight %}
+						<dt>Weight</dt>
+						<dd>
+							{{ step3.weight }} kg{% if step3.weight_method %} ({{ step3.weight_method}}){% endif %}
+						</dd>
+					{% endif %}
+
+					{% if step3.size %}
+						<dt>Size</dt>
+						<dd>
+							{{ step3.size }} cm{% if step3.size_method %} ({{ step3.size_method}}){% endif %}
+						</dd>
+					{% endif %}
+
+					{% if step3.sex %}
+						<dt>Sex</dt>
+						<dd>
+							{{ step3.sex }}
+						</dd>
+					{% endif %}
+
+					{% if step3.depth %}
+						<dt>Depth</dt>
+						<dd>
+							{{ step3.depth }} meters
+						</dd>
+					{% endif %}
+
+					{% if step3.habitat %}
+						<dt>Habitat</dt>
+						<dd>
+							{{ step3.habitat }}
+						</dd>				
+					{% endif %}
+
+					{% if step3.temperature %}
+						<dt>Water temperature</dt>
+						<dd>
+							{{ step3.temperature }}&deg;C
+						</dd>
+					{% endif %}
+
+					{% if step3.notes %}
+						<dt>Additional observation details</dt>
+						<dd>
+							{{ step3.notes }}
+						</dd>
+					{% endif %}
+				</dl>
+			</fieldset>
+		</div>
+	</div>
+</div>
+{% endblock %}

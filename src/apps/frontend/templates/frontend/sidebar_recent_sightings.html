@@ -1,0 +1,26 @@
+{% load frontend_extras %}
+{% if recent_species_sightings|length > 0 %}
+	<section class="section hr">
+		<header class="section-header">
+			<h3 class="fleft">
+				Recent <strong>sightings</strong> of this species
+				{% comment %}
+				Some species names are too long which breaks formatting
+				<strong>
+					{% if sighting %}
+						{{ sighting.species_name|truncatechars:30 }}
+					{% endif %}
+					{% if species %}
+						{{ species.common_name|truncatechars:30 }}
+					{% endif %}
+					sightings
+				</strong>
+				{% endcomment %}
+			</h3>
+			<p class="fright"><a href="{% url sighting_photo %}?species={% if species %}{{ species.id }}{% else %}{{ sighting.species.id }}{% endif %}" class="red">View more</a></p>				
+		</header>
+		<ul class="thumbs thumbs-col-3">
+			{% include "frontend/recent_sightings_list.html" with sighting_list=recent_species_sightings %}
+		</ul>
+	</section>
+{% endif %}

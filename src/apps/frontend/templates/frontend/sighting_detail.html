@@ -1,0 +1,287 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail %}
+{% load frontend_extras %}
+
+{% block head_title %}{{ sighting.description }}{% endblock %}
+
+{% block extra_head %}
+	{{ block.super }}
+	<!-- OpenLayers -->
+	<link href="{{ STATIC_URL }}openlayers/theme/default/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	{{ block.super }}
+	<!-- Google Maps -->
+	<script src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+	<!-- OpenLayers -->
+	<script src="{{ STATIC_URL }}openlayers/OpenLayers.js"></script>
+	<script>
+	$(document).ready(function() {
+
+		// Initialize map
+		var map = new OpenLayers.Map('map-sighting', {
+			minZoomLevel: 2,
+			projection: new OpenLayers.Projection("EPSG:900913"),
+			displayProjection: new OpenLayers.Projection("EPSG:4326"),
+			units: "m"
+		});
+		map.addControl(new OpenLayers.Control.ScaleLine());
+
+		// Create layers
+		var wms = new OpenLayers.Layer.Google(
+			"Google Maps",
+			{numZoomLevels: 20}
+		);
+		var markers = new OpenLayers.Layer.Markers('Markers');
+
+		// Add layers to map
+		map.addLayers([wms, markers]);
+
+		// Define map projections
+		var googleProjection = new OpenLayers.Projection("EPSG:900913");
+		var usefulProjection = new OpenLayers.Projection("EPSG:4326");
+
+		// Draw 1/2 degree box in area of sighting
+
+		var longT = {{ bounds_top_longitude  }};
+		var longB = {{ bounds_bottom_longitude }};
+
+		var latT = {{ bounds_top_latitude }};
+		var latB = {{ bounds_bottom_latitude }};
+
+		var centreY = ({{ bounds_bottom_latitude }} + {{ bounds_top_latitude }}) / 2;
+		var centreX = ({{ bounds_bottom_longitude }} + {{ bounds_top_longitude }}) / 2;
+
+		var centre = new OpenLayers.Geometry.Point(centreX, centreY);
+
+		bounds = new OpenLayers.Bounds();
+		bounds.extend(new OpenLayers.LonLat({{ bounds_top_longitude }},{{ bounds_top_latitude }}).transform(usefulProjection, googleProjection));
+		bounds.extend(new OpenLayers.LonLat({{ bounds_bottom_longitude }},{{ bounds_bottom_latitude }}).transform(usefulProjection, googleProjection));
+
+		// Add marker
+		var size = new OpenLayers.Size(100, 100);
+		var offset = new OpenLayers.Pixel(-size.w/2,-size.h/2);
+		var icon = new OpenLayers.Icon('{{STATIC_URL}}reskin/images/circle.png', size, offset);
+		markers.addMarker(new OpenLayers.Marker(bounds.getCenterLonLat(), icon));
+
+		// Zoom to marker
+		map.zoomToExtent(bounds)
+
+		if(map.getZoom() > 5) {
+			map.zoomTo(5);
+		}
+
+	});
+	</script>
+
+	<!-- Moment.js -->
+	<script src="{{ STATIC_URL }}js/moment.min.js"></script>
+{% endblock %}
+
+
+{% block section_title %}<h1>What's been spotted {% if region %}in {{ region }}{% else %}lately around the country{% endif %}?</h1>{% endblock %}
+
+{% block breadcrumbs %}
+	{% include "frontend/breadcrumbs.html" %}
+{% endblock %}
+
+{% block body %}
+
+<div class="overflow">
+
+	<article class="col col-540 padr2 margr2">
+		<header id="title" class="species">
+			{% if sighting.species %}
+				<h1>{{ sighting.common_name }}</h1>
+				<p><dfn>{{ sighting.species_name|truncatechars:30 }}</dfn></p>
+			{% else %}
+				<h1>{{ sighting.other_species }}</h1>
+			{% endif %}
+		</header><!-- /#title -->
+
+		{% if sighting.photo_url %}
+			<section class="section center">
+				{% with shape=shape|default:'520' %}
+					<div class="polaroid">
+						{% thumbnail sighting.photo_url shape upscale="False" as im %}
+							<img src="{{ im.url }}">
+						{% empty %}
+							No image found
+						{% endthumbnail %}
+						{% if sighting.photo_caption %}<p class="polaroid-caption">{{ sighting.photo_caption }}</p>{% endif %}
+					</div>
+				{% endwith %}
+			</section>
+		{% endif %}
+
+		<div>
+
+			<div class="col col-100 col-right margb">
+				<div class="social">
+					{% include "frontend/social.html" %}
+				</div><!-- /.social -->
+			</div><!-- /.col -->
+
+			<section class="section margr-140">
+				<table class="table">
+					<tbody>
+						{% if sighting.length %}
+							<tr>
+								<th>Length</th>
+								<td>{{ sighting.length }}cm</td>
+							</tr>
+						{% endif %}
+						{% if sighting.weight %}
+							<tr>
+								<th>Weight</th>
+								<td>{{ sighting.weight }}kg</td>
+							</tr>
+						{% endif %}
+						{% if sighting.depth and sighting.depth > 0 %}
+							<tr>
+								<th>Depth</th>
+								<td>{{ sighting.depth }}m</td>
+							</tr>
+						{% endif %}
+					</tbody>
+				</table>
+				<!-- <p><span class="pink">What goes here if species description is below</span></p> -->
+			</section>
+
+		</div><!-- /.overflow -->
+		
+		<div class="clear"></div>
+
+		{% if sighting.species %}
+			<section class="section clear box">
+				<div class="overflow pada">
+					<div class="col col-200">
+						{% with shape=shape|default:'174x174' %}
+							<div class="polaroid polaroid-white" style="width:174px;height:174px;display:table-cell;vertical-align:middle;">
+								{% thumbnail sighting.species.picture_url shape as im %}
+									<a href="{% url species_detail species_in_category.species_category.id sighting.species.id %}"><img src="{{ im.url }}" alt="{{ sighting.species.species_name }}"></a>
+								{% empty %}
+									<span class="none">No image found</span>
+								{% endthumbnail %}
+							</div>
+						{% endwith %}
+					</div>
+					<div class="margl-220 padt">
+						<h3 class="red caps"><strong>About</strong> this species</h3>
+						<p>
+							{{ sighting.species.short_description }}
+							{% if species_in_category %}
+								<a href="{% url species_detail species_in_category.species_category.id sighting.species.id %}" class="red">Read more&hellip;</a>
+							{% endif %}
+						</p>
+					</div>
+				</div>
+				<span class="paperclip-left"></span>
+			</section>
+		{% endif %}
+
+		{% include "frontend/comments.html" %}
+
+	</article><!-- /.col -->
+
+	<aside id="sidebar" class="col col-320 margl2 padl2">
+		<section class="section">
+			<h2 class="red">The sighting</h2>
+
+			<div id="map-sighting" class="map-canvas"></div>
+
+			{# <p class="right padth"><a href="#">Expand map<span class="enlarge"></span></a></p> #}
+
+			<table class="details nomargb margt2">
+				<tbody>
+					<tr>
+						<th>Spotted by</th>
+						<td class="red">
+							{{ sighting.user.profile.get_link }}
+						</td>
+					</tr>
+					<tr>
+						<th>Region</th>
+						<td>{{ sighting.region.description }}</td>
+					</tr>
+					{% comment %}
+						<tr>
+							<th>Latitude</th>
+							<td>{% if sighting.latitude %}{{ sighting.latitude }}{% else %}<span class="lighter">None</span>{% endif %}</td>
+						</tr>
+						<tr>
+							<th>Longitude</th>
+							<td>{% if sighting.latitude %}{{ sighting.longitude }}{% else %}<span class="lighter">None</span>{% endif %}</td>
+						</tr>
+					{% endcomment %}
+					<tr>
+						<th>Date/time</th>
+						<td>
+							<time datetime="{{ sighting.sighting_date|date:'c' }}">
+								{{ sighting.sighting_date|date:'j F Y' }}
+								{# {{ sighting.time }} #}
+							</time>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+
+		{% if sighting.is_verified_by_scientist %}
+		<section class="section" id="verified">
+			<header class="section-header">
+				<h2><strong class="verified">Verified</strong> <span>by our Scientists</span></h2>
+			</header>
+		</section>
+		{% endif %}
+
+		<div class="box overflow margb2">
+
+			{% if sighting.latest_tracker.comment and sighting.latest_tracker.is_displayed_on_site %}
+				<div class="pada" style="background:#e5e5e5;"><em>{{ sighting.latest_tracker.comment|safe|linebreaksbr }}</em></div>
+			{% endif %}
+
+			{% if sighting.is_verified_by_scientist or sighting.latest_tracker.comment and sighting.latest_tracker.is_displayed_on_site %}
+			<div class="overflow pada">
+				{% with shape=shape|default:'80x80' %}
+					{% thumbnail sighting_tracking.person.profile.image shape as im %}
+						<img class="fleft" title="{{ sighting_tracking.person.profile }}" src="{{ im.url }}">
+					{% endthumbnail %}
+				{% endwith %}
+				<div class="{% if sighting_tracking.person.profile.image %}margl-80 padl{% endif %}">
+					<h4 class="nomargb red">
+						{{ sighting_tracking.person.profile.get_link }}
+					</h4>
+
+					{% if sighting_tracking.person.profile.organisation %}
+						<p class="nomargb">{{ sighting_tracking.person.profile.organisation }}</p>
+					{% endif %}
+				</div>
+			</div>
+			{% endif %}
+		</div><!-- /.box -->
+
+		{% if recent_species_sightings %}
+			{% include "frontend/sidebar_recent_sightings.html" %}
+		{% endif %}
+
+		<section class="section hr">
+			<header class="section-header">
+				<h3 class="fleft">Recent <strong>sightings in this region</strong></h3>
+				<p class="fright"><a href="{% url sighting_photo_by_region sighting.region.description|abbrstate|lower %}" class="red">View more</a></p>
+			</header>
+			<ul class="thumbs thumbs-col-3">
+				{% include "frontend/recent_sightings_list.html" with sighting_list=recent_area_sightings %}
+			</ul>
+		</section>
+
+		{% if sighting.species.related_news %}
+			{% include 'frontend/_related_news.html' with related_news=sighting.species.related_news %}
+		{% endif %}
+	</aside><!-- /.col -->
+</div><!-- /.overflow -->
+
+{% endblock %}

@@ -1,0 +1,32 @@
+<form action="." method="post" class="padb2" style="z-index:10000;position:relative;">
+	{% with field=species_filter_form.species %}
+		{{ field }}
+		{# <button type="submit" class="margl button-red-square">Filter<span class="chevron chevron-right"></span></button> #}
+	{% endwith %}
+	
+	{# {% include "frontend/fields/textfield.html" with field=species_filter_form.species label_override="Filter sightings by species" %} #}
+</form>
+
+<ul class="tabs">
+{% if region %}
+	<li{% if resolver_match.url_name == "sighting_photo_by_region" %} class="active"{% endif %}>
+		<a href="{% url sighting_photo_by_region region.slug %}">Photos</a>
+	</li>
+	<li{% if resolver_match.url_name == "sighting_all_by_region" %} class="active"{% endif %}>
+		<a href="{% url sighting_all_by_region region.slug %}">All sightings</a>
+	</li>
+	<li{% if resolver_match.url_name == "sighting_map_by_region" %} class="active"{% endif %}>
+		<a href="{% url sighting_map_by_region region.slug %}">Map</a>
+	</li>
+{% else %}
+	<li{% if resolver_match.url_name == "sighting_photo" %} class="active"{% endif %}>
+		<a href="{% url sighting_photo %}">Photos</a>
+	</li>
+	<li{% if resolver_match.url_name == "sighting_latest" %} class="active"{% endif %}>
+		<a href="{% url sighting_latest %}">All sightings</a>
+	</li>
+	<li{% if resolver_match.url_name == "sighting_map" %} class="active"{% endif %}>
+		<a href="{% url sighting_map %}">Map</a>
+	</li>
+{% endif %}
+</ul>
