@@ -1,4 +1,3 @@
-# Create your views here.
 from django.core.files.uploadhandler import FileUploadHandler
 from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
@@ -45,7 +44,6 @@ class ProgressBarUploadHandler(FileUploadHandler):
             data['percentage'] = int(round(float(
                 data['uploaded']) / float(self.content_length) * 100, 0))
 
-            # slows upload for debug
             if settings.DEBUG and data['percentage'] > data['slower']:
                 data['slower'] += 5
                 time.sleep(1)

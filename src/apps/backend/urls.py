@@ -120,10 +120,11 @@ urlpatterns = patterns('backend',
                            r'^admin/organisations/edit/(?P<pk>\d+)/$', OrganisationAdd,
                        name='organisation_edit'),
                        url(r'^admin/organisations/delete/(?P<pk>\d+)/$',
-        OrganisationDelete, name='organisation_delete'),
+                           OrganisationDelete, name='organisation_delete'),
 
-    url(r'^admin/beta/$', BetaInvites.as_view(), name="beta_invites"),
-    url(r'^admin/beta/send/(?P<pk>\d+)/$', BetaSendInvite,
-        name='beta_send_invite'),
+                       url(r'^admin/beta/$',
+                           BetaInvites.as_view(), name="beta_invites"),
+                       url(r'^admin/beta/send/(?P<pk>\d+)/$', BetaSendInvite,
+                           name='beta_send_invite'),
 
-)
+                       )
