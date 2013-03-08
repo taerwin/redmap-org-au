@@ -1,0 +1,12 @@
+Dear {{ user.first_name }},
+
+{{ previous_user.profile }} has reassigned Sighting #{{ sighting.pk }} to you. Please log in and validate this sighting as soon as you are able.
+
+{% if comment %}The following comment was provided:
+
+{{ comment }}{% endif %}
+
+http://{{ domain }}/panel/verify/{{ sighting.pk }}/
+
+Kind regards,
+REDMAP Australia

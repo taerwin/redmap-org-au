@@ -1,0 +1,15 @@
+{% extends "backend/faq_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url faq_index %}delete/{{ faq.pk }}/" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are your sure you want to delete <strong>"{{ faq.title }}"</strong>?</legend>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="{% url faq_index %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

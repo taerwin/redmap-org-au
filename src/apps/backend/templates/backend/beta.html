@@ -1,0 +1,56 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n thumbnail backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Administration" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_administration "Beta Invites" request.user %}
+{% endblock %}
+
+{% block content %}
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Email</th>
+				<th>Created</th>
+				<th>Invited</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for invite in invites %}
+				<tr>
+					<td>
+						{{ invite.email }}
+					</td>
+					<td>
+						{{ invite.created }}
+					</td>
+					<td>
+						{% if invite.invited %}
+							<i class="icon-ok"></i>
+						{% else %}
+							<i class="icon-remove"></i>
+						{% endif %}
+					</td>
+					<td>
+						{% if invite.invited %}
+							<span class="label label-success">Invitation sent</span>
+						{% else %}
+							<a href="{% url beta_send_invite invite.pk %}" class="btn btn-primary">Send invite</a>
+						{% endif %}
+					</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="4" class="center">
+						<strong>No invites</strong>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

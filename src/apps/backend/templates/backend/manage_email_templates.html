@@ -1,0 +1,42 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Expert panel" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_expert "Templates" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div id="alert-box" class="span12"></div>
+</div>
+<div class="actions">
+	<p><a href="{% url add_email_template %}" class="btn btn-large btn-primary"><i class="icon-plus-sign icon-white"></i> Add template</a></p>
+</div>
+
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Options</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for template in templates %}
+			<tr>
+				<input type="hidden" value="{{ template.id }}" id="template_{{ template.id }}" class="template">
+				<th>
+					{{ template.name }}
+				</th>
+				<td>
+					<a href="{% url edit_email_template template.id %}" class="btn">Edit</a>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock %}

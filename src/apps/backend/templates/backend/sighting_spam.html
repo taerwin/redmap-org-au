@@ -1,0 +1,16 @@
+{% extends "backend/ScientistVerifyWizard/Step_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url sighting_spam pk %}" method="POST" class="form-horizontal">{% csrf_token %}
+    <fieldset>
+        <legend>Are you sure you want to mark sighting #{{ pk }} as SPAM?</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Yes, this is SPAM</button>
+            <a href="{% url verify_sightings pk %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

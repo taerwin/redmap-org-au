@@ -1,0 +1,76 @@
+{% extends "backend/validation_rules.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+{% load frontend_tags %}
+
+{# {% block extra_head %} #}
+{#             <!-- Chosen --> #}
+{#             <link href="/static/css/chosen/chosen.css" rel="stylesheet"> #}
+{# {% endblock %} #}
+{#  #}
+{# {% block extra_script %} #}
+{#             <!-- Chosen --> #}
+{#             <script src="/static/js/chosen.jquery.min.js"></script> #}
+{#             <script> #}
+{#             $(document).ready(function() { #}
+{#                 $("select").chosen(); #}
+{#             }); #}
+{#             </script> #}
+{# {% endblock %} #}
+
+{% block content %}
+<form action="" method="POST">{% csrf_token %}
+	{{ tests.management_form }}
+	
+	<div class="row">
+		<div class="span3">
+			<h3>Rule description</h3>
+		</div>
+		<div class="span9">
+			{{ form.name|as_bootstrap }}
+			{{ form.rank|as_bootstrap }}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="span3">
+			<h3>Rule conditions</h3>
+		</div>
+		<div class="span9">
+			
+			{{ form.valid_photo|as_bootstrap_field }}
+			
+			{% for test in tests %}
+				{{ test|as_bootstrap }}
+			{% endfor %}
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="span3">
+			<h3>Rule actions</h3>
+		</div>
+		<div class="span9">
+			{{ form.valid_sighting|as_bootstrap_field }}
+			{{ form.validation_message_template|as_bootstrap }}
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="span3">
+		</div>
+		<div class="span9">
+	        <div class="form-actions">
+	            <button type="submit" class="btn btn-primary">Save</button>
+	            <a href="{% url validation_rules %}" class="btn">Cancel</a>
+	            {% if pk %}
+	            <span class="pull-right">
+	                <a href="{% url delete_validation_rule pk %}" class="btn btn-danger">Delete</a>
+	            </span>
+	            {% endif %}
+	        </div>
+		</div>
+	</div>
+
+</form>
+{% endblock %}

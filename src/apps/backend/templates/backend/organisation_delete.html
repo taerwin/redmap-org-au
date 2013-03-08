@@ -1,0 +1,16 @@
+{% extends "backend/organisation_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url organisation_delete organisation.id %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are you sure you want to delete this organisation?</legend>
+        <h4>{{ organisation }}</h4>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="{% url organisation_index %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

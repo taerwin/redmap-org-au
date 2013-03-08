@@ -1,0 +1,25 @@
+{% block panel-content-tabs %}
+<ul class="nav nav-pills">
+    <li{% if active == "News" %} class="active"{% endif %}>
+        <a href="{% url news_entries_list %}">News</a>
+    </li>
+    <li{% if active == "Pages" %} class="active"{% endif %}>
+        <a href="{% url cms_index %}">Books and Pages</a>
+    </li>
+    <li{% if active == "Resources" %} class="active"{% endif %}>
+        <a href="{% url article_index %}">Resources</a>
+    </li>
+    <li{% if active == "Homepage" %} class="active"{% endif %}>
+        <a href="{% url cms_homepage %}">Homepage</a>
+    </li>
+    <li{% if active == "CopyBlocks" %} class="active"{% endif %}>
+        <a href="{% url cms_copyblock_index %}">Copy Blocks</a>
+    </li>
+    <!--li{% if active == "Sitewide" %} class="active"{% endif %}>
+        <a href="{% url news_entries_list %}">Sitewide</a>
+    </li-->
+    <li{% if active == "Faq" %} class="active"{% endif %}>
+        <a href="{% url faq_index %}">FAQs</a>
+    </li>
+</ul>
+{% endblock %}

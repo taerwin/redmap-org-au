@@ -1,0 +1,64 @@
+{% extends "backend/manage_email_templates.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+	<!-- Chosen -->
+	<link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	<!-- Chosen -->
+	<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$("select").chosen();
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+<form class="form-horizontal" action="{% url manage_email_templates %}{% if pk %}edit/{{ pk }}{% else %}add{% endif %}/" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>{% if pk %}Edit{% else %}Add{% endif %} email template</legend>
+		<div class="row">
+			<div class="span8">
+				{{ form|as_bootstrap }}
+			</div>
+			<div class="span4">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Description</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th><code>{sighter}</code></th>
+							<td>The sighter's username</td>
+						</tr>
+						<tr>
+							<th><code>{species}</code></th>
+							<td>The species (common) name</td>
+						</tr>
+						<tr>
+							<th><code>{sighting_url}</code></th>
+							<td>A link to the sighting</td>
+						</tr>
+					</tbody>							
+				</table>					
+			</div>
+		</div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large"><i class="icon-ok-circle icon-white"></i> Save</button>
+            <a href="{% url manage_email_templates %}" class="btn btn-large">Cancel</a>
+            {% if pk %}
+            <span class="pull-right">
+                <a href="{% url delete_email_template pk %}" class="btn btn-danger">Delete</a>
+            </span>
+            {% endif %}
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

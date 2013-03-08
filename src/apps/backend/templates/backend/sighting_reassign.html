@@ -1,0 +1,44 @@
+{% extends "backend/ScientistVerifyWizard/Step_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+	<!-- Chosen -->
+	<link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	<!-- Chosen -->
+	<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$("#{{ form.username.auto_id }}").chosen();
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+
+
+<hgroup id="title">
+	<div class="actions pull-right">
+		<a href="{% url verify_sightings sighting.pk %}" class="btn btn-large"><i class="icon-chevron-left"></i> Back to sighting</a>
+	</div>
+	<h1>Verify sighting {{ sighting.id }}</h1>
+	<h3 class="nobold lighter">
+		{{ sighting.species_name }}
+		(<dfn>{{ sighting.common_name }}</dfn>)
+	</h3>
+</hgroup><!-- /#title -->
+
+<form action="{% url sighting_reassign sighting.pk %}" method="POST" class="form-horizontal">{% csrf_token %}
+    <fieldset>
+        <legend>Reassign sighting</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Reassign</button>
+            <a href="{% url verify_sightings sighting.pk %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

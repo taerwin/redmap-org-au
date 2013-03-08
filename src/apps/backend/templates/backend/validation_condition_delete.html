@@ -1,0 +1,24 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Expert panel" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_expert "Conditions" %}
+{% endblock %}
+
+{% block content %}
+<form action="{% url validation_condition_delete condition.pk %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are you sure you want to delete this validation condition?</legend>
+        <h4>{{ condition.name }}</h4>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="{% url validation_conditions %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

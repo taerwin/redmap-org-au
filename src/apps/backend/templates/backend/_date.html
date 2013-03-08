@@ -1,0 +1,8 @@
+<time datetime="{{ date|date:"c" }}">
+	<strong>{{ date|date:"j F, Y" }}</strong>
+	{% if not time %}
+		<span class="block lighter">{{ date|date:"g:iA"|lower }}</span>
+	{% else %}
+		<span class="block lighter">{{ time }}</span>
+	{% endif %}
+</time>

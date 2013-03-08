@@ -1,0 +1,15 @@
+{% extends "backend/regional_administrators.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url regional_administrator_delete user.id %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are you sure you want to remove this regional administrator <strong>{{ user.profile }}</strong>?</legend>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger"><i class="icon-chevron-down icon-white"></i> Remove regional administrator</button>
+            <a href="{% url regional_administrators %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

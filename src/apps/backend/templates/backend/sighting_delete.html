@@ -1,0 +1,20 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Sightings" request.user %}
+{% endblock %}
+
+{% block content %}
+<form action="{% url sighting_delete sighting.id %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are you sure you want to delete this sighting?</legend>
+        <strong>Sighting #{{ sighting.id }}</strong>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="{% url sightings_list %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

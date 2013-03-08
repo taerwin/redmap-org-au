@@ -1,0 +1,36 @@
+{% extends "backend/faq_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+	<!-- Chosen -->
+	<link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	<!-- Chosen -->
+	<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$("select").chosen();
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+<form class="form-horizontal" action="{% url faq_index %}{% if pk %}edit/{{ pk }}{% else %}add{% endif %}/" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>{% if pk %}Edit{% else %}Add{% endif %} FAQ</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large"><i class="icon-ok-circle icon-white"></i> Save</button>
+            <a href="{% url faq_index %}" class="btn btn-large">Cancel</a>
+            {% if pk %}
+            <span class="pull-right">
+                <a href="{% url faq_delete pk %}" class="btn btn-danger">Delete</a>
+            </span>
+            {% endif %}
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

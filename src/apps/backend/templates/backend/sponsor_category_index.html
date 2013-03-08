@@ -1,0 +1,40 @@
+{% extends "backend/sponsor_index.html" %}
+
+{% load i18n backend_extras mptt_tags frontend_tags %}
+
+{% block content %}
+
+    <div id="alert-box"></div>
+	
+	<div class="actions">
+		<a href="{% url sponsor_category_add %}" class="btn btn-large btn-primary"><i class="icon-white icon-plus-sign"></i> Add category</a>
+		{#<a href="{% url sponsor_index %}" class="btn btn-large">Back</a> #}
+	</div>
+	
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Order</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for sponsor_category in sponsor_categories %}
+			<tr>
+				<td>
+					{{ sponsor_category.name }}
+				</td>
+				<td>
+					{{ sponsor_category.order }}
+				</td>
+				<td>
+					<a href="{% url sponsor_category_edit sponsor_category.id %}" class="btn">Edit</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+      
+</div>
+{% endblock %}

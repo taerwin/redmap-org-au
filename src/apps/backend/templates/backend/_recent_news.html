@@ -1,0 +1,17 @@
+{% load thumbnail %}
+
+	<ul class="nav nav-tabs nav-stacked content-list">
+		{% for news in recent_news %}
+			<li>
+				<a href="{{ news.get_absolute_url }}">
+					<h4>{{ news.title }}</h4>
+					<p>{{ news.creation_date|date:"j F, Y" }}</p>
+				</a>
+			</li>			
+		{% endfor %}
+		<li>
+			<a href="{% url news_entries_list %}">All news</a>
+		</li>
+	</ul>
+
+</section><!-- /.section -->

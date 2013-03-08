@@ -1,0 +1,35 @@
+{% load frontend_tags %}
+
+{% block panel-nav-tabs %}
+<div class="container">
+    <div class="row">
+        <div class="span12">
+
+            <ul class="nav nav-tabs navigation">
+                <li{% if active == "Dashboard" %} class="active"{% endif %}>
+                    <a href="{% url dashboard %}">Dashboard</a>
+                </li>
+                <li{% if active == "Sightings" %} class="active"{% endif %}>
+                    <a href="{% url sightings_unvalidated %}">Sightings</a>
+                </li>
+                {% if perms.redmapdb.can_manage_experts %}
+                    <li{% if active == "Expert panel" %} class="active"{% endif %}>
+                        <a href="{% url manage_experts %}">Verification panel</a>
+                    </li>
+                {% endif %}
+                {% if perms.redmapdb.can_manage_content %}
+                    <li{% if active == "Content" %} class="active"{% endif %}>
+                        <a href="{% url news_entries_list %}">Content</a>
+                    </li>
+                {% endif %}
+                {% if perms.auth.change_user %}
+                    <li{% if active == "Administration" %} class="active"{% endif %}>
+                        <a href="{% url member_index %}">Administration</a>
+                    </li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

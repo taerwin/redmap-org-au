@@ -1,0 +1,114 @@
+{% extends "backend/panel_base.html" %}
+
+{% load frontend_tags %}
+{% load i18n backend_extras thumbnail %}
+
+{% block panel_nav %}
+	{% navtabs "Sightings" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+	{% panel_sightings "All sightings" %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+	<script>
+	$(document).ready(function() {
+		// Validation templates
+		var assessment_templates = [];
+		var validation_templates = [];
+		{% for template in validation_templates %}
+		assessment_templates[{{ template.id }}] = "{{ template.public_assessment|escapejs }}";
+		validation_templates[{{ template.id }}] = "{{ template.template|escapejs }}";
+		{% endfor %}
+		$("#{{ wizard.form.template.auto_id }}").change(function() {
+			$("#{{ wizard.form.assessment.auto_id }}").text(assessment_templates[$(this).val()]);
+			$("#{{ wizard.form.message.auto_id }}").text(validation_templates[$(this).val()]);
+		});
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+	<form method="post" action=".">
+		{{ wizard.management_form }}
+		{% csrf_token %}
+		<hgroup id="title">
+			<div class="actions pull-right">
+				{% if wizard.steps.prev %}
+					<button name="wizard_prev_step" value="{{ wizard.steps.prev }}" class="btn btn-large"><i class="icon-chevron-left"></i> {% trans "Prev step" %}</button>
+				{% endif %}
+
+				<button
+					type="submit"
+					name="submit"
+					class="btn btn-large btn-primary">
+						&nbsp;
+					{% if wizard.steps.current == '1' %}
+						{% trans "Submit" %}
+					{% else %}
+						{% trans "Next step" %}
+					{% endif %}
+					<i class="icon-chevron-right icon-white"></i>
+				</button>
+			</div>
+
+			<h1>Verify sighting {{ sighting.id }}</h1>
+			<h3 class="nobold lighter">
+				{{ sighting.species_name }}
+				(<dfn>{{ sighting.common_name }}</dfn>)
+			</h3>
+		</hgroup><!-- /#title -->
+		<fieldset>
+			<legend>1. Publish sighting?</legend>
+			<label>{{ wizard.form.is_published }} Display sighting on public website</label>
+		</fieldset>
+		<fieldset>
+			<legend>2. Assessment &amp; response</legend>
+			<div class="control-group overflow"  style="margin-top: 5px">
+				<label class="control-label">Pick a template</label>
+				<div class="controls">
+					<div class="margb">
+						{{ wizard.form.template }}
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="control-group span6">
+					<label class="control-label">{{ wizard.form.assessment.label }}</label>
+					<div class="controls">
+						{{ wizard.form.assessment }}
+					</div>
+					<p class="help-block margt"><label>{{ wizard.form.is_displayed_on_site }} Include assessment on website?</label></p>
+				</div>
+				<div class="control-group span6">
+					<label class="control-label">Email response to sighter</label>
+					<div class="controls">
+						<div class="margb">
+							{{ wizard.form.message }}
+						</div>
+						<p class="help-block margt margb2">Tags: <code>{sighter}</code>, <code>{species}</code></p>
+					</div>
+				</div>
+			</div><!-- /.row -->
+		</fieldset>
+
+		<div class="overflow">
+			<div class="actions pull-right">
+				<button
+					type="submit"
+					name="submit"
+					class="btn btn-large btn-primary">
+						&nbsp;
+					{% if wizard.steps.current == '1' %}
+						{% trans "Submit" %}
+					{% else %}
+						{% trans "Next step" %}
+					{% endif %}
+					<i class="icon-chevron-right icon-white"></i>
+				</button>
+			</div>
+		</div>
+	</form>
+{% endblock %}

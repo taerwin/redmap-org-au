@@ -1,0 +1,328 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras thumbnail %}
+
+{% block extra_head %}
+			<!-- Chosen -->
+			<link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+
+			<!-- jQuery UI -->
+			<link href="{{ STATIC_URL }}css/jquery-ui/jquery-ui-1.8.18.custom.css" rel="stylesheet">
+
+			<!-- OpenLayers -->
+			<link href="{{ STATIC_URL }}openlayers/theme/default/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+			<!-- Chosen -->
+			<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+
+			<!-- jQuery UI -->
+			<script src="{{ STATIC_URL }}js/jquery-ui-1.8.18.custom.min.js"></script>
+			<script>
+			$(document).ready(function() {
+				$("#id_sighting_date").datepicker({
+					'dateFormat': 'yy-mm-dd',
+				});
+			});
+			</script>
+
+			<!-- Google Maps -->
+			<script src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+			<!-- OpenLayers -->
+			<script src="{{ STATIC_URL }}openlayers/OpenLayers.js"></script>
+			<script>
+			$(document).ready(function() {
+
+				// Accuracy list
+				var accuracies = new Object();
+				{% for a, b in accuracies.items %}
+					accuracies[{{ a }}] = {{ b }};
+				{% endfor %}
+
+				// Initialize map
+				var map = new OpenLayers.Map('ol_map', {
+					minZoomLevel: 2,
+					projection: new OpenLayers.Projection("EPSG:900913"),
+					displayProjection: new OpenLayers.Projection("EPSG:4326"),
+					units: "m",
+				});
+				map.addControl(new OpenLayers.Control.Navigation());
+				map.addControl(new OpenLayers.Control.ScaleLine());
+
+				// Create layers
+				var wms = new OpenLayers.Layer.Google(
+					"Google Maps",
+					{numZoomLevels: 20}
+				);
+				var vectors = new OpenLayers.Layer.Vector('Vectors');
+				var markers = new OpenLayers.Layer.Markers('Markers');
+
+				// Add layers to map
+				map.addLayers([wms, vectors, markers]);
+
+				// Handle marker logic //
+
+				var longitude = $("#id_longitude");
+				var latitude = $("#id_latitude");
+				var accuracy = $("#id_accuracy");
+
+				var marker, circle;
+
+				// Define map projections
+				var googleProjection = new OpenLayers.Projection("EPSG:900913");
+				var usefulProjection = new OpenLayers.Projection("EPSG:4326");
+
+				// Setup icon for marker
+				var size = new OpenLayers.Size(21,25);
+				var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+				var icon = new OpenLayers.Icon(
+					'http://www.openlayers.org/dev/img/marker.png',
+					size,
+					offset
+				);
+
+				/**
+				 * When the map is clicked, create a marker at specified location
+				 */
+				map.events.register('click', map, function(e) {
+
+					// Find position clicked
+					var position = map.getLonLatFromPixel(e.xy);
+
+					position.transform(googleProjection, usefulProjection);
+
+					// Update lat/lng form fields
+					longitude.val(position.lon);
+					latitude.val(position.lat);
+
+					position.transform(usefulProjection, googleProjection);
+
+					addMarker(position);
+				});
+
+				/**
+				 * Updates the marker position on the map based on lat/lng form fields
+				 */
+				var updateMap = function() {
+
+					var position = new OpenLayers.LonLat(longitude.val(), latitude.val()).transform(usefulProjection, googleProjection);
+
+					addMarker(position);
+				};
+
+				/**
+				 * Adds or updates a marker on the map
+				 */
+				var addMarker = function(position) {
+
+					// Check for invalid coordinates
+					if(isNaN(position.lat) || isNaN(position.lon)) {
+						return 1;
+					}
+
+					// Add marker to map
+					if(marker != null) {
+						markers.removeMarker(marker); // Remove marker if it already exists
+					}
+					marker = new OpenLayers.Marker(position, icon);
+					markers.addMarker(marker);
+
+					// Add accuracy circle to map
+					if(circle != null) {
+						vectors.removeFeatures(circle); // Remove circle if it exists
+					}
+					var point = OpenLayers.Geometry.Polygon.createRegularPolygon(
+						new OpenLayers.Geometry.Point(position.lon, position.lat),
+						accuracies[accuracy.val()] / 2, // radius
+						30
+					);
+					circle = new OpenLayers.Feature.Vector(point);
+					vectors.addFeatures(circle);
+				}
+
+				// Listen for updates to lat/lng form fields
+				longitude.change(updateMap);
+				latitude.change(updateMap);
+				accuracy.change(updateMap);
+
+				// Perform initial update
+				updateMap();
+
+				// Zoom map
+				var aussieBounds = new OpenLayers.Bounds();
+				if(circle == null || isNaN(circle.geometry.getBounds().top)) {
+					aussieBounds.extend(new OpenLayers.LonLat(110.21484, -13.92340).transform(usefulProjection, googleProjection));
+					aussieBounds.extend(new OpenLayers.LonLat(159.94922, -43.32518).transform(usefulProjection, googleProjection));
+				} else {
+					aussieBounds.extend(circle.geometry.getBounds());
+				}
+				map.zoomToExtent(aussieBounds);
+				if(map.getZoom() > 8) {
+					map.zoomTo(8);
+				}
+			});
+			</script>
+
+			{% block step_script %}{% endblock %}
+{% endblock %}
+
+{% block panel_nav %}
+	{% navtabs "Sightings" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+	{% panel_sightings "All sightings"  %}
+{% endblock %}
+
+{% block content %}
+<form action="{% url sighting_edit pk %}" method="POST">{% csrf_token %}
+	<div class="row">
+		<div class="span4">
+			<h3>Sighting details</h3>
+			<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<th>Sighting #</th>
+						<td>{{ sighting.pk }}</td>
+					</tr>
+					<tr>
+						<th>Sighter</th>
+						<td>{{ sighting.user.profile.get_link }}</td>
+					</tr>
+					<tr>
+						<th>Status</th>
+						<td>{% if sighting.is_out_of_range %}Out of range{% else %}In range{% endif %}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="row">
+		<div class="span12">
+			<div class="row">
+				<div class="span4">
+					<div class="row">
+						<div class="span4">
+							<fieldset><legend>Uploaded photo</legend>
+							{% with shape=shape|default:'250x200' %}
+								{% thumbnail form.photo_url.value shape upscale="True" as im %}
+									<img class="thumbnail"
+									src="{{ im.url }}"
+									style="margin:{{ im|margin:shape }}">
+								{% empty %}
+									No image found.
+								{% endthumbnail %}
+							{% endwith %}
+							<p>
+								{{ form.photo_caption.errors }}{{ form.photo_caption }}
+							</p>
+							</fieldset>
+						</div>
+					</div>
+					<div class="row">
+						<div class="span4">
+							<fieldset><legend>Reported location</legend>
+								<div id="ol_map" class="smallmap"></div>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+				<div class="span8">
+					<fieldset><legend>Reported characteristics</legend>
+					<table class="table table-bordered table-striped">
+						<tbody>
+							<tr>
+								<td>{{ form.species.label }}</td>
+								<td>{{ form.species.errors }}{{ form.species }}</td>
+							</tr>
+							<tr>
+								<td>{{ form.other_species.label }}</td>
+								<td>{{ form.other_species.errors }}{{ form.other_species }}</td>
+							</tr>
+							<tr>
+								<td>Gender</td>
+								<td>{{ form.sex.errors }}{{ form.sex }}</td>
+							</tr>
+							<tr>
+								<td>Weight (kg)</td>
+								<td>{{ form.weight.errors }}{{ form.weight }}{{ form.weight_method.errors }}{{ form.weight_method }}</td>
+							</tr>
+							<tr>
+								<td>Length (cm)</td>
+								<td>{{ form.size.errors }}{{ form.size }} {{ form.size_method.errors }}{{ form.size_method }}</td>
+							</tr>
+							<tr>
+								<td>Count</td>
+								<td>{{ form.count.errors }}{{ form.count }}</td>
+							</tr>
+							<tr>
+								<td>When</td>
+								<td>{{ form.sighting_date.errors }}{{ form.sighting_date }} {{ form.time.errors }}{{ form.time }}</td>
+							</tr>
+							<tr>
+								<td>Location</td>
+								<td>{{ form.latitude.errors }}<div class="input-prepend"><span class="add-on">latitude</span>{{ form.latitude }}</div>{{ form.longitude.errors }}<div class="input-prepend"><span class="add-on">longitude</span>{{ form.longitude }}</div></td>
+							<tr>
+								<td>Accuracy</td>
+								<td>{{ form.accuracy.errors }}{{ form.accuracy }}</td>
+							</tr>
+							</tr>
+							<tr>
+								<td>Activity</td>
+								<td>{{ form.activity.errors }}{{ form.activity }}</td>
+							</tr>
+							<tr>
+								<td>Comment</td>
+								<td>{{ form.notes.errors }}{{ form.notes }}</td>
+							</tr>
+						</tbody>
+					</table>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-actions">
+		<button type="submit" class="btn btn-primary">Save sighting</button>
+		<a href="{% url sightings_list %}" class="btn">Cancel</a>
+		{% if pk %}
+		<span class="pull-right">
+			<a href="{% url sighting_delete pk %}" class="btn btn-danger">Delete</a>
+		</span>
+		{% endif %}
+	</div>
+</form>
+{% if sighting_tracking %}
+{% for tracking in sighting_tracking %}
+<div class="sighting_tracking well">
+	<h6 class="pull-left">{{ tracking.tracking_date }}</h6>
+	<table class="sighting-details">
+		<tbody>
+			<tr><th>Scientist</th><td>{{ tracking.person.profile.display_name }}</td></tr>
+			<tr>
+				<th>Status</th>
+				<td>
+					{% include "backend/_sighting_tracking_status.html" with tracking=tracking.sighting_tracking_status %}
+				</td>
+			</tr>
+			<tr><th>Comment</th><td>{{ tracking.comment }}</td></tr>
+			{% if tracking.validation_response %}
+				<tr>
+					<th>Validation Response</th>
+					<td>
+						<ul class="unstyled">
+						{% for response in tracking.validation_response %}
+						<li><i class="icon-{% if response.answer %}ok{% else %}remove{% endif %}"></i> {{ response.sighting_validation_condition }}</li>
+						{% endfor %}
+						</ul>
+					</td>
+				</tr>
+			{% endif %}
+		</tbody>
+	</table>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

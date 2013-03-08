@@ -1,0 +1,11 @@
+Hi {{ species_contact }},
+
+An {% if not out_of_range %}in-range{% else %}out of range{% endif %} {{ species_common_name }} ({{ species_name }}) sighting was reported in {{ region }} one week ago.
+
+It has not yet been validated, so it has been re-assigned to you (as the nominated administrator) to make sure this is validated as soon as possible.
+
+You can view and verify the sighting here:
+http://{{ domain }}/panel/verify/{{ sighting_id }}
+
+Kind regards,
+REDMAP Australia

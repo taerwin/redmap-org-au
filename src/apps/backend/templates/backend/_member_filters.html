@@ -1,0 +1,33 @@
+<fieldset>
+	<div class="control-group">
+		<div class="controls">
+			<select name="group" id="filter_group" class="pull-left">
+				<option value="">All groups</option>
+				{% for group in group_list %}
+					<option value="{{ group.1 }}">{{ group.1 }}</option>
+				{% endfor %}
+			</select>
+			
+
+			<div class="input-append pull-right">
+				<input type="search" id="filter_search" placeholder="Search for user">
+				<a id="filter_apply" class="add-on btn"><i class="icon-search"></i></a>
+			</div>
+			
+
+			
+			<div class="pull-right" style="margin-right: 20px;">
+				{% if 'activated' not in request.GET %}
+					<a href="{% url member_index %}?activated=False" class="btn">Show un-activated members</a>
+				{% endif%}
+				
+				{% if request.GET %}
+					<a href="{% url member_index %}" class="btn">Clear filters</a>
+				{% endif %}
+			</div>
+
+
+			
+		</div>
+	</div>
+</fieldset>

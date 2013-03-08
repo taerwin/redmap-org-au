@@ -1,0 +1,22 @@
+{% extends "backend/member_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+
+{% if user.get_profile.is_pending_activation %}
+	<form action="{% url member_resend_activation user.id %}" method="post">
+		{% csrf_token %}
+	    <fieldset>
+	        <legend>Are your sure you want to resend the activation for <strong>{{ user.profile }}</strong>?</legend>
+	        <div class="form-actions">
+	        	<input type="hidden" name="__confirm__" value="true">
+	            <button type="submit" class="btn btn-primary">Re-send activation</button>
+	            <a href="{% url member_index %}" class="btn">Cancel</a>
+	        </div>
+	    </fieldset>
+	</form>
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "backend/administrator_allocations.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+            <!-- Chosen -->
+            <link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+            <!-- Chosen -->
+            <script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+            <script>
+            $(document).ready(function() {
+                $("#id_species").chosen();
+                $("#id_region").chosen();
+                $("#id_person").chosen();
+            });
+            </script>
+{% endblock %}
+
+{% block content %}
+<form action="{% url administrator_allocations %}{% if pk %}edit/{{ pk }}{% else %}add{% endif %}/" method="POST" class="form-horizontal">
+    {% csrf_token %}
+    <fieldset>
+        <legend>{% if pk %}Edit{% else %}Add{% endif %} regional administrator</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if pk %}Edit{% else %}Add{% endif %} administrator</button>
+            <a href="{% url administrator_allocations %}" class="btn">Cancel</a>
+            {% if pk %}
+            <span class="pull-right">
+                <a href="{% url administrator_allocation_delete pk %}" class="btn btn-danger">Delete</a>
+            </span>
+            {% endif %}
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

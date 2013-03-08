@@ -1,0 +1,13 @@
+<form action="{{ form_action }}" method="get" id="{{ form_id|default:"filters" }}">
+	<fieldset>
+		<div class="control-group">
+			<div class="controls">
+				{{ form.user }}
+				{{ form.species }}
+				{{ form.region }}
+				{{ form.scientist }}
+				{{ form.is_out_of_range }}
+			</div>
+		</div>
+	</fieldset>
+</form>

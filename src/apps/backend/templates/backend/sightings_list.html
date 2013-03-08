@@ -1,0 +1,136 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n thumbnail backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Sightings" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_sightings "All sightings" %}
+{% endblock %}
+
+{% block extra_head %}
+	{{ block.super }}
+	<!-- Chosen -->
+	<link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	{{ block.super }}
+	<!-- Chosen -->
+	<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		var $form = $("#filters");
+		$form.change(function() {
+			$form.submit();
+		});
+		$form.find("select").each(function() {
+			var $select = $(this);
+			var $option = $select.children("option:first-child");
+			var options = {};
+			if (!$option.attr('value')) {
+				// Chosen mixes and matches option sources. Some options are
+				// set via `data-` attributes, some via the options object.
+				// Also, for `'allow_single_deselect'` to work, the first
+				// option element needs to have no text. WTF.
+				$select.attr('data-placeholder', $option.text());
+				options['allow_single_deselect'] = true;
+				$option.text('');
+			}
+			$select.chosen(options);
+		});
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+
+{% include "backend/_sightings_filters.html" with form_action="." form_id="filters" form=search_form.form %}
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th style="width:81px">Photo</th>
+			{% with order_html_name=search_form.form.o.html_name %}
+				<th><a href="?{% order_by order_html_name "-logging_date" %}">Logging date</a></th>
+				<th><a href="?{% order_by order_html_name "-sighting_date" %}">Sighting date</a></th>
+				<th><a href="?{% order_by order_html_name "species__common_name" %}">Species sighted</a></th>
+				<th><a href="?{% order_by order_html_name "user__username" %}">Reported by</a></th>
+				<th>Status</th>
+				<th>Admin notes</th>
+				<th></th>
+			{% endwith %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for sighting in sightings %}
+			<tr>
+				<td class="center">
+					{% with shape=shape|default:'75x50' %}
+						{% with lightbox_shape=lightbox_shape|default:"800x600" %}
+							{% thumbnail sighting.photo_url shape upscale="True" as im %}
+								{% thumbnail sighting.photo_url lightbox_shape upscale="False" crop="center" as lightbox_im %}
+									<a class="lightbox lightbox-image" href="{{ lightbox_im.url }}">
+										<img
+											class="thumbnail"
+											title="{{ sighting.photo_caption }}"
+											src="{{ im.url }}"
+											style="margin:{{ im|margin:shape }}"
+										>
+									</a>
+								{% endthumbnail %}
+							{% empty %}
+								<div style="width:75px;height:50px;" class="thumbnail thumbnail-placeholder"><span>No image provided</span></div>
+							{% endthumbnail %}
+						{% endwith %}
+					{% endwith %}
+				</td>
+				<td class="nowrap">
+					{% include "backend/_date.html" with date=sighting.logging_date %}
+				</td>
+				<td class="nowrap">
+					{# Can't use backend/_date.html here, as sighting.time could be None #}
+					<time datetime="{{ sighting.sighting_date.date|date:"c" }}">
+						<strong>{{ sighting.sighting_date|date:"j F, Y" }}</strong>
+						{% if sighting.time %}
+							<span class="block lighter">{{ sighting.time }}</span>
+						{% endif %}
+					</time>
+				</td>
+				<td>
+					<strong>{{ sighting.species_name }}</strong>
+					<cite class="block lighter">{{ sighting.common_name }}</cite>
+				</td>
+				<td>
+					<strong>{{ sighting.user.profile }}</strong>
+					<span class="lighter block">{{ sighting.user.profile.organisation }}</span>
+				</td>
+				<td>
+					{{ sighting.latest_tracker.sighting_tracking_status }}
+				</td>
+				<td>
+					{{ sighting.notes }}
+				</td>
+				<td>
+					<p>{% if sighting.sighting_tracking.all.0.sighting_tracking_status.code == UNKNOWN %}
+					<a href="{% url verify_sightings sighting.id %}" class="btn btn-primary">Verify</a>
+					{% else %}
+					<a href="{% url sighting_edit sighting.id %}" class="btn btn-primary">Edit</a>
+					{% endif %}</p>
+				</td>
+			</tr>
+		{% empty %}
+			<tr>
+				<td colspan="8" class="center">
+					<strong>No sightings found</strong>
+				</td>
+			</tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if is_paginated %}
+	{% include "backend/_pagination.html" %}
+{% endif %}
+{% endblock %}

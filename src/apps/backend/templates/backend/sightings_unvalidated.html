@@ -1,0 +1,137 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n thumbnail backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Sightings" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_sightings "Require validation" %}
+{% endblock %}
+
+{% block extra_head %}
+            {{ block.super }}
+            <!-- Chosen -->
+            <link href="{{ STATIC_URL }}/css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	{{ block.super }}
+	<script>
+	$(document).ready(function() {
+		var username = $("#filter_username"),
+			species = $("#filter_species"),
+			pagination = {{ page_obj.number }};
+
+		username.change(function() {
+			filter = "{% url sightings_unvalidated %}";
+			username_str = username.val();
+			if (username_str.length > 0) {
+				filter += '?username=' + username_str
+			}
+			window.location.assign(filter);
+		});
+
+		species.change(function() {
+			filter = "{% url sightings_unvalidated %}";
+			species_str = species.val();
+			if (species_str.length > 0) {
+				filter += '?species=' + species_str
+			}
+			window.location.assign(filter);
+		});
+
+		{% if 'username' in filters %}
+		username.val('{{ filters.username }}');
+		{% endif %}
+		{% if 'species' in filters %}
+		species.val('{{ filters.species }}');
+		{% endif %}
+	});
+	</script>
+
+	<!-- Chosen -->
+	<script src="{{ STATIC_URL }}/js/chosen.jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$("select").chosen();
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+
+{% include "backend/_sightings_filters.html" %}
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th style="width:81px">Photo</th>
+            <th>Date logged</th>
+            <th>Species sighted</th>
+            <th>Sighter</th>
+            <th>Status</th>
+            <th>Assigned Scientist</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% block sightings %}
+
+			{% for allocation in allocations %}
+				<tr class="row-hover row-clickable">
+					<td class="center">
+						{% with shape=shape|default:'75x50' %}
+							{% with lightbox_shape=lightbox_shape|default:"800x600" %}
+								{% thumbnail allocation.sighting.photo_url shape upscale="True" as im %}
+									{% thumbnail allocation.sighting.photo_url lightbox_shape upscale="False" crop="center" as lightbox_im %}
+										<a class="lightbox lightbox-image" href="{{ lightbox_im.url }}">
+											<img
+												class="thumbnail"
+												title="{{ allocation.sighting.photo_caption }}"
+												src="{{ im.url }}"
+												style="margin:{{ im|margin:shape }}"
+											>
+										</a>
+									{% endthumbnail %}
+								{% empty %}
+									<div style="width:75px;height:50px;" class="thumbnail thumbnail-placeholder"><span>No image provided</span></div>
+								{% endthumbnail %}
+							{% endwith %}
+						{% endwith %}
+					</td>
+					<td class="nowrap">
+						{% include 'backend/_date.html' with date=allocation.sighting.logging_date %}
+					</td>
+					<td>
+						<strong>{{ allocation.sighting.species_name }}</strong>
+						<cite class="block lighter">{{ allocation.sighting.common_name }}</cite>
+					</td>
+					<td>
+						{{ allocation.sighting.user.profile.display_name }}
+					</td>
+					<td>
+						{{ allocation.sighting_tracking_status }}
+					</td>
+					<td>
+						{{ allocation.person.profile.display_name }}
+					</td>
+					<td>
+						<a href="{% url verify_sightings allocation.sighting.id %}" class="btn btn-primary">Verify sighting</a>
+					</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="7" class="center">
+						<strong>No sightings to validate</strong>
+					</td>
+				</tr>
+			{% endfor %}
+				
+        {% endblock %}
+    </tbody>
+</table>
+{% if is_paginated %}
+    {% include "backend/_pagination.html" %}
+{% endif %}
+{% endblock %}

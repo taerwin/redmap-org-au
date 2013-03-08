@@ -1,0 +1,32 @@
+{% extends "backend/regional_administrators.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+            <!-- Chosen -->
+            <link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+            <!-- Chosen -->
+            <script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+            <script>
+            $(document).ready(function() {
+                $("#id_user").chosen();
+                $("#id_organisation").chosen();
+            });
+            </script>
+{% endblock %}
+
+{% block content %}
+<form action="{% url regional_administrator_add %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Add regional administrator</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="icon-chevron-up icon-white"></i> Add regional administrator</button>
+            <a href="{% url regional_administrators %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

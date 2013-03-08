@@ -1,0 +1,19 @@
+{% block panel-expert-tabs %}
+<ul class="nav nav-pills">
+    <li{% if active == "Species Experts" %} class="active"{% endif %}>
+        <a href="{% url manage_experts %}">Species Experts</a>
+    </li>
+    <li{% if active == "Regional Admins" %} class="active"{% endif %}>
+        <a href="{% url administrator_allocations %}">Regional Admins</a>
+    </li>
+    <li{% if active == "Validation rules" %} class="active"{% endif %}>
+        <a href="{% url validation_rules %}">Verification rules</a>
+    </li>
+    <li{% if active == "Templates" %} class="active"{% endif %}>
+        <a href="{% url manage_email_templates %}">Templates</a>
+    </li>
+    <li{% if active == "Conditions" %} class="active"{% endif %}>
+        <a href="{% url validation_conditions %}">Conditions</a>
+    </li>
+</ul>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "backend/scientist_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+<!-- Chosen -->
+<link href="{{ STATIC_URL }}/css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+<!-- Chosen -->
+<script src="{{ STATIC_URL }}/js/chosen.jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+	$("#{{ form.user.auto_id }}").chosen();
+	$("#{{ form.organisation.auto_id }}").chosen();
+});
+</script>
+{% endblock %}
+
+{% block content %}
+	<form action="{% url add_scientist %}" method="POST" class="form-horizontal">
+		{% csrf_token %}
+		<fieldset>
+			<legend>Add scientist</legend>
+			{{ form|as_bootstrap }}
+			<div class="form-actions">
+				<button type="submit" class="btn btn-primary"><i class="icon-chevron-up icon-white"></i> Promote to scientist</button>
+				<a href="{% url scientist_index %}" class="btn">Cancel</a>
+			</div>
+		</fieldset>
+	</form>
+{% endblock %}

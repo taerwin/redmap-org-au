@@ -1,0 +1,38 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Expert panel" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_expert "Conditions" %}
+{% endblock %}
+
+{% block content %}
+	<div id="alert-box"></div>
+    <div class="actions">
+        <p><a href="{% url validation_condition_add %}" class="btn btn-large btn-primary"><i class="icon-white icon-plus-sign"></i> Add verification condition</a></p>
+    </div>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for condition in conditions %}
+				<tr>
+					<td>
+						{{ condition.name }}
+					</td>
+					<td class="right">
+						<a href="{% url validation_condition_edit condition.pk %}" class="btn">Edit</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

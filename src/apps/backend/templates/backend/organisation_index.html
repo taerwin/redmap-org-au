@@ -1,0 +1,49 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Administration" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_administration "Organisations" request.user %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div id="alert-box" class="span12"></div>
+</div>
+    
+    <div class="actions">
+        <p><a href="{% url organisation_add %}" class="btn btn-large btn-primary"><i class="icon-plus-sign icon-white"></i> Add organisation</a></p>
+    </div>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Description</th>
+				<th>Citation</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for organisation in organisations %}
+			<tr>
+				<th>
+					{{ organisation }}
+				</th>
+				<td>
+					{{ organisation.citation }}
+				</td>
+				<td>
+					<a href="{% url organisation_edit organisation.id %}" class="btn">Edit</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% if is_paginated %}
+	{% include "backend/_pagination.html" %}    
+{% endif %}
+{% endblock %}

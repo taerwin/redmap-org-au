@@ -1,0 +1,55 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Administration" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_administration "Regional Admins" request.user %}
+{% endblock %}
+
+{% block content %}
+	 <div class="actions">
+        <p><a href="{% url regional_administrator_add %}" class="btn btn-large btn-primary"><i class="icon-plus-sign icon-white"></i> Add regional admin</a></p>
+    </div>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Regions</th>
+				<th>Date joined</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for administrator in administrators %}
+				<tr>
+					<th>
+						{{ administrator.profile }}
+						<span class="block lighter nobold">{{ administrator.profile.organisation }}</span>
+					</th>
+					<td>
+						<a href="mailto:{{ administrator.email }}">{{ administrator.email }}</a>
+					</td>
+					<td>
+						{% for region in administrator.region %}
+							{{ region }}{% if not forloop.last %},{% endif %}
+						{% empty %}
+							<span class="lighter">None</span>
+						{% endfor %}
+					</td>
+					<td>
+						{% include "backend/_date.html" with date=administrator.date_joined %}
+					</td>
+					<td>
+						<a href="{% url regional_administrator_delete administrator.id %}" class="btn btn-danger">Remove</a>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+   
+{% endblock %}

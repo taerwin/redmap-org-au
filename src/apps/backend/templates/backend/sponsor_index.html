@@ -1,0 +1,61 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n backend_extras mptt_tags frontend_tags %}
+
+{% block panel_nav %}
+    {% navtabs "Administration" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_administration "Sponsors" request.user %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div id="alert-box" class="span12"></div>
+</div>
+
+    <div class="actions">
+        <a href="{% url sponsor_add %}" class="btn btn-large btn-primary"><i class="icon-white icon-plus-sign"></i> Add sponsor</a> 
+		<a href="{% url sponsor_category_index %}" class="btn btn-large">Manage categories</a>
+    </div>
+	
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Category</th>
+				<th>Region</th>
+				<th class="center">Is major sponsor?</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for sponsor in sponsors_list %}
+				<tr>
+					<th>
+						{{ sponsor.name }}
+					</th>
+					<td>
+						{{ sponsor.category.name }}
+					</td>
+					<td>
+						{{ sponsor.region.description }}
+					</td>
+					<td class="center">
+						{% if sponsor.is_major %}<i class="icon-ok"></i>{% endif %}
+					</td>
+					<td class="right">
+						<a href="{% url sponsor_edit sponsor.id %}" class="btn">Edit</a>
+					</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="5" class="center">
+						No sponsers
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

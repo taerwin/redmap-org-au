@@ -1,0 +1,26 @@
+<form id="filters">
+	<fieldset>
+		<div class="control-group">
+			<div class="controls">
+				<select id="filter_username">
+					<option value="">All users</option>
+					{% for user in user_list %}
+						<option value="{{ user.0 }}">{{ user.1 }}</option>
+					{% endfor %}
+				</select>
+				<select id="filter_region">
+					<option value="">All regions</option>
+					{% for region in region_list %}
+						<option value="{{ region.1 }}">{{ region.1 }}</option>
+					{% endfor %}
+				</select>
+				<select id="filter_species">
+					<option value="">All species</option>
+					{% for species in species_list %}
+						<option value="{{ species.0 }}">{{ species.1 }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+	</fieldset>
+</form>

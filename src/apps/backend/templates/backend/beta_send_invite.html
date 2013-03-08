@@ -1,0 +1,21 @@
+{% extends "backend/beta.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url beta_send_invite invite.pk %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Confirm REDMAP Beta invitation:</legend>
+        <p><strong>{{ invite.email }}</strong> has requested an invite to the REDMAP Beta.</>
+        {% if user = None %}
+        <p><i class="icon-question-sign"></i> No user with the email exists, a new user will be automatically created.</p>
+        {% else %}
+        <p><i class="icon-question-sign"></i> An account with this email address <strong>already exists</strong>. A new account will not be created.</p>
+        {% endif %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Send invite now</button>
+            <a href="{% url beta_invites %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

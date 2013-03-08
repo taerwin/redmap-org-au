@@ -1,0 +1,16 @@
+{% extends "backend/manage_email_templates.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url delete_email_template rule.id %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are you sure you want to delete this email template?</legend>
+        <h4>{{ rule.name }}</h4>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="{% url manage_email_templates %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

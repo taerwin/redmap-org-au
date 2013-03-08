@@ -1,0 +1,21 @@
+{% extends "backend/member_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url member_index %}{% if pk %}edit/{{ pk }}{% else %}add{% endif %}/" method="POST" class="form-horizontal">{% csrf_token %}
+    <fieldset>
+        <legend>{% if pk %}Edit{% else %}Add{% endif %} member</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if pk %}Save{% else %}Add{% endif %} member</button>
+            <a href="{% url member_index %}" class="btn">Cancel</a>
+            {% if pk %}
+            <span class="pull-right">
+                <a href="{% url member_delete pk %}" class="btn btn-danger">Delete</a>
+            </span>
+            {% endif %}
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

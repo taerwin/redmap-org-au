@@ -1,0 +1,14 @@
+<table>
+    <tr>
+        <td>
+            <p>Hi {{ species_contact }},</p>
+            <p>An {% if not out_of_range %}in-range{% else %}out of range{% endif %} {{ species_common_name }} ({{ species_name }}) sighting was reported in {{ region }} one week ago.</p>
+            <p>It has not yet been validated, so it has been re-assigned to you (as the nominated administrator) to make sure this is validated as soon as possible.</p>
+            <p>You can view and verify the sighting here:<br>http://{{ domain }}/panel/verify/{{ sighting_id }}</p>
+            <p>Kind regards,<br>REDMAP Australia</p>
+        </td>
+        <td>
+            <img src="{{ image }}" style="max-width:250px; max-height:250px;">
+        </td>
+    </tr>
+</table>

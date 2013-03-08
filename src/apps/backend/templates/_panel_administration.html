@@ -1,0 +1,41 @@
+{% load frontend_tags %}
+
+{% block panel-admin-tabs %}
+<ul class="nav nav-pills">
+    {% if perms.auth.change_user %}
+		<li{% if active == "Members" %} class="active"{% endif %}>
+			<a href="{% url member_index %}">Members</a>
+		</li>
+    {% endif %}
+    {% if perms.redmapdb.can_manage_experts %}
+		<li{% if active == "Scientists" %} class="active"{% endif %}>
+			<a href="{% url scientist_index %}">Scientists</a>
+		</li>
+    {% endif %}
+    {% if perms.redmapdb.change_administratorallocation %}
+		<li{% if active == "Regional Admins" %} class="active"{% endif %}>
+			<a href="{% url regional_administrators %}">Region Admins</a>
+		</li>
+    {% endif %}
+    {% if perms.redmapdb.change_organisation %}
+		<li{% if active == "Organisations" %} class="active"{% endif %}>
+			<a href="{% url organisation_index %}">Organisations</a>
+		</li>
+    {% endif %}
+    {% if perms.tagging.change_tag %}
+		<li{% if active == "Region Tags" %} class="active"{% endif %}>
+			<a href="{% url news_tags_list %}">Region Tags</a>
+		</li>
+    {% endif %}
+    {% if perms.frontend.change_sponsor %}
+		<li{% if active == "Sponsors" %} class="active"{% endif %}>
+			<a href="{% url sponsor_index %}">Sponsors</a>
+		</li>
+    {% endif %}
+    {% if perms.privatebeta.change_inviterequest %}
+		<li{% if active == "Beta Invites" %} class="active"{% endif %}>
+			<a href="{% url beta_invites %}">Beta Invites</a>
+		</li>
+    {% endif %}
+</ul>
+{% endblock %}

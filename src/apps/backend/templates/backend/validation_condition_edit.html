@@ -1,0 +1,29 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Expert panel" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_expert "Conditions" %}
+{% endblock %}
+
+{% block content %}
+<form class="form-horizontal" action="{% url validation_conditions %}{% if pk %}edit/{{ pk }}{% else %}add{% endif %}/" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>{% if pk %}Edit{% else %}Add{% endif %} validation condition</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large">Save</button>
+            <a href="{% url validation_conditions %}" class="btn btn-large">Cancel</a>
+            {% if pk %}
+				<span class="pull-right">
+					<a href="{% url validation_condition_delete pk %}" class="btn btn-danger">Delete</a>
+				</span>
+            {% endif %}
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

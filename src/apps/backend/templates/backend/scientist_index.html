@@ -1,0 +1,72 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+            <!-- Chosen -->
+            <link href="{{ STATIC_URL }}/css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+            <!-- Chosen -->
+            <script src="{{ STATIC_URL }}/js/chosen.jquery.min.js"></script>
+            <script>
+            $(document).ready(function() {
+                $("{{ form.username.auto_id }}").chosen();
+            });
+            </script>
+{% endblock %}
+
+{% block panel_nav %}
+    {% navtabs "Administration" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_administration "Scientists" request.user %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="actions">
+        <p><a href="{% url add_scientist %}" class="btn btn-large btn-primary"><i class="icon-white icon-plus-sign"></i> Add scientist</a></p>
+    </div>
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Joined</th>
+				<th class="center">Trusted</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for scientist in scientists %}
+				<tr>
+					<th>
+						{{ scientist.profile }}
+						<span class="block lighter nobold">{{ scientist.profile.organisation }}</span>
+					</td>
+					<td>
+						<a href="mailto:{{ scientist.email }}">{{ scientist.email }}</a>
+					</td>
+					<td>
+						{% include "backend/_date.html" with date=scientist.date_joined %}
+					</td>
+					<td class="center">
+						{% if scientist.profile.trust_level == 1 %}<i class="icon-ok"></i>{% else %}<i class="icon-remove"></i>{% endif %}
+					</td>
+					<td>
+						<a href="{% url delete_scientist scientist.id %}" class="btn btn-danger">Remove</a>
+					</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="5" class="center">
+						<strong>No scientists found</strong>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

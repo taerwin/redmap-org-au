@@ -1,0 +1,15 @@
+{% extends "backend/scientist_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="{% url delete_scientist user.id %}" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are you sure you want to remove the scientist <strong>{{ user.profile }}</strong>?</legend>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger"><i class="icon-chevron-down icon-white"></i> Demote</button>
+            <a href="{% url scientist_index %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

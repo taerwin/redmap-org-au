@@ -1,0 +1,21 @@
+{% extends "admin_base.html" %}
+
+{% load i18n thumbnail %}
+
+{% block head_title %}{% trans "Scientist Panel" %}{% endblock %}
+
+{% block body_class %}panel{% endblock %}
+
+{% block region_navigation %}{% endblock %}
+{% block site_navigation %}{% endblock %}
+
+{% block body %}
+	<div id="nav">
+		{% block panel_nav %}{% endblock %}
+		{% block panel_sub_nav %}{% endblock %}
+	</div>
+
+	{% include "messages.html" %}
+	
+	{% block content %}{% endblock %}
+{% endblock %}

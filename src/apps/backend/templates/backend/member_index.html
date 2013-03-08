@@ -1,0 +1,133 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Administration" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_administration "Members" request.user %}
+{% endblock %}
+
+{% block extra_head %}
+	{{ block.super }}
+	<!-- Chosen -->
+	<link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	{{ block.super }}
+	<script>
+	$(document).ready(function() {
+		var group = $("#filter_group"),
+			search = $("#filter_search"),
+			apply = $("#filter_apply"),
+			pagination = {{ page_obj.number }};
+
+		group.change(function() {
+			filter = "{% url member_index %}";
+			group_str = group.val();
+			if (group_str.length > 0) {
+				filter += '?group=' + group_str
+			}
+			window.location.assign(filter);
+		});
+
+		var applyFilter = function() {
+			filter = "{% url member_index %}";
+			search_str = search.val();
+			if (search_str.length > 0) {
+				filter += '?search=' + search_str
+			}
+			window.location.assign(filter);
+		}
+
+		search.keypress(function(e) {
+			if (e.which == 13) { // Enter
+				applyFilter();
+			}
+		});
+
+		$("#filters").submit(function(e) { e.preventDefault(); });
+
+		apply.click(applyFilter);
+
+		{% if 'group' in filters %}
+		group.val('{{ filters.group }}');
+		{% endif %}
+		{% if 'search' in filters %}
+		search.val('{{ filters.search }}');
+		{% endif %}
+	});
+	</script>
+
+	<!-- Chosen -->
+	<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$("select").chosen();
+	});
+	</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div id="alert-box" class="span12"></div>
+</div>
+
+<div class="actions">
+	<p>
+		<a href="{% url member_add %}" class="btn btn-large btn-primary"><i class="icon-plus-sign icon-white"></i> Add member</a>
+	</p>
+</div>
+
+{% include "backend/_member_filters.html" %}
+
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Joined</th>
+			<th>Trusted</th>
+			<th>Options</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for user in users %}
+			<tr>
+				<th>
+					{{ user.profile }}
+					<span class="block lighter nobold">{{ user.profile.organisation }}</span>
+				</th>
+				<td>
+					<a href="mailto:{{ user.email }}">{{ user.email }}</a>
+				</td>
+				<td>
+					{% include "backend/_date.html" with date=user.date_joined %}
+				</td>
+				<td>
+					{% if user.profile.trust_level == 1 %}Yes{% else %}No{% endif %}
+				</td>
+				<td class="right">
+					<a href="{% url member_edit user.id %}" class="btn">Edit</a>
+					{% if user.get_profile.is_pending_activation %}
+						<a href="{% url member_resend_activation user.id %}" class="btn">Resend activation</a>
+					{% endif %}
+				</td>
+			</tr>
+		{% empty %}
+			<tr>
+				<td colspan="6" class="center">
+					<strong>No members found</strong>
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{% if is_paginated %}
+    {% include "backend/_pagination.html" %}
+{% endif %}
+{% endblock %}

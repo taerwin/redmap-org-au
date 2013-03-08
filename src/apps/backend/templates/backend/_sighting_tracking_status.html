@@ -1,0 +1,21 @@
+{% block sighting_tracking_status %}
+{% if tracking %}
+<span class="
+	label
+	{% if tracking.code == SIGHTING_SPAM %}
+		label-warning
+	{% elif tracking.code == SIGHTING_REASSIGNED %}
+		label-info
+	{% elif tracking.code == SIGHTING_INVALID %}
+		label-important
+	{% elif tracking.code == SIGHTING_VALID %}
+		label-success
+	{% elif tracking.code == SIGHTING_REQUIRES_VALIDATION %}
+		label-default
+	{% endif %}
+	"
+>
+	{{ tracking.description }}
+</span>
+{% endif %}
+{% endblock %}

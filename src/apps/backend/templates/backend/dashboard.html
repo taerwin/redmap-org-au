@@ -1,0 +1,86 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n thumbnail backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Dashboard" request.user %}
+{% endblock %}
+
+{% block content %}
+				
+					
+<div class="row">
+    <div class="span9">
+	
+		<div class="actions">
+			<p><a href="{% url sightings_unvalidated %}" class="btn btn-primary btn-large"><i class="icon-eye-open icon-white"></i> See all sightings</a></p>
+		</div>
+		
+		<h3>Your allocated sightings</h2>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Species sighted</th>
+                    <th>Sighter</th>
+                    <th>Status</th>
+                    <th>Comments</th>
+                    <th>Date logged</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% block sightings %}
+
+					{% for allocation in allocations %}
+						<tr>
+							<td class="center">
+								{% with shape=shape|default:'75x50' %}
+									{% thumbnail allocation.sighting.photo_url shape crop="center" as im %}
+										<img
+											class="thumbnail"
+											title="{{ allocation.sighting.photo_caption }}"
+											src="{{ im.url }}"
+										>
+									{% empty %}
+										<div style="width:62px;height:44px;" class="thumbnail"><span>No image provided</span></div>
+									{% endthumbnail %}
+								{% endwith %}
+							</td>
+							<td>
+								{{ allocation.sighting.species_name }}
+							</td>
+							<td>
+								{{ allocation.sighting.user.profile.display_name }}
+							</td>
+							<td>
+								{{ allocation.sighting_tracking_status }}
+							</td>
+							<td>
+								{{ allocation.comment }}
+							</td>
+							<td>
+								{{ allocation.sighting.logging_date }}
+							</td>
+							<td>
+								<a href="{% url verify_sightings allocation.sighting.id %}" class="btn btn-primary">Begin validation</a>
+							</td>
+						</tr>
+					{% empty %}
+						<tr>
+							<td colspan="8" class="center">
+								<strong>No sightings</strong>
+							</td>
+						</tr>
+					{% endfor %}
+
+                {% endblock %}
+            </tbody>
+        </table>
+    </div>
+    <div class="span3">
+        <h3>Recent news</h3>
+		{% include "backend/_recent_news.html" with news_entries=recent_news %}
+    </div>
+</div>
+{% endblock %}

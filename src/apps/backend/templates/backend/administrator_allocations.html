@@ -1,0 +1,117 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Expert panel" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_expert "Regional Admins" %}
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div id="alert-box" class="span12"></div>
+	</div>
+
+	<div class="actions">
+		<p><a href="{% url administrator_allocation_add %}" class="btn btn-large btn-primary"><i class="icon-plus-sign icon-white"></i> Add regional administrator</a></p>
+	</div>
+	{% include "backend/_administrator_allocations_filters.html" %}	
+      
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th class="center">Rank</th>
+                    <th>Administrator</th>
+                    <th>Institution</th>
+                    <th class="center">Active?</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for allocation in administrator_allocations %}
+                <tr>
+                    <input type="hidden" value="{{ allocation.id }}" id="allocation_{{ allocation.id }}" class="allocation">
+                    <td>
+                        {% if allocation.region %}{{ allocation.region.description }}{% else %}All&nbsp;regions{% endif %}
+                    </td>
+                    <td class="center">
+                        {{ allocation.rank }}
+                    </td>
+                    <th>
+						<span class="block lighter nobold">{{ allocation.person.profile }}</span>
+                    </th>
+                    <td>
+                        {{ allocation.person.profile.organisation }}
+                    </td>
+                    <td class="center">
+						{% if allocation.person.profile.is_available %}
+							<i class="icon-ok"></i>
+						{% endif %}						
+                    </td>
+                    <td class="right">
+                        <a href="{% url administrator_allocation_edit allocation.id %}" class="btn">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+		
+{% if is_paginated %}
+  {% include "backend/_pagination.html" %}
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+            <!-- Chosen -->
+            <link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+            <!-- Filter -->
+            <script>
+            $(document).ready(function() {
+                var username = $("#filter_username"),
+                    region = $("#filter_region"),
+                    pagination = {{ page_obj.number }};
+
+                username.change(function() {
+                    filter = "{% url administrator_allocations %}";
+                    username_str = username.val();
+                    if (username_str.length > 0) {
+                        filter += '?username=' + username_str
+                    }
+                    window.location.assign(filter);
+                });
+
+                region.change(function() {
+                    filter = "{% url administrator_allocations %}";
+                    region_str = region.val();
+                    if (region_str.length > 0) {
+                        filter += '?region=' + region_str
+                    }
+                    window.location.assign(filter);
+                });
+
+                {% if 'username' in filters %}
+                username.val('{{ filters.username }}');
+                {% endif %}
+                {% if 'region' in filters %}
+                region.val('{{ filters.region }}');
+                {% endif %}
+            });
+            </script>
+
+            <!-- Chosen -->
+            <script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+            <script>
+            $(document).ready(function() {
+                $("select").chosen();
+            });
+            </script>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Expert panel" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_expert "Validation rules" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div id="alert-box" class="span12"></div>
+</div>
+
+	<div class="actions">
+		<p><a href="{% url add_validation_rule %}" class="btn btn-large btn-primary"><i class="icon-plus-sign icon-white"></i> Add validation rule</a></p>
+	</div>
+
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Template</th>
+				<th>Rank</th>
+				<th>Passes validation</th>
+				<th>Valid photo</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for rule in rules %}
+			<tr>
+				<input type="hidden" value="{{ rule.id }}" id="rule_{{ rule.id }}" class="rule">
+				<td>
+					{{ rule.name }}
+				</td>
+				<td>
+					{{ rule.validation_message_template }}
+				</td>
+				<td>
+					{{ rule.rank }}
+				</td>
+				<td>
+					{{ rule.valid_sighting }}
+				</td>
+				<td>
+					{{ rule.valid_photo }}
+				</td>
+				<td>
+					<a href="{% url edit_validation_rule rule.id %}" class="btn">Edit</a>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
+
+{% block extra_script %}
+            <script>
+            $(document).ready(function() {
+                $(".cb_active").click(function() {
+                    var allocation_id = $(this).parent().siblings('.allocation').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '/panel/manage/',
+                        dataType: 'json',
+                        data: { allocation: allocation_id, active: $(this).prop('checked') ? 1 : 0 },
+                        success: function(response) {
+                            if(response.success) {
+                                createAlert('Allocation updated', false);
+                            } else {
+                                createAlert('Allocation could not be updated', true);
+                            }
+                        }
+                    });
+                });
+                $(".cb_inrange").click(function() {
+                    var allocation_id = $(this).parent().siblings('.allocation').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '/panel/manage/',
+                        dataType: 'json',
+                        data: { allocation: allocation_id, inrange: $(this).prop('checked') ? 1 : 0 },
+                        success: function(response) {
+                            if(response.success) {
+                                createAlert('Allocation updated', false);
+                            } else {
+                                createAlert('Allocation could not be updated', true);
+                            }
+                        }
+                    });
+                });
+                $(".delete_box").mouseover(function() {
+                    $(this).children('.delete_allocation').addClass('icon-remove-sign');
+                }).mouseout(function() {
+                    $(this).children('.delete_allocation').removeClass('icon-remove-sign');
+                });
+                $(".delete_allocation").click(function() {
+                    var allocation_row = $(this).parent().parent();
+                    var allocation_id = $(this).attr('id');
+                    $.ajax({
+                        type: 'POST',
+                        url: '/panel/manage/',
+                        dataType: 'json',
+                        data: { allocation: allocation_id, delete: 1 },
+                        success: function(response) {
+                            if(response.success) {
+                                createAlert('Allocation deleted', false);
+                                allocation_row.fadeOut();
+                            } else {
+                                createAlert('Allocation could not be deleted', true);
+                            }
+                        }
+                    });
+                });
+                $("table.table").tooltip({
+                    'animation': true,
+                    'placement': 'right',
+                    'selector': '.delete_allocation',
+                    'trigger': 'hover',
+                    'delay': { 'show': 500, 'hide': 0 }
+                })
+
+                function createAlert(message, error) {
+                    var alertmsg = document.createElement("div");
+                    if(error) {
+                        alertmsg.setAttribute('class', 'alert alert-error fade in');
+                    } else {
+                        alertmsg.setAttribute('class', 'alert alert-success fade in');
+                    }
+
+                    var closebtn = document.createElement("a");
+                    closebtn.setAttribute('class', 'close');
+                    closebtn.setAttribute('data-dismiss', 'alert');
+                    closebtn.setAttribute('href', '#');
+                    closebtn.appendChild(document.createTextNode("×"));
+
+                    alertmsg.appendChild(document.createTextNode(message));
+                    alertmsg.appendChild(closebtn);
+
+                    var alert_box = document.getElementById('alert-box');
+                    alert_box.appendChild(alertmsg);
+                }
+            });
+            </script>
+{% endblock %}

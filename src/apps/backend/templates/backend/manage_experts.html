@@ -1,0 +1,163 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Expert panel" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_expert "Species Experts" %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div id="alert-box" class="span12"></div>
+</div>
+
+    <div class="actions">
+        <p><a href="{% url add_expert %}" class="btn btn-large btn-primary"><i class="icon-white icon-plus-sign"></i> Add species expert</a></p>
+    </div>
+
+	{% include "backend/_experts_filters.html" %}	
+
+
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Region</th>
+				<th>Species</th>
+				<th class="center">Rank</th>
+				<th>Nominated&nbsp;Scientist</th>
+				<th>Institution</th>
+				<th class="center">Active?</th>
+				<th class="center">Accepts in-range&nbsp;sightings?</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for allocation in species_allocations %}
+				<tr class="row-hover">
+					<td>
+						<input type="hidden" value="{{ allocation.id }}" id="allocation_{{ allocation.id }}" class="allocation">
+						<strong>{% if allocation.region %}{{ allocation.region.description }}{% else %}All&nbsp;regions{% endif %}</strong>
+					</td>
+					<td>
+						<strong>{{ allocation.species.species_name }}</strong>
+						<cite class="lighter block">{{ allocation.species.common_name }}</cite>
+					</td>
+					<td class="center">
+						{{ allocation.rank }}
+					</td>
+					<td>
+						<strong>{{ allocation.person.profile }}</strong>
+						<span class="block lighter">{{ allocation.person.profile.organisation }}</span>
+					</td>
+					<td>
+						{{ allocation.person.profile.organisation }}
+					</td>
+					<td class="center">
+						{% if allocation.person.profile.is_available %}
+							<i class="icon-ok"></i>
+						{% endif %}						
+					</td>
+					<td class="center">
+						{% if allocation.contact_in_range %}
+							<i class="icon-ok"></i>
+						{% endif %}
+					</td>
+					<td>
+						<a href="{% url edit_expert allocation.id %}" class="btn">Edit</a>
+					</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="8" class="center">
+						<strong>No experts found</strong>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+{% if is_paginated %}
+    <div class="form-actions">
+        <span class="page-current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+        <span class="page-links pull-right">
+            {% if page_obj.has_previous %}
+                <a href="/panel/experts/assignments/?page={{ page_obj.previous_page_number }}{{ filter_url_args }}" class="btn">previous</a>
+            {% endif %}
+            {% if page_obj.has_next %}
+                <a href="/panel/experts/assignments/?page={{ page_obj.next_page_number }}{{ filter_url_args }}" class="btn">next</a>
+            {% endif %}
+        </span>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+            {{ block.super }}
+            <!-- Chosen -->
+            <link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+            {{ block.super }}
+
+            <!-- Filter -->
+            <script>
+            $(document).ready(function() {
+                var username = $("#filter_username"),
+                    region = $("#filter_region"),
+                    species = $("#filter_species"),
+                    pagination = {{ page_obj.number }};
+
+                username.change(function() {
+                    filter = "{% url manage_experts %}";
+                    username_str = username.val();
+                    if (username_str.length > 0) {
+                        filter += '?username=' + username_str
+                    }
+                    window.location.assign(filter);
+                });
+
+                region.change(function() {
+                    filter = "{% url manage_experts %}";
+                    region_str = region.val();
+                    if (region_str.length > 0) {
+                        filter += '?region=' + region_str
+                    }
+                    window.location.assign(filter);
+                });
+
+                species.change(function() {
+                    filter = "{% url manage_experts %}";
+                    species_str = species.val();
+                    if (species_str.length > 0) {
+                        filter += '?species=' + species_str
+                    }
+                    window.location.assign(filter);
+                });
+
+                {% if 'username' in filters %}
+                username.val('{{ filters.username }}');
+                {% endif %}
+                {% if 'region' in filters %}
+                region.val('{{ filters.region }}');
+                {% endif %}
+                {% if 'species' in filters %}
+                species.val('{{ filters.species }}');
+                {% endif %}
+            });
+            </script>
+
+            <!-- Chosen -->
+            <script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+            <script>
+            $(document).ready(function() {
+                $("select").chosen();
+            });
+            </script>
+{% endblock %}

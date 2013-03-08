@@ -1,0 +1,36 @@
+{% extends "backend/manage_experts.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block extra_head %}
+            <!-- Chosen -->
+            <link href="{{ STATIC_URL }}css/chosen/chosen.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+            <!-- Chosen -->
+            <script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+            <script>
+            $(document).ready(function() {
+                $("form.form-horizontal select").chosen();
+            });
+            </script>
+{% endblock %}
+
+{% block content %}
+<form action="{% url manage_experts %}{% if pk %}edit/{{ pk }}{% else %}add{% endif %}/" method="POST" class="form-horizontal">{% csrf_token %}
+    <fieldset>
+        <legend>{% if pk %}Edit{% else %}Add{% endif %} species expert</legend>
+        {{ form|as_bootstrap }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if pk %}Edit{% else %}Add{% endif %} expert</button>
+            <a href="{% url manage_experts %}" class="btn">Cancel</a>
+            {% if pk %}
+            <span class="pull-right">
+                <a href="{% url delete_expert pk %}" class="btn btn-danger">Delete</a>
+            </span>
+            {% endif %}
+        </div>
+    </fieldset>
+</form>
+{% endblock %}
