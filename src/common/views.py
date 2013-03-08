@@ -25,7 +25,6 @@ class ProgressBarUploadHandler(FileUploadHandler):
         self.content_length = content_length
         self.progress_uuid = self.request.GET.get(progress_param, None)
 
-        # check a list of uuids for this session is availble, and that this post request is valid
         if 'progress_uuids' in self.request.session and self.progress_uuid in self.request.session['progress_uuids']:
             cache.set(self.progress_uuid, {
                 'length': self.content_length,
