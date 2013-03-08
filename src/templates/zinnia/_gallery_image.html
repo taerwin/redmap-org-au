@@ -1,0 +1,13 @@
+{% load i18n thumbnail %}
+
+<div class="box pada" style="display:inline-block">
+    {% thumbnail gallery_item.image size crop="center" as im %}
+    <div class="polariod-small" style="width:{{ im.width }}px; height:{{ im.height }}px">
+        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    </div>
+    {% endthumbnail %}
+    <p class="nomargb">
+        <dfn>{{ gallery_item.caption }}</dfn>
+        <span class="paperclip-right"></span>
+    </p>
+</div>

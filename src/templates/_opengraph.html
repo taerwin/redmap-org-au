@@ -1,0 +1,39 @@
+{% load i18n mptt_tags frontend_tags frontend_extras thumbnail %}
+
+{# OG #}
+{% if sighting or species %}
+	{# If we're on a species or a sighting display that OG data #}
+	{% if sighting %}
+		{# Sighting #}
+		<meta property="og:type" content="{{ sighting.get_facebook_object_domain }}">
+		{% with shape=shape|default:"200x200" %}
+			{% thumbnail sighting.photo_url shape upscale=False as im %}
+				<meta property="og:image" content="{% if request.is_secure %}https{% else %}http{% endif%}://{{ request.META.HTTP_HOST }}{{ im.url }}">
+			{% endthumbnail %}
+		{% endwith %}
+		{% with sighting.species.common_name|default:sighting.other_species as species_name %}
+			<meta property="og:title" content="{{ species_name|indefinite_article:"An,A," }} {{ species_name }}">
+		{% endwith %}
+		{% if sighting.latest_tracker %}
+		<meta property="og:description"
+		      content="{{ sighting.description }}">
+		{% endif %}
+	{% else %}
+		{# Species #}
+		{% with shape=shape|default:"200x200" %}
+			{% thumbnail species.photo_url shape upscale=False as im %}
+				<meta property="og:image" content="{{ im.url }}">
+			{% endthumbnail %}
+		{% endwith %}
+		<meta property="og:title" content="{{ species.common_name }} ({{ species.species_name }}">
+		<meta property="og:description" content="{{ species.short_description }}">
+	{% endif %}		
+{% else %}
+	{# Generic OG fallback #}
+	<meta property="og:title" content="{{ copy.site.site_title }}">
+	<meta property="og:image" content="{{ MEDIA_URL }}{{ copy.site.facebook_logo }}">
+	<meta property="og:description" content="{{ copy.site.meta_description }}">
+{% endif %}
+
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta property="og:site_name" content="{{ copy.site.site_title }}">

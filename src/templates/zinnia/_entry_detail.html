@@ -1,0 +1,67 @@
+{% load tagging_tags comments i18n thumbnail %}
+{% load url from future %}
+
+<div id="entry-{{ object.pk }}" class="entry{% if object.featured %} featured{% endif %}">
+	<div class="entry-header">
+		<h2 class="entry-title blue">
+			<a href="{{ object.get_absolute_url }}" title="{{ object.title }}" rel="bookmark">
+				{{ object.title }}
+			</a>
+		</h2>
+
+		<h4>
+			{{ object.start_publication|date:"DATE_FORMAT" }}
+		</h4>
+	</div>
+
+	<div class="entry-body">
+		{% if object.image %}
+		<div class="entry-image">
+			{% if continue_reading %}
+				<a href="{{ object.get_absolute_url }}" title="{{ object.title }}" rel="bookmark">
+			{% endif %}
+
+			{% with shape=shape|default:"200" %}
+				{% thumbnail object.image shape upscale=True as im %}
+					<img src="{{ im.url }}" alt="{{ object.title }}">
+				{% endthumbnail %}
+			{% endwith %}
+
+			{% if continue_reading %}
+				</a>
+			{% endif %}
+		</div>
+		{% endif %}
+		<div class="entry-content">
+			{{ object_content }}
+			{% comment %}
+			{% if continue_reading %}
+			<a
+				href="{{ object.get_absolute_url }}"
+				title="{% blocktrans with object=object.title %}Continue reading {{ object }}{% endblocktrans %}"
+				rel="bookmark"
+				class="button-red button-caps"
+				>
+				{% trans "Continue reading" %}
+				<span class="chevron chevron-right"></span>
+			</a>
+			{% endif %}
+			{% endcomment %}
+		</div>
+	</div>
+	{% comment %}
+	<div class="entry-footer">
+		<p class="entry-tags">
+		<strong>{% trans "Tags" %}</strong> :
+		{% tags_for_object object as tag_list %}
+		{% for tag in tag_list %}
+		<a href="{% url 'zinnia_tag_detail' tag %}"
+			title="{% blocktrans %}Show all entries tagged by {{ tag }}{% endblocktrans %}"
+			rel="tag">{{ tag }}</a>
+		{% empty %}
+		<span>{% trans "No tags" %}</span>
+		{% endfor %}
+		</p>
+	</div>
+	{% endcomment %}
+</div>

@@ -1,0 +1,36 @@
+{% load i18n mptt_tags frontend_tags %}
+{% load frontend_extras %}
+
+
+{% if resources %}
+
+	{% url region_cms_page_base region.slug as region_cms_page_base_url %}
+
+	<li class="dropdown{% if region_cms_page_base_url and request.path|startswith:region_cms_page_base_url %} active{% endif %}">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ resources.title }} <i class="chevron"></i></a>
+		<ul class="dropdown-menu">
+			{% recursetree resources.get_descendants %}
+				{% if node.is_published %}
+				{% if region %}
+					{% url region_cms_page region.slug node.slug as cms_view %}
+				{% else %}
+					{% url cms_page node.slug as cms_view %}
+				{% endif %}
+
+				<li{% if not node.is_leaf_node %} class="sub-nav-parent"{% endif %}>
+					<a
+						href="{{ cms_view }}"
+						{% if request.path == cms_view %}class="active"{% endif %}>
+							{{ node.title }}</a>
+					{% if not node.is_leaf_node %}
+						<ul class="sub-nav">
+							{{ children }}
+						</ul>
+					{% endif %}
+				</li>
+				{% endif %}
+			{% endrecursetree %}
+		</ul>
+	</li>
+
+{% endif %}

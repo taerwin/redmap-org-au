@@ -1,0 +1,78 @@
+{% extends "site_base.html" %}
+
+{% load i18n comments zinnia_tags thumbnail %}
+{% load url from future %}
+
+{% block head_title %}{{ object.title }}{% endblock %}
+
+{% block body_class %}news{% if is_draft %} draft-content{% endif %}{% endblock %}
+
+{% block meta-description %}{% if object.excerpt %}{{ object.excerpt|striptags }}{% else %}{{ object.content|striptags|truncatewords:100 }}{% endif %}{% endblock %}
+
+{% block section_title %}<h1>Latest News</h1>{% endblock %}
+
+{% block body %}
+
+	<article class="col col-640 margr2">
+		<header id="title">
+			<h1>{% if is_draft %}<em>{{ object.title }} - (Draft)</em>{% else %}{{ object.title }}{% endif %}</h1>
+
+			<div class="overflow">
+				<div class="col col-right col-100">
+					{% include "frontend/social.html" %}
+				</div>
+				<div class="margr-120 entry-excerpt">
+					{{ object.excerpt|safe|linebreaks }}
+				</div>
+			</div>
+		</header>
+
+		<div class="section padt padb">
+
+			<div class="entry">
+				<div class="entry-image">
+					{% if object.image %}
+						{% with shape=shape|default:"300" %}
+							{% thumbnail object.image shape upscale=True as im %}
+								<img src="{{ im.url }}" alt="{{ object.title }}" class="left padb">
+							{% endthumbnail %}
+							{% if object.image_caption %}<h4 class="center">{{ object.image_caption }}</h4>{% endif %}
+						{% endwith %}
+						
+					{% endif %}
+
+					{% if object.gallery.all %}
+						<ul class="overflow clear-3 thumbs-col-3 padt" style="margin: 0;">
+							{% for newsimage in object.gallery.all %}
+								{% thumbnail newsimage.image '94x94' crop="center" as im %}
+									<li class="fleft margb {% cycle 'margr' 'margr' '' %} nolh" style="border: #ccc solid 1px">
+										<a href="{{ newsimage.image.url }}" class="lightbox-image" target="_blank">
+											<img src="{{ im.url }}" alt="{{ newsimage.caption }}">
+										</a>
+									</li>
+								{% endthumbnail %}
+							{% endfor %}
+						</ul>
+					{% endif %}
+				</div>
+
+				<div class="entry-content">
+					
+					{% if object.author %}<h2>By {{ object.author }}</h2>{% endif %}
+					{% include "snippet/html-content.html" with html=object.html_content %}
+				</div>
+			</div>
+
+		</div>
+
+		{% include "search/related_links.html" with object=object %}
+
+		<div class="hr-inline"></div>
+
+	</article><!-- /.col -->
+
+	<aside class="col col-260 margl2" id="sidebar">
+		{% include "zinnia/_sidebar.html" with latest_news=latest_news %}
+	</aside><!-- /.col -->
+
+{% endblock %}

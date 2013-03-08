@@ -1,0 +1,15 @@
+{% extends "site_base.html" %}
+{% load zinnia_tags i18n %}
+{% load url from future %}
+
+{% block head_title %}Latest News{% endblock %}
+
+{% block body %}
+
+    <h1 class="page-header">{% block page_header %}Latest News{% endblock %}{% block header-extra %}{% endblock %}</h1>
+
+    <div id="blog-content">
+        {% block content %}{% endblock %}
+    </div>
+
+{% endblock %}

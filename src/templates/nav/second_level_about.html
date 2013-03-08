@@ -1,0 +1,38 @@
+{% load i18n mptt_tags frontend_tags %}
+{% load frontend_extras %}
+
+{% if not region %}
+{% url scientists as scientists %}
+{% else %}
+{% url scientists_by_region region.slug as scientists %}
+{% endif %}
+{% url cms_region_about region.slug as region_cms_about_page_base_url%}
+
+<li class="dropdown
+{% if region_cms_about_page_base_url and request.path|startswith:region_cms_about_page_base_url %} active{% endif %}">
+	<a href="#" class="dropdown-toggle" data-toggle="dropdown">About <i class="chevron"></i></a>
+	<ul class="dropdown-menu">
+		{% if about_book %}
+			{% recursetree about_book.get_descendants %}
+				{% if node.is_published %}
+					{% if region %}
+						{% url cms_region_about_page region.slug node.slug as cms_view %}
+					{% else %}
+						{% url cms_about_page node.slug as cms_view %}
+					{% endif %}
+                    {% spaceless %}
+					<li{% if not node.is_leaf_node %} class="sub-nav-parent"{% endif %}>
+						<a href="{{ cms_view }}" {% if request.path == cms_view %}class="active"{% endif %}>
+								{{ node.title }}</a>
+						{% if not node.is_leaf_node %}
+							<ul class="sub-nav">
+								{{ children }}
+							</ul>
+						{% endif %}
+					</li>
+					{% endspaceless %}
+				{% endif %}
+			{% endrecursetree %}
+		{% endif %}
+	</ul>
+</li>

@@ -1,0 +1,120 @@
+{% extends "site_base.html" %}
+
+{% load i18n thumbnail %}
+
+{% block head_title %}{{ copy.home.title }}{% endblock %}
+
+{% block body_class %}home{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+		<!-- OpenLayers -->
+		<link href="{{ STATIC_URL }}openlayers/theme/default/style.css" rel="stylesheet">
+{% endblock %}
+
+{% block extra_script %}
+	{{ block.super }}
+	<!-- Google Maps -->
+	<script src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false"></script>
+
+	<!-- OpenLayers -->
+	<script src="{{ STATIC_URL }}openlayers/OpenLayers.js"></script>
+	<script>
+	$(document).ready(function() {
+
+		// Initialize map
+		var map = new OpenLayers.Map('map-home', {
+			minZoomLevel: 2,
+			projection: new OpenLayers.Projection("EPSG:900913"),
+			displayProjection: new OpenLayers.Projection("EPSG:4326"),
+			units: "m",
+			controls: false
+		});
+
+		// Define map projections
+		var googleProjection = new OpenLayers.Projection("EPSG:900913");
+		var usefulProjection = new OpenLayers.Projection("EPSG:4326");
+
+		// Create layers
+		var wms = new OpenLayers.Layer.Google(
+			"Google Maps",
+			{numZoomLevels: 20}
+		);
+
+		// Add layers to map
+		map.addLayers([wms]);
+
+		// Zoom to Australia
+		var aussieBounds = new OpenLayers.Bounds();
+		aussieBounds.extend(new OpenLayers.LonLat(110.21484, -13.92340).transform(usefulProjection, googleProjection));
+		aussieBounds.extend(new OpenLayers.LonLat(159.94922, -43.32518).transform(usefulProjection, googleProjection));
+		map.zoomToExtent(aussieBounds);
+
+		// Add markers to map
+		var store = [];
+		{% for sighting in photo_sightings %}
+			var popup = new OpenLayers.Popup("Popup",
+				new OpenLayers.LonLat({{ sighting.longitude }}, {{ sighting.latitude }}).transform(usefulProjection, googleProjection),
+				new OpenLayers.Size(175,175),
+				{% include "frontend/_map_sighting_popup.html" %},
+				false
+			);
+			store.push(popup);
+			map.addPopup(popup);
+			popup.hide();
+		{% endfor %}
+
+		// Set map to cycle through markers
+		var idx = 0,
+			last = null,
+			panToMarker = function() {
+				map.zoomTo(4);
+				if (last != null) {
+					store[last].hide();
+				}
+				store[idx].show();
+				// Note: We are offsetting the position of the popups so that they do not overlap
+				//       with the welcome blurb which appears over the homepage map.
+				map.panTo(new OpenLayers.LonLat(store[idx].lonlat.lon + 850000, store[idx].lonlat.lat - 250000));
+				last = idx;
+				if (!store[++idx]) {
+					idx = 0;
+				}
+			}
+		panToMarker();
+		setInterval(panToMarker, 5000);
+	});
+	</script>
+{% endblock %}
+
+{% block map %}
+	<div id="map">
+		<div id="map-home" class="map-canvas"></div>
+		<div class="box-paper box-paper-pin">
+			<h2 class="red">{{ copy.home.subtitle }}</h2>
+			<p>{{ copy.home.teaser }}</p>
+			{% if copy.home.find_out_more %}
+				<p class="nomargb">
+					<a href="{{ copy.home.find_out_more }}" class="button-red button-caps">
+						<strong>Find out more</strong>
+						<span class="chevron chevron-right chevron-white"></span>
+					</a>
+				</p>
+			{% endif %}
+			<span class="pin"></span>
+		</div>
+	</div><!-- /#map -->
+{% endblock %}
+
+{% block body %}
+	<div class="col col-500 margr2">
+		{% include "frontend/activity_list.html" with sighting_list=latest_sightings %}
+	</div><!-- /.col -->
+	<aside class="col col-400 margl2">
+		{% include "frontend/recent_news.html" %}
+		{% include "frontend/sidebar_newsletter_signup.html" %}
+		<div class="hr">
+			{% include "frontend/sidebar_facebook.html" %}
+		</div>
+	</aside>
+{% endblock %}

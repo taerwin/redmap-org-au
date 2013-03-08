@@ -1,0 +1,22 @@
+{% comment %}
+    Display a list of related links using haystack.
+    
+    Uses `object` in the context as the input.
+{% endcomment %}
+
+{% load more_like_this %}
+
+{% more_like_this object as results limit 5  %}
+
+{% if results %}
+<div class="hr-inline margb2"><a href="#" class="button-blue button-caps">Related <strong>links</strong></a></div>
+<ul class="arrows">
+	{% for result in results %}
+	{% if result.object %}
+	<li class="{{ result.content_type }} {{ result.content_type }}-{{ result.object.pk }}">
+	    <a href="{{ result.object.get_public_url|default:result.object.get_absolute_url }}">{{ result.object }}</a>
+	</li>
+	{% endif %}
+	{% endfor %}
+</ul>
+{% endif %}

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Redmap</title>
+<style>
+@import url(//fonts.googleapis.com/css?family=Droid+Sans:400,700);
+
+@import url({{ STATIC_URL }}/reskin/css/bootstrap.css);
+
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body, textarea, select, input, button {
+	font: 13px Arial, Helvetica, sans-serif;
+}
+
+
+body {
+	background-color: #171561;
+	background-image: radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+	background-image: -webkit-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+	background-image: -moz-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+	background-image: -ms-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+	background-image: -o-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+	background-repeat: no-repeat;
+}
+
+#box {
+	width: 640px;
+	margin: 0 auto;
+		-moz-border-radius: 0 0 10px 10px;
+		-webkit-border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
+	min-height: 700px;
+	background: #fff;
+}
+
+#header {
+	text-align: center;
+	padding: 20px 0;
+}
+
+img {
+	border: 0;
+}
+
+#newsletter {
+	overflow:hidden;
+	margin-bottom:15px;
+}
+
+#newsletter label {
+	float:left;
+	margin:0 5px 0 0;
+	line-height:26px;
+	font-weight:400;
+}
+
+#newsletter input {
+	background:#e7e6e6;
+	padding:0 5px;
+	height:24px;
+	float:left;
+	border-right:0;
+}
+
+#newsletter button {
+	float:left;	
+}
+
+.button {
+	white-space:nowrap;
+	background:#ee3123;
+	height:26px;
+	padding:0 10px;
+	text-transform:uppercase;
+	color:#fff;
+	font:11px/26px 'Droid Sans', Arial, Helvetica, sans-serif;
+}
+
+#content {
+	padding: 20px;
+}
+
+</style>
+</head>
+<body>
+
+	<div id="box">
+	
+		<header id="header">
+			<a href="/"><img src="{{ STATIC_URL }}/reskin/images/logo.png" alt="Redmap. Spot, Log, Map"></a>
+		</header>
+		
+		<div id="content">
+			{% block content %}
+				
+			{% endblock %}
+		</div>
+	</div>
+
+</body>
+</html>

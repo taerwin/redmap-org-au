@@ -1,0 +1,18 @@
+{% extends 'site_base.html' %}
+
+{% load bootstrap_tags %}
+
+{% block head_title %}Register for beta{% endblock %}
+
+{% block section_title %}<h1>Register for beta</h1>{% endblock %}
+
+{% block content %}
+<h3 class="page-header">Enter your email address and we'll send you an invite soon</h3>
+<form action="{% url privatebeta_invite %}" method="post" class="form-horizontal">
+    {{ form|as_bootstrap }}
+    {% csrf_token %}
+    <div class="form-actions">
+        <button type="submit" value="Request invite" class="button-red button-caps"><strong>Request invite</strong></button>
+    </div>
+</form>
+{% endblock %}

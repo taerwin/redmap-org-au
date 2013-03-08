@@ -1,0 +1,71 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js ie ie8 ie7 ie6" lang="en-AU"><![endif]-->
+<!--[if IE 7]>	 <html class="no-js ie ie8 ie7" lang="en-AU">    <![endif]-->
+<!--[if IE 8]>	 <html class="no-js ie ie8" lang="en-AU">        <![endif]-->
+<!--[if IE 9]>	 <html class="no-js ie9" lang="en-AU">           <![endif]-->
+<!--[if (gte IE 10)|!(IE)]><!--><html class="no-js" lang="en-AU"><!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">	
+	<title>{% block head_title %}{% endblock %} {{ site_title }}</title>
+	
+	<meta name="description" content="">
+	
+	{% if not TESTING %}
+	
+	<link rel="shortcut icon" href="{{ STATIC_URL }}reskin/favicon.ico">
+	<link rel="apple-touch-icon" href="{{ STATIC_URL }}reskin/apple-touch-icon.png">
+	
+	<link rel="stylesheet" href="{{ STATIC_URL }}reskin/css/admin.css">
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/chosen/chosen.css">
+	
+	<script src="{{ STATIC_URL }}reskin/js/libs/modernizr-2.5.3.min.js"></script>
+	<script src="{{ STATIC_URL }}reskin/js/libs/selectivizr-1.0.2.min.js"></script>
+	{{ form.media }}
+	{% block extra_head %}{% endblock %}
+	
+	{% endif %}
+</head>
+<body class="admin">
+
+
+	<div id="page">
+		<header id="header">
+			<a href="/" id="logo"><img src="{{ STATIC_URL }}reskin/images/logo.png" alt="Redmap - Spot, Log, Map" width="354" height="89"></a>				
+			<nav id="topnav">
+				<span>Logged in as <strong>{{ user.profile }}</strong></span>
+				<a href="{% url acct_profile %}">My Redmap</a>
+				<a href="{% url auth_logout %}">Sign out</a>
+			</nav>
+		</header>
+		
+		<div id="main">
+			{% block body %}{% endblock %}			
+		</div>		
+		
+	</div><!-- /#page -->
+
+	{% if not TESTING %}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{{ STATIC_URL }}reskin/js/libs/jquery-1.8.0.min.js"><\/script>')</script>
+<script src="{{ STATIC_URL }}reskin/js/libs/jquery.fancybox-1.3.4/jquery.fancybox-1.3.4.pack.js"></script>
+<script>
+if ($.fancybox) (function(d, l) {
+	var s = d.createElement('link');
+	s.rel = 'stylesheet';
+	s.href = l;
+	document.getElementsByTagName('head')[0].appendChild(s);
+})(document, '{{ STATIC_URL }}reskin/js/libs/jquery.fancybox-1.3.4/jquery.fancybox-1.3.4.css');
+</script>
+<script src="{{ STATIC_URL }}reskin/js/libs/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}js/chosen.jquery.min.js"></script>
+<script src="{{ STATIC_URL }}reskin/js/plugins.js"></script>
+<script src="{{ STATIC_URL }}reskin/js/admin.js"></script>
+
+{% block extra_script %}{% endblock %}
+
+{% endif %}
+
+</body>
+</html>

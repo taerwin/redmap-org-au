@@ -1,0 +1,64 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n ifsetting_tag %}
+
+{% block head_title %}{% trans 'Create an account' %}{% endblock %}
+
+
+{% block section_title %}<h1>{% trans 'Create an account' %}</h1>{% endblock %}
+
+{% block content %}
+
+	<div class="row">
+		<div class="span6">
+            <h2 class="page-header">Account details</h2>
+			
+			<form method="post" action='.' class="form-horizontal">
+				{% csrf_token %}
+				{{ form|as_bootstrap }}
+				<button type="submit" class="margl-200 button-red-big button-bottom">Register</button>
+			</form>
+		</div>
+		
+		<div class="span6">	
+			 <h2 class="page-header">Register with <span class="red">Facebook</span></h2>
+			
+			<form action="{% url facebook_connect %}?facebook_login=1" method="post" class="padt" id="facebook_login_form">
+				{% if request.GET.fb_error_or_cancel or request.GET.error %}
+					<div class="error">Please click allow in the facebook interface to access Redmap</div>
+				{% endif %}
+				{% if form.errors.email %}
+					<ul class="errorlist">
+						<li>The email address provided by your Facebook account ({{ form.email.value }}) has already been registered on Redmap.</li>
+						<li>If you own this address, you may link Facebook to your account from your profile page.</li>
+					</ul>
+					<p><a href="{% url auth_login %}" class="btn">Sign in to your account</a></p>
+				{% else %}
+					<div id="facebook_login_js">
+						<input id="fb_logo_input" type="image" src="{{ STATIC_URL }}reskin/img/fb.png">
+					</div>
+				{% endif %}
+                <input type="hidden" value="{% url acct_profile %}" name="register_next">
+                <input type="hidden" value="{% url home %}" name="next">
+            </form>
+		</div>
+	</div>	
+
+{% endblock %}
+
+
+{% block extra_script %}
+
+{{ block.super }}
+
+<script>
+$(document).ready(function(){
+	$("#fb_logo_input").click(function(e){
+ 		F.connect($("#facebook_login_form"));
+ 		e.preventDefault();
+ 		return false;
+	});
+});
+
+</script>
+{% endblock %}

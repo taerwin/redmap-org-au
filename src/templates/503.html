@@ -1,0 +1,170 @@
+<!doctypehtml>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<title>Website down for maintenance</title>
+<style>
+@import url(//fonts.googleapis.com/css?family=Droid+Sans:400,700);
+
+
+a img {
+border: 0;
+}
+
+a {
+	color: #E41E26;
+	text-decoration: underline;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+html, body {
+	min-height: 100%;
+	height: 100%;
+	margin: 0;
+}
+
+body, textarea, select, input, button {
+	font: 13px Arial, Helvetica, sans-serif;
+}
+
+body {
+	background-color: #171561;
+	background-image: radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+		background-image: -webkit-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+		background-image: -moz-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+		background-image: -ms-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+		background-image: -o-radial-gradient(center top, 750px 750px, #00A7DF, #00A7DF 60%, #171561);
+		background-repeat: no-repeat;
+}
+
+#page {
+	margin: 50px auto;
+	width: 440px;
+	background: #fff;
+	padding: 20px;
+	border-radius: 7px;
+		-moz-border-radius: 7px;
+		-webkit-border-radius: 7px;
+	box-shadow: rgba(0,0,0,.3) 0 2px 4px;
+		-moz-box-shadow: rgba(0,0,0,.3) 0 2px 4px;
+		-webkit-box-shadow: rgba(0,0,0,.3) 0 2px 4px;	
+}
+
+#header {
+	text-align: center;
+	margin: 10px 0 50px;
+}
+
+#main {
+	padding: 0 50px 20px;
+}
+
+h1 {
+	font: 700 30px/1.2 'Droid Sans', Arial, Helvetica, sans-serif;
+}
+
+h2 {
+	font: 700 20px/1.2 'Droid Sans', Arial, Helvetica, sans-serif;
+	margin-bottom: 30px;
+}
+
+h1 + h2 {
+	margin-top: -16px;
+}
+
+.sign {
+	margin-top: 30px;
+}
+
+p, h4 {
+	line-height: 1.5;
+	margin: 0 0 10px;
+}
+
+#countdown {
+	margin: 30px 0 0;
+	background: #f3f4f5;
+	border: #cacbcc solid 3px;
+	padding: 20px;
+	border-radius: 7px;
+		-moz-border-radius: 7px;
+		-webkit-border-radius: 7px;
+	text-align: center;
+}
+
+#timer {
+}
+
+#countdown p {
+	color: #777;
+	font: 14px 'Droid Sans', Arial, Helvetica, sans-serif;
+}
+
+#timer ul {
+	list-style: none;
+	margin: 0;
+	padding: 10px 0 0;	
+	overflow: hidden;
+	-webkit-padding-start: 0;
+	
+}
+
+#timer li {
+	text-align: center;
+	float: left;
+	width: 24.999%;
+	margin: 0 !important;
+	font: 20px 'Droid Sans', Arial, Helvetica, sans-serif;
+}
+
+#timer li span {
+	display: block;
+	font-size: 14px;
+	color: #777;
+}
+
+#logo {
+	display: block;
+	text-align: center;
+}
+</style>
+<script src="{{ STATIC_URL }}reskin/js/libs/modernizr-2.5.3.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}/countdown/jquery.countdown.js"></script>
+<script>
+$(function () {
+	var liveDate = new Date(2012, 11, 13, 11);
+	
+	$timer = $('#timer');
+	
+	$timer.countdown({until: liveDate, layout: '<ul>{y<}<li>{yn} {yl}</li>{y>}{o<}<li>{on} {ol}</li>{o>}' + 
+    '{d<}<li>{dn} <span>{dl}</span></li>{d>}{h<}' + 
+	'<li>{hn} <span>{hl}</span></li>{h>}' + 
+    '{m<}<li>{mn} <span>{ml}</span></li>{m>}{s<}<li>{sn} <span>{sl}</span></li>{s>}</ul>'});
+});
+</script>
+</head>
+<body>
+    <div id="page">
+        <header id="header">
+            <a href="/" id="logo">
+				<img src="{{ STATIC_URL }}reskin/images/logo.png" alt="Redmap - Spot, Log, Map" width="344" height="79">
+			</a>
+        </header>
+        <div id="main">
+			<h2>Website down for maintenance</h2>
+            <p>We're making the final preparations for the new website launch on Thursday.</p>
+            <p>Our apologies for any inconvenience.  Please check back later.</p>
+            <p class="sign">&ndash; <a href='mailto:enquiries@redmap.org.au'>The Redmap Team</a></p>
+			
+			<div id="countdown">
+				<p>Counting down to 13 December <span id="year">2012</span></p>
+				<div id="timer"></div>
+			</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,249 @@
+﻿{% load i18n mptt_tags frontend_tags frontend_extras thumbnail compress %}<!--[if lt IE 7]><html class="no-js ie ie8 ie7 ie6" lang="en-AU"><![endif]-->
+<!--[if IE 7]>	 <html class="no-js ie ie8 ie7" lang="en-AU">    <![endif]-->
+<!--[if IE 8]>	 <html class="no-js ie ie8" lang="en-AU">        <![endif]-->
+<!--[if IE 9]>	 <html class="no-js ie9" lang="en-AU">           <![endif]-->
+<!--[if (gte IE 10)|!(IE)]><!--><html class="no-js" lang="en-AU"><!--<![endif]-->
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#{% if facebook_redmap_namespace %} {{facebook_redmap_namespace}}: http://ogp.me/ns/fb/{{facebook_redmap_namespace}}#"{% endif %}>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>{% block head_title %}{{ copy.home.title }}{% endblock %} - {{ copy.site.site_title }}</title>
+
+	<meta name="description" content="{{ copy.site.meta_description }}">
+
+	<meta property="fb:app_id" content="{{ fbappid }}">
+	
+	{% include '_opengraph.html' %}
+
+	{% if not TESTING %}
+
+	<link rel="shortcut icon" href="{{ STATIC_URL }}reskin/favicon.ico">
+	<link rel="apple-touch-icon" href="{{ STATIC_URL }}reskin/apple-touch-icon.png">
+
+    <!-- compress css -->
+    {% compress css %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}reskin/css/style.css">
+    {% endcompress %}
+    <!-- /compress css -->
+
+    <!-- compress js -->
+    {% compress js %}
+    <script src="{{ STATIC_URL }}reskin/js/libs/modernizr-2.5.3.min.js"></script>
+    <script src="{{ STATIC_URL }}reskin/js/libs/selectivizr-1.0.2.min.js"></script>
+    {% endcompress %}
+    <!-- /compress js -->
+
+	{% endif %}
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="{{ STATIC_URL }}reskin/js/libs/jquery-1.8.3.min.js"><\/script>')</script>
+
+	{% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+	<div id="page">
+		<header id="header">
+			<a href="/" id="logo"><img src="{{ STATIC_URL }}reskin/images/logo.png" alt="Redmap - Spot, Log, Map" width="354" height="89"></a>
+
+			<nav id="topnav">
+                <a href="{% url haystack_search %}">Search</a>
+				{% if request.user.is_authenticated %}
+
+                    {% url acct_profile as acct_profile %}
+                    {% url acct_edit_profile as acct_edit_profile %}
+                    {% url auth_password_change as auth_password_change %}
+                    {% url auth_password_change_done as auth_password_change_done %}
+                    <a href="{{ acct_profile }}">My Redmap</a>
+					{% if perms.redmapdb.can_access_dashboard %}
+					   <a href="{% url dashboard %}">Administration panel</a>
+					{% endif %}
+
+                    {% url auth_logout as auth_logout %}
+                    <a href="{{ auth_logout }}">Sign out</a>
+                {% else %}
+                    {% url auth_login as auth_login %}
+                    {% url facebook_connect as facebook_connect %}
+                    <a href="{{ auth_login }}">Sign in</a>
+					<a href="{% url registration_register %}">Create an account</a>
+					{#  <a href="{{ facebook_connect }}">Sign in with Facebook</a> #}
+                {% endif %}
+				{#<a href="#">About Redmap</a>#}
+			</nav>
+
+			{% block log %}
+				<div id="log">
+					{% url sighting_add as sighting_add %}
+					<a href="{{ sighting_add }}" class="button-red button-caps"><strong>Log</strong> a sighting</a>
+				</div>
+			{% endblock %}
+			
+			{% block locale %}				
+				<figure id="locale" class="{% if region %}{{ region.description|abbrstate|lower }}{% endif %}">
+
+					<img src="{{ STATIC_URL }}reskin/images/header-locale.png" alt="Location" width="197" height="156">
+					{% if region %}<figcaption>{{ region }}</figcaption>{% endif %}
+				</figure>
+			{% endblock %}
+		</header><!-- /#header -->
+
+		{% block region_navigation %}
+			<nav id="nav">
+				<ul>
+					{% url home as home %}
+					<li{% if request.path = home or not region %} class="active"{% endif %}>
+						<a href="{{ home }}">Home</a>
+					</li>
+
+					{% for nav_region in nav_regions %}
+						{% active_region nav_region as is_region_active %}
+						<li{% if is_region_active %} class="active"{% endif %}>
+							<a href="{% url region_landing_page nav_region.slug %}">{{ nav_region }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</nav>
+		{% endblock %}
+
+		{% block site_navigation %}
+			{% include "nav/second_level.html" %}
+		{% endblock %}
+
+		{% block map %}{% endblock %}
+
+		<header id="section">
+			{% block section_title %}{% endblock %}
+		</header>
+
+		{% block breadcrumbs %}{% endblock %}
+
+		<div id="main">
+			{% block messages %}{% include "messages.html" %}{% endblock %}
+
+			{% block body %}
+				{% block content %}{% endblock %}
+			{% endblock %}
+		</div><!-- /#main -->
+
+		<div id="sponsers">
+			<div class="overflow">
+				{% block sponsers %}
+
+					{% with sponsors=region.sponsor_set|default:national_sponsors shape=shape|default:'100x64' %}
+
+						{# MAJOR SPONSORS #}
+						<div class="col col-50pc">
+							<h3>{% if not region %}Redmap is funded by{% else %}Regional funding bodies{% endif %}</h3>
+							<ul class="nomargb footer-sponsers">
+							{% block major_sponsors %}
+								{% if not region %}
+									{# NATIONAL SPONSORS #}
+									{% include "frontend/list_sponsors.html" with display_sponsors=sponsors.get_national_funding_partners %}
+								{% else %}
+									{# REGIONAL SPONSORS #}
+									{% include "frontend/list_sponsors.html" with display_sponsors=sponsors.get_funding_partners %}
+								{% endif %}
+							{% endblock %}
+							</ul>
+						</div>
+
+						{# MINOR SPONSORS #}
+						<div class="col col-50pc">
+							<h3>{% if not region %}Lead institutes{% else %}Regional supporters{% endif %}</h3>
+							<ul class="nomargb footer-sponsers">
+								{% block minor_sponsors %}
+									{% if not region %}
+										{# NATIONAL SPONSORS #}
+										{% include "frontend/list_sponsors.html" with display_sponsors=sponsors.get_national_lead_sponsors %}
+									{% else %}
+										{# REGIONAL SPONSORS #}
+										{% include "frontend/list_sponsors.html" with display_sponsors=sponsors.get_supporters %}
+									{% endif %}
+								{% endblock %}
+							</ul>
+						</div>
+
+					{% endwith %}
+
+				{% endblock %}
+			</div><!-- /.overflow -->
+		</div><!-- /#sponsers -->
+	</div><!-- /#page -->
+
+	<footer id="footer">
+		<div class="col col-50pc">
+			<p id="footer-imas">
+				{% with shape=shape|default:"x28" %}
+					<a href="http://www.imas.utas.edu.au/" target="_blank">
+						<img
+							class="fleft margr2"
+							alt="Institute for Marine and Antarctic Studies"
+							{% thumbnail copy.site.imas_logo shape format="PNG" as im %}
+								src="{{ im.url }}"
+							{% empty %}
+								src="{{ STATIC_URL }}reskin/images/imas.png"
+							{% endthumbnail %}
+						>
+					</a>
+				{% endwith %}
+				IMAS is the National host of Redmap Australia
+			</p>
+		</div>
+
+		<div class="col col-50pc right">
+			<nav id="footer-links">
+				<ul class="nomargb">
+					<li><a href="/">{% trans "Home" %}</a></li>
+					<li><a href="/about/">{% trans "About us" %}</a></li>
+                    {# <li><a href="/misc/footer-links/sitemap">{% trans "Sitemap" %}</a></li> #}
+					<li><a href="/misc/footer-links/legals/">{% trans "Copyright &amp; Disclaimer" %}</a></li>
+				</ul>
+			</nav>
+			<p class="padth nomargb">{{ copy.site.copyright|safe }}</p>
+			<p class="padth">
+				<small>
+					Website built by <a href="http://ionata.com.au" target="_blank">Ionata Web Solutions</a>.
+					Website designed by <a href="http://www.hollywebber.com.au/" target="_blank">Holly Webber</a>
+				</small>
+			</p>
+		</div>
+	</footer><!-- /#footer -->
+
+{% if not TESTING %}
+
+<!-- compress js -->
+{% compress js %}
+<script src="{{ STATIC_URL }}reskin/js/libs/jquery.fancybox-1.3.4/jquery.fancybox-1.3.4.js"></script>
+<script src="{{ STATIC_URL }}reskin/js/libs/jquery.chosen-0.9.7.min.js"></script>
+<script src="{{ STATIC_URL }}reskin/js/libs/jquery.ba-bbq.min.js"></script>
+<script src="{{ STATIC_URL }}reskin/js/libs/bootstrap.min.js"></script>
+
+{% include 'django_facebook/_facebook_js.html' %}
+
+<script src="{{ STATIC_URL }}reskin/js/plugins.js"></script>
+<script src="{{ STATIC_URL }}reskin/js/scripts.js"></script>
+{% endcompress %}
+<!-- /compress js -->
+
+<script>
+if ($.fancybox) (function(d, l) {
+	var s = d.createElement('link');
+	s.rel = 'stylesheet';
+	s.href = l;
+	document.getElementsByTagName('head')[0].appendChild(s);
+})(document, '{{ STATIC_URL }}reskin/js/libs/jquery.fancybox-1.3.4/jquery.fancybox-1.3.4.css');
+</script>
+
+{% block extra_script %}{% endblock %}
+
+<script>
+var _gaq=[['_setAccount','{{ copy.site.ga_tracking_code }}'],['_trackPageview']];
+(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,11 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'REDMAP' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="/admin/">{% trans 'Redmap Database Administration' %}</a></h1>
+<div style="margin-left:8px"><p><a href="/" class="view-website">View website</a></p></div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

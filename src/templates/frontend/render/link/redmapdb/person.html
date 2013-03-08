@@ -1,0 +1,7 @@
+
+<a href="{{ object.get_public_url }}">{% spaceless %}
+    {{ object.user.get_full_name }}
+    {% if object.organisation %}
+        ({{ object.organisation }})
+    {% endif %}
+{% endspaceless %}</a>

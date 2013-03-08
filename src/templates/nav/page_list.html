@@ -1,0 +1,32 @@
+{% comment %}
+
+Build a book index showing only public pages.
+
+Useful for menu and sidebar listings.
+
+Input: `page` context variable
+
+{% endcomment %}
+{% load mptt_tags frontend_extras %}
+
+<ul class='page-list'>
+{% recursetree page.get_root.get_descendants %}
+{% spaceless %}
+{% page_url node as url %}
+{% if node.is_published %}
+
+    <li>
+        <a href="{{ url }}" {% if page == node %}class="active"{% endif %}>
+            {{ node }}
+        </a>
+        {% if not node.is_leaf_node %}
+            <ul class="sub-nav">
+                {{ children }}
+            </ul>
+        {% endif %}
+    </li>
+
+{% endif %}
+{% endspaceless %}
+{% endrecursetree %}
+</ul>

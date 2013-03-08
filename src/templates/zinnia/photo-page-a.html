@@ -1,0 +1,13 @@
+{% extends "zinnia/news_base.html" %}
+
+{% block news_content %}
+
+{% include "snippet/html-content.html" with html=object.html_content %}
+
+<div>
+    {% for item in object.gallery.all %}
+        {% include "zinnia/_gallery_image.html" with gallery_item=item size="190" %}
+    {% endfor %}
+</div>
+
+{% endblock news_content %}

@@ -1,0 +1,20 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n ifsetting_tag %}
+
+{% block head_title %}{% if account %}Activation complete{% else %}Activation problem{% endif %}{% endblock %}
+
+{% block region_navigation %}{% endblock %}
+{% block site_navigation %}{% endblock %}
+
+{% block content %}
+
+    <h1>{% if account %}Activation complete{% else %}Activation problem{% endif %}</h1>
+
+    {% if account %}
+    Thanks {{ account }}, activation complete!  You may now <a href='{% url auth_login %}'>login</a> using the username and password you set at registration.
+    {% else %}
+    Oops &ndash; it seems that your activation key is invalid.  Please check the url again.
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% comment %}
+    
+    Generate a thumbnail image for a profile.
+    
+    inputs:
+        profile: redmapdb.person type
+        geometry: thumbnail shape.  optional.  defaults to 194x194.
+
+{% endcomment %}
+
+{% load thumbnail %}
+
+{% thumbnail profile.image geometry|default:'194x194' crop="center" format="JPEG" as im %}
+	<img class="fleft polaroid-small"
+	     title="{{ profile }}"
+	       alt="{{ profile }}"
+	       src="{{ im.url }}">
+{% empty %}
+{% endthumbnail %}

@@ -1,0 +1,72 @@
+{% extends "site_base.html" %}
+
+{% load i18n comments zinnia_tags thumbnail %}
+{% load url from future %}
+
+{% block head_title %}{{ object.title }}{% endblock %}
+
+{% block body_class %}news{% endblock %}
+
+{% block meta-description %}{% if object.excerpt %}{{ object.excerpt|striptags }}{% else %}{{ object.content|striptags|truncatewords:100 }}{% endif %}{% endblock %}
+
+{% block section_title %}<h1>Latest News</h1>{% endblock %}
+
+{% block body %}
+
+	<article class="col col-640 margr2">
+		<header id="title">
+			<h1>{{ object.title }}</h1>
+			<h3>
+				{% if object.author %}
+					{% trans "By" %}
+					{{ object.author }}
+					{% trans "on" %}
+				{% else %}
+					{% trans "Written on" %}
+				{% endif %}
+				{{ object.start_publication|date:"DATE_FORMAT" }}
+			</h3>
+
+			<div class="overflow">
+				<div class="col col-right col-100">
+					{% include "frontend/social.html" %}
+				</div>
+				<div class="margr-120 entry-excerpt">
+					{{ object.excerpt|safe|linebreaks }}
+				</div>
+			</div>
+		</header>
+
+		<div class="section padt padb">
+
+			<div class="entry">
+				{% if object.image %}
+					<div class="entry-image">
+						{% with shape=shape|default:"300" %}
+							{% thumbnail object.image shape upscale=True as im %}
+								<img src="{{ im.url }}" alt="{{ object.title }}" class="left">
+							{% endthumbnail %}
+						{% endwith %}
+
+					</div>
+				{% endif %}
+				<div class="entry-content">
+					{% block news_content %}
+					{{ object.html_content|safe }}
+					{% endblock news_content %}
+				</div>
+			</div>
+
+		</div>
+
+		{% include "search/related_links.html" with object=object %}
+
+		<div class="hr-inline"></div>
+
+	</article><!-- /.col -->
+
+	<aside class="col col-260 margl2" id="sidebar">
+		{% include "zinnia/_sidebar.html" %}
+	</aside><!-- /.col -->
+
+{% endblock %}

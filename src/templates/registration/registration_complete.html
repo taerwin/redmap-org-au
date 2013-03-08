@@ -1,0 +1,19 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n ifsetting_tag %}
+
+{% block head_title %}Activation email sent{% endblock %}
+
+{% comment %}
+{% block region_navigation %}{% endblock %}
+{% block site_navigation %}{% endblock %}
+{% endcomment %}
+
+{% block section_title %}<h1>{% trans 'Create an account' %}</h1>{% endblock %}
+
+{% block content %}
+
+<h2 class="red heading-big">Activation email sent</h2>
+<p>An activation email has been sent.  Please check your email and click on the link to activate your account.</p>
+
+{% endblock %}

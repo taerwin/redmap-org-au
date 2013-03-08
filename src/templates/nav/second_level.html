@@ -1,0 +1,61 @@
+{% load i18n mptt_tags frontend_tags %}
+{% load frontend_extras %}
+
+<nav id="subnav">
+	<ul>
+
+	{% if not region %}
+		{% url home as home %}
+		<li{% if request.path = home %} class="active"{% endif %}><a href="{% url home %}">Overview</a></li>
+	{% else %}
+		{% overview_menu_active request nav_regions as is_region_active %}
+		<li{% if is_region_active %} class="active"{% endif %}>
+			<a href="{{ region.get_absolute_url }}">Overview</a>
+		</li>
+	{% endif %}
+
+	{# Sightings #}
+	{% if not region %}
+		<li{% if is_sightings_page %} class="active"{% endif %}>
+			<a href="{% url sighting_photo %}">Sightings</a>
+		</li>
+	{% else %}
+		<li{% if is_sightings_page %} class="active"{% endif %}>
+			<a href="{% url sighting_photo_by_region region.slug %}">Sightings</a>
+		</li>
+	{% endif %}
+
+	{# Species #}
+	{% if not region %}
+		<li{% if is_species_page %} class="active"{% endif %}>
+			<a href="{% url species_category_list %}">Species</a>
+		</li>
+	{% else %}
+		<li{% if is_species_page %} class="active"{% endif %}>
+			<a href="{% url species_category_list_by_region region.slug %}">Species</a>
+		</li>
+	{% endif %}
+
+	{% block resources %}
+		{% include "nav/second_level_resources.html" %}
+	{% endblock %}
+
+	{% url zinnia_entry_archive_index as zinnia_entry_archive_index %}
+	<li{% if request.path = zinnia_entry_archive_index %} class="active"{% endif %}>
+		{% if region %}
+			<a href="{% url region_zinnia_entry_archive_index region.slug %}">Latest News</a>
+		{% else %}
+			<a href="{% url zinnia_entry_archive_index %}">Latest News</a>
+		{% endif %}
+	</li>
+
+	{% block about %}
+	    {% if region %}
+	        {% include "nav/second_level_about.html" with about_book=region.regionaboutpage.page %}
+	    {% else %}
+            {% include "nav/second_level_about.html" with about_book=copy.home.about_book %}
+	    {% endif %}
+	{% endblock %}
+
+	</ul>
+</nav><!-- /#nav -->

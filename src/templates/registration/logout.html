@@ -1,0 +1,22 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n ifsetting_tag %}
+
+{% block head_title %}{% trans "You have signed out" %}{% endblock %}
+
+{% comment %}
+	{% block region_navigation %}{% endblock %}
+	{% block site_navigation %}{% endblock %}
+{% endcomment %}
+
+{% block section_title %}<h1>Sign out</h1>{% endblock %}
+
+{% block content %}
+
+	<div class="box col-340 col-center pada-40">
+		<h2 class="big-heading red padb">Thank you for using Redmap</h2>
+		<p>You have successfully signed out of your account.</p>
+	</div>
+
+
+{% endblock %}

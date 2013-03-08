@@ -1,0 +1,17 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n ifsetting_tag %}
+
+{% block head_title %}{% trans "Page not found" %}{% endblock %}
+
+{% block section_title %}<h1>Page not found</h1>{% endblock %}
+
+{% block content %}
+
+	<div class="box box-rounded col-340 col-center pada-40">
+		<h2 class="big-heading red padb">Page not found</h2>
+		<p>Sorry, the page you requested could not be found</p>
+	</div>
+
+
+{% endblock %}

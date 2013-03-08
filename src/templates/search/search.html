@@ -1,0 +1,71 @@
+{% extends 'site_base.html' %}
+
+{% load i18n %}
+
+{% block section_title %}
+	<h1>Search</h1>
+{% endblock %}
+
+{% block content %}
+    <form method="get" action="." class="form-horizontal form-horizontal-narrow">
+	
+		<div class="control-group">
+			<label class="control-label" for="{{ form.q.auto_id }}">{% trans "Search query" %}</label>
+			<div class="controls">
+				{{ form.q }}
+				<button type="submit" class="button-red button-caps"><strong>Search</strong></button>
+			</div>
+		</div>
+		
+		{% comment %}
+			{# Hide these, they don't do much #}
+			<div class="control-group">
+				{# <label class="control-label" for="{{ form.models.auto_id }}">{% trans "Search for" %}</label> #}
+				<div class="controls">
+					{{ form.models }}
+				</div>
+			</div>
+		{% endcomment %}
+		
+	</form>
+	
+	{% if query %}
+		<h2 class="hr">Results</h2>
+		
+		{% if page.object_list %}
+			<p><strong>{{ page.object_list|length }}</strong> results found 	for <b>{{ query }}</b> </p>
+		{% else %}		
+			<p>No results found found for <b>{{ query }}</b></p>
+		{% endif %}
+		
+		<ul id="results">
+			{% for result in page.object_list %}
+				<li class="{{ result.content_type }} {{ result.content_type }}-{{ result.object.pk }}">
+					{# TODO: This could be refactored to pattern based #}
+					{% if result.content_type == "redmapdb.person" %}
+						{% include "search/includes/redmapdb/person.html" %}
+					{% elif result.content_type == "redmapdb.species" %}
+						{% include "search/includes/redmapdb/species.html" %}
+					{% elif result.content_type == "zinnia.entry" %}
+						{% include "search/includes/zinnia/entry.html" %}
+					{% elif result.content_type == "cms.page" %}
+						{% include "search/includes/cms/page.html" %}
+					{% else %}
+						<a href="{{ result.object.get_absolute_url }}">{{ result.object }}</a>
+					{% endif %}
+				</li>
+			{% endfor %}
+		</ul>
+		
+		 {% if page.has_previous or page.has_next %}
+			<div>
+				{% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+				|
+				{% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+			</div>
+		{% endif %}
+	{% else %}
+		{# Show some example queries to run, maybe query syntax, something else? #}
+	{% endif %}
+		
+{% endblock %}

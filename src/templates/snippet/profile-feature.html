@@ -1,0 +1,30 @@
+{% comment %}
+    
+    Summary feature of `profile`.
+    
+    Format:
+    - Profile image
+    - Title with link
+      - Format is "First Last (Organisation)"
+    - Excerpt
+    
+    Requirements:
+    - profile context variable must be of type redmapdb.person
+    
+{% endcomment %}
+
+<div class="overflow">
+    {% include "snippet/profile-thumbnail.html" %}
+	<div class="margl-220">
+		<a href="{{ profile.get_public_url }}">
+			<h3 class="margt">
+				{{ profile }}
+				{% if profile.organisation %}
+				    ({{ profile.organisation }})
+				{% endif %}
+			</h3>
+		</a>
+		{{ profile.about_me|linebreaks }}
+	</div>
+</div>
+<span class="paperclip-left"></span>

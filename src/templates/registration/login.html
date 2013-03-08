@@ -1,0 +1,93 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n ifsetting_tag %}
+
+{% block head_title %}{% trans "Sign in" %}{% endblock %}
+
+{# {% block region_navigation %}{% endblock %} #}
+{# {% block site_navigation %}{% endblock %} #}
+
+{% block section_title %}
+	<h1>Sign into your account</h1>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="span6">
+
+            <h2 class="page-header">Sign in</h2>
+
+            {% if user.is_authenticated %}
+                <div class="alert alert-info">
+                    <strong>{% trans "Note" %}</strong>:
+                    {% blocktrans %}you don't have permission to access this page.{% endblocktrans %}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url django.contrib.auth.views.login %}" autocapitalize="off" class="form-horizontal">
+                <fieldset>
+                    {% csrf_token %}
+                    {{ form|as_bootstrap }}
+					
+                    {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    {% endif %}						
+						
+					<div class="margl-160">
+						<p>Don't have an account? <a class="red" href="{% url registration_register %}">Sign up</a>!</p>
+						<p><a href="{% url auth_password_reset %}">{% trans "Forgot password?" %}</a></p>
+					</div>
+					
+                    <div class="form-actions">
+                        <button type="submit" class="button-red button-caps"><strong>{% trans "Sign in" %}</strong></button>
+                    </div>
+                    <input type="hidden" name="next" value="{{ next }}">
+                </fieldset>
+            </form>
+
+        </div>
+
+        <div class="span6">
+
+            <h2 class="page-header">Sign in with <span class="red">Facebook</span></h2>
+
+            <form action="{% url facebook_connect %}?facebook_login=1" method="post" id="facebook_login_form">
+				{% if request.GET.fb_error_or_cancel or request.GET.error %}
+					<div class="error">Please click allow in the facebook interface to access Redmap</div>
+				{% endif %}
+				{% if form.errors.email %}
+					<ul class="errorlist">
+						<li>The email address provided by your Facebook account ({{ form.email.value }}) has already been registered on Redmap.</li>
+						<li>If you own this address, you may link Facebook to your account from your profile page.</li>
+					</ul>
+					<p><a href="{% url auth_login %}" class="btn">Sign in to your account</a></p>
+				{% else %}
+					<div id="facebook_login_js">
+						<input id="fb_logo_input" type="image" src="{{ STATIC_URL }}reskin/img/fb.png">
+					</div>
+				{% endif %}
+                <input type="hidden" value="{% url acct_profile %}" name="register_next">
+                <input type="hidden" value="{% url home %}" name="next">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+
+{{ block.super }}
+
+<script>
+    $(document).ready(function(){
+       $("#id_username").focus();
+
+	$("#fb_logo_input").click(function(e){
+ 		F.connect($("#facebook_login_form"));
+		e.preventDefault();
+ 		return false;
+	});
+	
+     });
+</script>
+{% endblock %}

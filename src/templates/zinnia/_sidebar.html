@@ -1,0 +1,44 @@
+{% load thumbnail %}
+{% load article_tags %}
+
+		<div class="box pada2">
+			{% news_with_tags object|region_tags as related_news %}
+			{% if related_news.exists %}
+				<section class="section">
+					<h2><span class="red">Related news</span></h2>
+					<ul class="arrows lines">
+
+						{% for news in related_news|slice:":5" %}
+							<li><a href="{{ news.get_absolute_url }}">{{ news.title }}</a></li>
+						{% endfor %}
+					</ul>
+				</section>
+			{% endif %}
+
+			{% if sighting_list %}
+				{# Get first sighting #}
+				{% with sighting=sighting_list.0 %}
+					<h2>Most recent sighting</h2>
+					{% thumbnail sighting.photo_url "200x200" crop="center" format="JPEG" as img %}
+						<img class="polaroid" title="{{ sighting.resolved_species }}" src="{{ img.url }}" alt="{{ sighting.species_name }}">
+						<p class="padt">
+							<strong>
+								{{ sighting.species.species_name }}
+							</strong> spotted by <strong>{{ sighting.user }}</strong>
+						</p>
+					{% endthumbnail %}
+				{% endwith %}
+			{% endif %}
+
+			{% include "frontend/sidebar_log.html" %}
+			{% include "frontend/sidebar_newsletter_signup.html" %}
+			{% include "frontend/sidebar_facebook.html" %}
+
+			{% comment %}
+				{% with facebook_share_url=request.get_host|add:request.get_full_path %}
+					<a href="http://www.facebook.com/sharer.php?u={{ facebook_share_url|urlencode }}" class="button-red-big">Send to a friend</a>
+				{% endwith %}
+			{% endcomment %}
+
+			<span class="paperclip-right-vertical"></span>
+		</div><!-- /.box -->

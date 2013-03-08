@@ -1,0 +1,14 @@
+
+
+{% if messages %}
+<div class="row">
+	<div id="alert-box" class="{% block messages_class %}span12{% endblock %}">
+		{% for message in messages %}
+			<div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+				<a data-dismiss="alert" class="close">×</a>
+				{{ message }}
+			</div>
+		{% endfor %}
+	</div>
+</div>
+{% endif %}

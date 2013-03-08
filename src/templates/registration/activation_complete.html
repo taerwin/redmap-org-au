@@ -1,0 +1,20 @@
+{% extends "site_base.html" %}
+
+{% load bootstrap_tags i18n ifsetting_tag %}
+
+{% block head_title %}Activation complete{% endblock %}
+
+{% block section_title %}<h1>{% trans 'Create an account' %}</h1>{% endblock %}
+
+{% block content %}
+
+<!-- TODO: should be content manageable -->
+<h2 class="red heading-big">Activation complete</h2>
+{{ copyblock.registration_activation_complete|safe|default:"<p>Thanks, activation complete! You are now logged in&hellip;</p>" }}
+
+{% include "frontend/newsletter_signup.html" %}
+
+<h2 class="red heading-big">Update your profile</h2>
+<a href="{% url acct_edit_profile %}">Click here to edit your profile</a>
+
+{% endblock %}
