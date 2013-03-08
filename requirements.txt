@@ -13,6 +13,7 @@ pytz==2011n
 sorl-thumbnail==11.12
 wsgiref==0.1.2
 django-formwizard==1.0
+pyparsing==1.5.7
 django-blog-zinnia==0.10.1
 django-singletons==0.1.6-1
 django-ckeditor==3.6.2-ionata2
