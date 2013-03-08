@@ -1,0 +1,5 @@
+
+{{ object.full_name }}
+{{ object.organisation }}
+{{ object.occupation_interest }}
+

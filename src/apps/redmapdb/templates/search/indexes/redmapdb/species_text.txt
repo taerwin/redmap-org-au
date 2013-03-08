@@ -1,0 +1,18 @@
+
+{{ object.species_name }}
+{{ object.caab_code }}
+{{ object.common_name }}
+{{ object.short_description }}
+{{ object.description }}
+{{ object.related }}
+{{ object.habitat }}
+
+{{ object.family }}
+{{ object.order }}
+{{ object.class_field }}
+{{ object.phylum }}
+{{ object.genus }}
+{{ object.species_epithet }}
+
+{{ object.species_report_group }}
+{{ object.species_taxonomic_group }}

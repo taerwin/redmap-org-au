@@ -1,0 +1,13 @@
+<h3 class="red nomargb">
+	<a href="{{ result.object.get_absolute_url }}">
+		{% if result.object %}
+		<strong>{{ result.object.common_name }}</strong>
+		<span class="nobold">(<dfn>{{ result.object.species_name }}</dfn>)</span>
+		{% else %}
+		<strong>{{ result.object.other_species }}</strong>
+		{% endif %}
+	</a>
+</h3>
+{% if result.object.short_description %}
+{{ result.object.short_description|truncatechars:250 }}
+{% endif %}

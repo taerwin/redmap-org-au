@@ -1,0 +1,14 @@
+{% with result.object as person %}
+<h3 class="red">
+	<a href="{{ person.get_public_url }}">
+		<strong>
+			{{ person.user.get_full_name }}
+		</strong>
+		{% if person.organisation %}
+		<span class="nobold">(<dfn>{{ person.organisation }}</dfn>)</span>
+		{% endif %}
+	</a>
+</h3>
+{% if person.about_me %}
+{{ person.about_me|truncatechars:250 }}
+{% endif %}{% endwith %}
