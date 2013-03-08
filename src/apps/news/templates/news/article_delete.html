@@ -1,0 +1,15 @@
+{% extends "news/article_index.html" %}
+
+{% load i18n bootstrap_tags backend_extras %}
+
+{% block content %}
+<form action="" method="POST">{% csrf_token %}
+    <fieldset>
+        <legend>Are your sure you want to delete <strong>"{{ article.title }}"</strong>?</legend>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Delete</button>
+            <a href="{% url article_index %}" class="btn">Cancel</a>
+        </div>
+    </fieldset>
+</form>
+{% endblock %}

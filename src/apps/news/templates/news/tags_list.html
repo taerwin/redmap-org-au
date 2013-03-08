@@ -1,0 +1,45 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n thumbnail backend_extras news_filters %}
+
+{% block panel_nav %}
+    {% navtabs "Administration" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_administration "Region Tags" request.user %}
+{% endblock %}
+
+{% block content %}
+        <form action="{% url news_tags_list %}" method="POST">{% csrf_token %}
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Region</th>
+                        <th>Tag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Redmap</th>
+                        <td><input type="text" id="id_tag_0" name="tag_0" value="{% get_tag %}"></td>
+                    </tr>
+                    {% for region in nav_regions %}
+						<tr>
+							<th>
+								{{ region }}
+							</th>
+							<td>
+								<input type="text" id="id_tag_{{ region.id }}" name="tag_{{ region.id }}" value="{% get_tag region %}">
+							</td>
+						</tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-large"><i class="icon-ok-circle icon-white"></i> Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

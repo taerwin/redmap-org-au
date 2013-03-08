@@ -1,0 +1,15 @@
+
+{{ object.title }}
+{{ object.slug }}
+{{ object.content }}
+{{ object.excerpt }}
+{{ object.tags }}
+{% for category in object.categories.all %}
+    {{ category }}
+{% endfor %}
+{% for related in object.related.all %}
+    {{ related }}
+{% endfor %}
+{% for image in object.gallery.all %}
+    {{ image.caption }}
+{% endfor %}

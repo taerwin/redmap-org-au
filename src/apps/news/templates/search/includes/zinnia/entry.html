@@ -1,0 +1,16 @@
+{# View for profile #}
+{% with result.object as entry %}
+    <h3 class="red">
+        <a href="{{ entry.get_public_url }}">
+            <strong>
+                {{ entry.title }}
+            </strong>
+        </a>
+    </h3>
+    {% if entry.is_news %}
+    {{ entry.creation_date }} -
+    {% endif %}
+    {% if entry.excerpt %}
+    {{ entry.excerpt|striptags|safe|truncatechars:250 }}
+    {% endif %}
+{% endwith %}

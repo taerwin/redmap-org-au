@@ -1,0 +1,78 @@
+{% extends "backend/panel_base.html" %}
+
+{% load i18n thumbnail backend_extras %}
+
+{% block panel_nav %}
+    {% navtabs "Content" request.user %}
+{% endblock %}
+
+{% block panel_sub_nav %}
+    {% panel_content "Resources" %}
+{% endblock %}
+
+{% block content %}
+
+	<div class="actions">
+        <p><a href="{% url article_add %}" class="btn btn-large btn-primary"><i class="icon-plus-sign icon-white"></i> Add new resource</a></p>
+    </div>
+
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Author</th>
+				<th>Category</th>
+				<th>Tags</th>
+				<th>Published</th>
+				<th>Created</th>
+				<th>Options</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for article in articles %}
+				<tr>
+					<th>
+						<a href="{% url article_edit article.id %}" title="Edit">{{ article.title }}</a>
+					</th>
+					<td>
+						{{ article.author }}
+					</td>
+					<td>
+						{% for category in article.categories.all %}
+							{{ category.slug }}
+						{% endfor %}
+					</td>
+					<td>
+						{{ article.tags }}
+					</td>
+					<td>
+						{% if article.status == 0 %}
+							{{ STATUS_CHOICES.0 }}
+						{% else %}
+							{% if article.status == 1 %}
+								{{ STATUS_CHOICES.1 }}
+							{% else %}
+								{% if article.status == 2 %}
+									{{ STATUS_CHOICES.2 }}
+								{% endif %}
+							{% endif %}
+						{% endif %}
+					</td>
+					<td class="nowrap">
+						{% include "backend/_date.html" with date=article.creation_date %}
+					</td>
+					<td class="right">
+						<a href="{% url article_edit article.id %}" class="btn">Edit</a>
+					</td>
+				</tr>
+			{% empty %}
+				<tr>
+					<td colspan="7" class="center">
+						<strong>No resources found</strong>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+   
+{% endblock %}
